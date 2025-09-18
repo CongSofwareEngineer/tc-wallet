@@ -4,7 +4,7 @@ import { Core } from "@walletconnect/core";
 
 let walletKit: TypeWalletKit
 
-const WC = {
+const WalletConnectServices = {
   init: async () => {
     if (walletKit) return walletKit;
     const core = new Core({
@@ -25,7 +25,7 @@ const WC = {
     });
 
     return walletKit
-  }
+  },
 }
 
-export default WC;
+export default WalletConnectServices;
