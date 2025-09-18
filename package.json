@@ -19,6 +19,7 @@
     "@react-navigation/native": "^7.1.8",
     "@reown/walletkit": "^1.2.10",
     "@walletconnect/react-native-compat": "^2.21.8",
+    "bignumber.js": "^9.3.1",
     "expo": "~54.0.8",
     "expo-application": "~7.0.7",
     "expo-calendar": "~15.0.7",
@@ -62,7 +63,15 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "reactotron-react-native": "^5.1.17",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "@babel/core": "^7.25.2",
+    "@types/react-native-extra-dimensions-android": "^1.2.3",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "prettier": "^3.5.3"
   },
   "private": true
 }

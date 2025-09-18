@@ -1,8 +1,10 @@
-import { Hex } from "viem"
+import { Hex } from 'viem'
 
 export type Address = string
 
 export type WalletType = 'evm' | 'solana' | 'aptos' | 'starknet' | 'near'
+
+export type ListMnemonic = string[]
 
 export interface Wallet {
   address: Address
@@ -12,6 +14,7 @@ export interface Wallet {
   isSmartAccount?: boolean
   isSmart7702?: boolean
   type: WalletType
+  indexMnemonic?: number // which account index in mnemonic derivation
 }
 
 export interface WalletConnect {

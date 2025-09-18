@@ -1,38 +1,42 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import "@walletconnect/react-native-compat";
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-// Dev tooling (safe to keep; no-op in production if dependency missing)
-import '@/utils/debug/reactotron';
+import '@/utils/debug/reactotron'
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import '@walletconnect/react-native-compat'
+import { useCameraPermissions } from 'expo-camera'
+import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
+import { useEffect } from 'react'
+import 'react-native-reanimated'
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import WC from '@/utils/walletEvm';
-import { useCameraPermissions } from 'expo-camera';
-import { useEffect } from 'react';
-
-
+import { KEY_STORAGE } from '@/constants/storage'
+import { useColorScheme } from '@/hooks/use-color-scheme'
+import { getSecureData } from '@/utils/secureStorage'
+import WalletEvmUtil from '@/utils/walletEvm'
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [, requestPermission] = useCameraPermissions();
-  console.log({ colorScheme });
+  const colorScheme = useColorScheme()
+  const [, requestPermission] = useCameraPermissions()
+
+  console.log({ colorScheme })
 
   useEffect(() => {
-    (async () => {
+    ; (async () => {
       requestPermission()
-      const wc = await WC.init()
-      wc.getPendingSessionRequests()
-      const wallet = await WC.createWallet()
-      console.log({ wallet });
+      // const wc = await getWallet()
+      const arrWallet = await Promise.all([WalletEvmUtil.createWallet(0), WalletEvmUtil.createWallet(1), WalletEvmUtil.createWallet(2)])
 
-    })();
-  }, [requestPermission]);
+      console.log({ arrWallet })
+    })()
+  }, [requestPermission])
 
+  useEffect(() => {
+    getSecureData(KEY_STORAGE.Mnemonic).then((res) => {
+      console.log({ res })
+    })
+  }, [])
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack  >
+      <Stack>
         {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
         {/* <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} /> */}
         {/* <Stack.Screen name="/" options={{ headerShown: false }} /> */}
@@ -44,10 +48,9 @@ export default function RootLayout() {
         <Stack.Screen name="connect-dapp" options={{ headerShown: false }} />
         <Stack.Screen name="backup" options={{ headerShown: false }} />
         <Stack.Screen name="wallet" options={{ headerShown: false }} /> */}
-        <Stack.Screen name="approve/index" options={{ headerShown: false }} />
+        <Stack.Screen name='approve/index' options={{ headerShown: false }} />
       </Stack>
-      <StatusBar style="auto" />
-
+      <StatusBar style='auto' />
     </ThemeProvider>
-  );
+  )
 }
