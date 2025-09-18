@@ -108,6 +108,7 @@ const WalletEvmUtil = {
         tx.gas = BigInt(Bignumber(gas.toString()).multipliedBy(1.05).decimalPlaces(0).toFixed()) // add 5% buffer
       }
       const account = privateKeyToAccount(privateKey)
+
       const wallet = createWalletClient({
         account,
         transport: custom(publicClient.transport),

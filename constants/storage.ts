@@ -8,4 +8,5 @@ export enum KEY_STORAGE {
   'RefreshToken' = 'RefreshToken',
   'WalletConnect' = 'WalletConnect',
   Mnemonic = 'Mnemonic',
+  ListChain = 'ListChain',
 }

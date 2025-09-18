@@ -4,9 +4,12 @@ import { optimism } from 'viem/chains'
 import { ChainId, RawTransactionEVM } from '@/types/web3'
 const EVMServices = {
   getClient: (chainId: ChainId) => {
+    const listChain = [optimism]
+    const chain = listChain.find((item) => item.id.toFixed() === chainId)
+
     const publicClient = createPublicClient({
-      chain: optimism,
-      transport: http(optimism.rpcUrls.default.http[0]),
+      chain: chain,
+      transport: http(chain!.rpcUrls.default.http[0]),
     })
 
     return publicClient
