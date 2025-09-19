@@ -1,12 +1,9 @@
 import React from 'react'
-import { Text, View } from 'react-native'
 
-const CreateWallet = () => {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-      <Text style={{ color: 'black' }}>CreateWallet</Text>
-    </View>
-  )
+import HomeScreen from './(tabs)/home'
+
+const InitApp = () => {
+  return <HomeScreen />
 }
 
-export default CreateWallet
+export default InitApp

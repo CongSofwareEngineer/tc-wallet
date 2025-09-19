@@ -1,0 +1,85 @@
+{
+  "common": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "logout": "Đăng xuất",
+    "home": "Trang chủ",
+    "search": "Tìm kiếm",
+    "cart": "Giỏ hàng",
+    "profile": "Tài khoản",
+    "language": "Ngôn ngữ",
+    "back": "Quay lại",
+    "close": "Đóng"
+  },
+  "userName": "Tên người dùng",
+  "password": "Mật khẩu",
+  "textPopular": {
+    "userName": "Tên người dùng",
+    "password": "Mật khẩu",
+    "passwordAgain": "Nhập lại mật khẩu",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "fullName": "Họ và tên",
+    "address": "Địa chỉ",
+    "confirmPassword": "Xác nhận mật khẩu"
+  },
+  "warning": {
+    "logout": "Bạn có muốn đăng xuất khỏi tài khoản không?",
+    "required": "Trường này là bắt buộc",
+    "invalidEmail": "Email không hợp lệ",
+    "invalidPhone": "Số điện thoại không hợp lệ",
+    "invalidPassword": "Mật khẩu không hợp lệ",
+    "minLength": "Trường này phải có ít nhất {min} ký tự",
+    "maxLength": "Trường này không đươc quá {max} ký tự",
+    "emailExists": "Email đã được sử dụng",
+    "phoneExists": "Số điện thoại đã được sử dụng",
+    "passwordMismatch": "Mật khẩu không khớp",
+    "loginFailed": "Đăng nhập thất bại, vui lòng kiểm tra lại tên người dùng và mật khẩu",
+    "networkError": "Lỗi mạng, vui lòng kiểm tra kết nối Internet của bạn",
+    "serverError": "Lỗi máy chủ, vui lòng thử lại sau",
+    "unknownError": "Lỗi không xác định, vui lòng thử lại sau",
+    "emptyField": "Trường này không được để trống",
+    "invalidInput": "Đầu vào không hợp lệ",
+    "passwordAgain": "Mật khẩu không khớp, vui lòng nhập lại"
+  },
+  "placeholder": {
+    "enterUserName": "Nhập tên người dùng",
+    "enterPassword": "Nhập mật khẩu",
+    "enterPasswordAgain": "Nhập mật khẩu lại"
+  },
+  "login": {
+    "titlePage": "Đăng nhập",
+    "welcome": "Xin chào",
+    "loginToContinue": "Đăng nhập để tiếp tục"
+  },
+  "register": {
+    "titlePage": "Đăng ký",
+    "welcome": "Xin chào",
+    "registerToContinue": "Đăng ký để tiếp tục"
+  },
+  "homeScreen": {
+    "titlePage": "Trang chủ",
+    "search": "Tìm kiếm"
+  },
+  "production": {
+    "titlePage": "Sản phẩm"
+  },
+  "setting": {
+    "titlePage": "Cài đặt",
+    "language": "Ngôn ngữ",
+    "darkMode": "Chế độ",
+    "dark": "Tối",
+    "light": "Sáng",
+    "system": "Hệ thống",
+    "notification": "Thông báo",
+    "changePassword": "Đổi mật khẩu",
+    "backup": {
+      "title": "Sao lưu và khôi phục",
+      "backupNow": "Sao lưu ngay",
+      "restore": "Khôi phục"
+    }
+  },
+  "thayHongToan": {
+    "listRegister": "Danh sách đăng ký"
+  }
+}

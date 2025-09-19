@@ -10,11 +10,13 @@ export interface Wallet {
   address: Address
   name?: string
   isNfc?: boolean
-  private: Hex
+  privateKey: Hex
   isSmartAccount?: boolean
   isSmart7702?: boolean
   type: WalletType
   indexMnemonic?: number // which account index in mnemonic derivation
+  indexAccountMnemonic?: number // which account index in mnemonic derivation
+  isDefault?: boolean
 }
 
 export interface WalletConnect {

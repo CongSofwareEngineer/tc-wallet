@@ -6,21 +6,25 @@ export type ChainId = string
 export type ChainInfo = {
   name: string
   chain: string
+
+  testnet: boolean
+  chainId: number
+  networkId: number
+  faucets: string[]
   nativeCurrency: {
     name: string
     symbol: string
     decimals: number
   }
-  rpc: string[]
-  faucets: string[]
-  chainId: number
-  networkId: number
   explorers?: {
     name: string
     url: string
     standard: string
   }[]
-  testnet: boolean
+  rpc: {
+    url: string
+    [key: string]: unknown
+  }[]
 }
 export type Callback = {
   callbackSuccess?: (hash?: Hash) => void

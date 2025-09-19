@@ -2,7 +2,7 @@ import { HDKey } from '@scure/bip32'
 import { mnemonicToSeedSync } from '@scure/bip39'
 import Bignumber from 'bignumber.js'
 import 'react-native-get-random-values'
-import { Address, createWalletClient, custom, Hash, Hex, PrivateKeyAccount, toHex, TransactionRequest } from 'viem'
+import { Address, createWalletClient, custom, Hash, Hex, PrivateKeyAccount, toHex } from 'viem'
 import { english, generateMnemonic, privateKeyToAccount } from 'viem/accounts'
 
 import { KEY_STORAGE } from '@/constants/storage'
@@ -10,6 +10,7 @@ import EVMServices from '@/services/EVM'
 import { ListMnemonic, WalletType } from '@/types/wallet'
 import { RawTransactionEVM } from '@/types/web3'
 
+import { decodeData, encodeData } from '../crypto'
 import { getSecureData, saveSecureData } from '../secureStorage'
 
 type DerivedAccount = {
@@ -24,7 +25,7 @@ const WalletEvmUtil = {
 
     const hdKeyString = HDKey.fromMasterSeed(seed)
 
-    const hdKey = hdKeyString.derive(`m/44'/60'/${accountIndex}'/0/${accountIndex}`)
+    const hdKey = hdKeyString.derive(`m/44'/60'/0/0/${accountIndex}`)
 
     const privateKey = toHex(hdKey.privateKey!)
 
@@ -59,47 +60,29 @@ const WalletEvmUtil = {
     const { account, privateKey } = WalletEvmUtil.deriveAccountFromMnemonic(mnemonic, accountIndex)
 
     const address = account.address
+    const privateKeyEncode = (await encodeData(privateKey)) as Hex
 
-    return { indexMnemonic: 0, mnemonic, address, accountIndex, privateKey, type: 'evm' }
+    return { indexMnemonic: 0, mnemonic, address, accountIndex, privateKey: privateKeyEncode, type: 'evm' }
   },
   sendTransaction: async (raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> => {
     try {
-      const publicClient = EVMServices.getClient(raw.chainId!)
-
-      const tx: TransactionRequest = {
-        to: raw.to,
-        data: raw.data,
-        from: raw.from,
-        value: raw.value,
-      }
-
       raw.callbackBefore?.()
 
-      // 2) Nonce
-      if (raw.nonce !== undefined) {
-        tx.nonce = raw.nonce
-      } else if (tx.from) {
-        const nonce = await publicClient.getTransactionCount({ address: tx.from as Address, blockTag: 'latest' })
+      const publicClient = EVMServices.getClient(raw.chainId!)
+      const privateKeyDecode = await decodeData(privateKey)
 
-        tx.nonce = nonce
-      }
+      const wallet = createWalletClient({
+        account: privateKeyToAccount(privateKeyDecode),
+        transport: custom(publicClient.transport),
+      })
 
-      // 3) Gas price / fees
-      if (raw.gasPrice) {
-        tx.gasPrice = raw.gasPrice
-      } else {
-        if (raw.maxFeePerGas || raw.maxPriorityFeePerGas) {
-          if (raw.maxFeePerGas) {
-            tx.maxFeePerGas = raw.maxFeePerGas
-          }
-          if (raw.maxPriorityFeePerGas) {
-            tx.maxPriorityFeePerGas = raw.maxPriorityFeePerGas
-          }
-        } else {
-          const gasPrice = await publicClient.getGasPrice()
-          tx.gasPrice = gasPrice
-        }
-      }
+      const tx = await EVMServices.getRawTransactions({
+        to: raw.to,
+        data: raw.data,
+        value: raw.value,
+        from: raw.from || wallet.account.address,
+        chainId: raw.chainId,
+      })
 
       if (raw.gas) {
         tx.gas = raw.gas
@@ -107,21 +90,15 @@ const WalletEvmUtil = {
         const gas = await EVMServices.estimateGas({ ...tx })
         tx.gas = BigInt(Bignumber(gas.toString()).multipliedBy(1.05).decimalPlaces(0).toFixed()) // add 5% buffer
       }
-      const account = privateKeyToAccount(privateKey)
-
-      const wallet = createWalletClient({
-        account,
-        transport: custom(publicClient.transport),
-      })
 
       const hash = await wallet.sendTransaction({
         chain: publicClient.chain,
-        account: account.address,
+        account: wallet.account.address,
         ...tx,
       })
 
       raw.callbackPending?.()
-      if (raw.isTracking !== false) {
+      if (raw.isTracking) {
         await EVMServices.tracking(hash as Hash, raw.chainId!)
       }
       raw.callbackSuccess?.(hash as Hash)
@@ -132,9 +109,47 @@ const WalletEvmUtil = {
       return Promise.reject(error)
     }
   },
+  signTransaction: async (raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> => {
+    try {
+      const publicClient = EVMServices.getClient(raw.chainId!)
+      const privateKeyDecode = await decodeData(privateKey)
+
+      const wallet = createWalletClient({
+        account: privateKeyToAccount(privateKeyDecode),
+        transport: custom(publicClient.transport),
+      })
+
+      const tx = await EVMServices.getRawTransactions({
+        to: raw.to,
+        data: raw.data,
+        value: raw.value,
+        from: raw.from || wallet.account.address,
+        chainId: raw.chainId,
+      })
+
+      if (raw.gas) {
+        tx.gas = raw.gas
+      } else {
+        const gas = await EVMServices.estimateGas({ ...tx })
+        tx.gas = BigInt(Bignumber(gas.toString()).multipliedBy(1.05).decimalPlaces(0).toFixed()) // add 5% buffer
+      }
+
+      const signature = await wallet.signTransaction({
+        chain: publicClient.chain,
+        account: wallet.account.address,
+        ...tx,
+      })
+
+      return signature as Hash
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  },
   signMessage: async (raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> => {
     try {
-      const account = privateKeyToAccount(privateKey)
+      const privateKeyDecode = await decodeData(privateKey)
+
+      const account = privateKeyToAccount(privateKeyDecode)
       const signature = await account.signMessage({ message: raw.message || ' ' })
 
       return signature as Hash
@@ -144,7 +159,9 @@ const WalletEvmUtil = {
   },
   signTypedData: async (raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> => {
     try {
-      const account = privateKeyToAccount(privateKey)
+      const privateKeyDecode = await decodeData(privateKey)
+
+      const account = privateKeyToAccount(privateKeyDecode)
       const signature = await account.signTypedData({
         domain: raw.domain,
         types: raw.types,

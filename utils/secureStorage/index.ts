@@ -1,6 +1,7 @@
-import { KEY_STORAGE } from '@/constants/storage'
 import * as SecureStore from 'expo-secure-store'
 import { MMKV } from 'react-native-mmkv'
+
+import { KEY_STORAGE } from '@/constants/storage'
 
 export const checkSupportSecure = async () => {
   try {
@@ -29,24 +30,30 @@ export const generateKey = () => {
   return btoa(binary).replace(/\+-/g, '@').replace(/\//g, '@').slice(0, 16)
 }
 
-const create = async () => {
-  let encryptionKey: string | null = process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE as string
-  const isSupport = await checkSupportSecure()
-
-  if (isSupport) {
-    encryptionKey = await SecureStore.getItemAsync(KEY_STORAGE.keyEncrypt, {
+export const getKeyEncode = async () => {
+  const isSupportSecure = await checkSupportSecure()
+  if (isSupportSecure) {
+    let encryptionKey = await SecureStore.getItemAsync(KEY_STORAGE.keyEncrypt, {
       keychainAccessible: SecureStore.WHEN_UNLOCKED,
       authenticationPrompt: `Auth require ${KEY_STORAGE.keyEncrypt}`,
     })
-
-    if (!encryptionKey) {
+    if (encryptionKey) {
+      return encryptionKey
+    } else {
       encryptionKey = generateKey()
-      SecureStore.setItemAsync(KEY_STORAGE.keyEncrypt, encryptionKey, {
+      await SecureStore.setItemAsync(KEY_STORAGE.keyEncrypt, encryptionKey, {
         keychainAccessible: SecureStore.WHEN_UNLOCKED,
         authenticationPrompt: `Auth require ${KEY_STORAGE.keyEncrypt}`,
       })
+      return encryptionKey
     }
+  } else {
+    return process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE as string
   }
+}
+
+const create = async () => {
+  const encryptionKey = await getKeyEncode()
 
   const storage = new MMKV({ id: 'SECURE_LOCAL_STORAGE', encryptionKey })
 

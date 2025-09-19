@@ -9,4 +9,5 @@ export enum KEY_STORAGE {
   'WalletConnect' = 'WalletConnect',
   Mnemonic = 'Mnemonic',
   ListChain = 'ListChain',
+  AllWallet = 'AllWallet',
 }

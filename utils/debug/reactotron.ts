@@ -2,9 +2,9 @@
 // Requires: yarn add -D reactotron-react-native @react-native-async-storage/async-storage
 // Open Reactotron app on your computer to see logs.
 
-import { Platform } from 'react-native';
+import { Platform } from 'react-native'
 
-console.log({ __DEV__ });
+console.log({ __DEV__ })
 
 try {
   if (__DEV__) {
@@ -13,9 +13,7 @@ try {
         // @ts-ignore dynamic dev import
         const { default: Reactotron } = await import('reactotron-react-native')
         const { NativeModules } = await import('react-native')
-        const { default: AsyncStorage } = await import(
-          '@react-native-async-storage/async-storage'
-        )
+        const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage')
 
         const scriptURL: string | null | undefined = NativeModules?.SourceCode?.scriptURL ?? null
 
@@ -55,12 +53,7 @@ try {
 
         console.log('[Reactotron] resolve host:', { scriptURL, envHost, host })
 
-
-        Reactotron.setAsyncStorageHandler(AsyncStorage)
-          .configure({ name: 'TC Wallet', host })
-          .useReactNative({})
-          .connect()
-
+        Reactotron.setAsyncStorageHandler(AsyncStorage).configure({ name: 'TC Wallet', host }).useReactNative({}).connect()
           ; (console as any).tron = Reactotron
 
         Reactotron.clear?.()
@@ -71,9 +64,6 @@ try {
       }
     })()
   }
-
-} catch (error) {
-
-}
-export { };
+} catch (error) { }
+export { }
 

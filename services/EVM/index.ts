@@ -1,4 +1,4 @@
-import { createPublicClient, Hex, http } from 'viem'
+import { Address, createPublicClient, Hex, http, TransactionRequest } from 'viem'
 import { optimism } from 'viem/chains'
 
 import { ChainId, RawTransactionEVM } from '@/types/web3'
@@ -51,6 +51,42 @@ const EVMServices = {
         limitCurrent++
       }
     }
+  },
+  getRawTransactions: async (raw: RawTransactionEVM): Promise<RawTransactionEVM> => {
+    const publicClient = EVMServices.getClient(raw.chainId!)
+    const tx: TransactionRequest = {
+      to: raw.to,
+      data: raw.data,
+      value: raw.value,
+      from: raw.from,
+    }
+
+    if (raw.nonce !== undefined) {
+      tx.nonce = raw.nonce
+    } else if (tx.from) {
+      const nonce = await publicClient.getTransactionCount({ address: tx.from as Address, blockTag: 'latest' })
+
+      tx.nonce = nonce
+    }
+
+    // 3) Gas price / fees
+    if (raw.gasPrice) {
+      tx.gasPrice = raw.gasPrice
+    } else {
+      if (raw.maxFeePerGas || raw.maxPriorityFeePerGas) {
+        if (raw.maxFeePerGas) {
+          tx.maxFeePerGas = raw.maxFeePerGas
+        }
+        if (raw.maxPriorityFeePerGas) {
+          tx.maxPriorityFeePerGas = raw.maxPriorityFeePerGas
+        }
+      } else {
+        const gasPrice = await publicClient.getGasPrice()
+        tx.gasPrice = gasPrice
+      }
+    }
+
+    return tx
   },
 }
 
