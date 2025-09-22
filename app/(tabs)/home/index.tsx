@@ -6,10 +6,12 @@ import ThemedText from '@/components/UI/ThemedText'
 import useModal from '@/hooks/useModal'
 import ClientServices from '@/services/Client'
 import { ChainInfo } from '@/types/web3'
+import { useCounterStore } from '@/zustand/test'
 
 const HomeScreen = () => {
   const router = useRouter()
   const { openModal, modal } = useModal()
+  const { count, inc } = useCounterStore((state) => state)
   console.log({ modal })
 
   const [listChains, setListChains] = useState<ChainInfo[]>([])
@@ -51,7 +53,15 @@ const HomeScreen = () => {
         <ThemedText>Fetch on chains</ThemedText>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('/create-wallet')}>
-        <ThemedText>to create</ThemedText>
+        <ThemedText>to create </ThemedText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => {
+          useCounterStore.getState().inc()
+        }}
+      >
+        <ThemedText>inc: {JSON.stringify(count)}</ThemedText>
       </TouchableOpacity>
       {listChains.length > 0 && (
         <FlatList

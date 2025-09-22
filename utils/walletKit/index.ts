@@ -97,6 +97,7 @@ const WalletKit = {
       })
       const newSessions = sessionsZustand.getState().sessions
       newSessions[session.topic] = session
+
       sessionsZustand.getState().setSessions(newSessions)
     } catch (error) {
       await walletKit.rejectSession({
@@ -109,7 +110,11 @@ const WalletKit = {
     try {
       const walletKit = await WalletKit.init()
       await walletKit.core.relayer.unsubscribe(topic)
-      sessionsZustand.getState().removeSessionByTopic(topic)
+      const sessions = sessionsZustand.getState().sessions
+      if (sessions[topic]) {
+        delete sessions[topic]
+      }
+      sessionsZustand.getState().setSessions(sessions)
     } catch (error) {
       console.error('onSessionDelete error', error)
     }
