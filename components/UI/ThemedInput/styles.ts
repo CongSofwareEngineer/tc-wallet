@@ -17,6 +17,8 @@ export const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     borderRadius: 8,
+    borderColor: '#ccc',
+    borderWidth: 1,
   },
   label: {
     width: '100%',

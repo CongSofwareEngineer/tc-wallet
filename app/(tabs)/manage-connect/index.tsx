@@ -1,29 +1,50 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
-import React from 'react'
-import { FlatList, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { TouchableOpacity, View } from 'react-native'
 
+import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
+import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import useWallets from '@/hooks/useWallets'
-import { Wallet } from '@/types/wallet'
+import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
 
+import ListConnect from './Components/ListConnect'
 import styles from './styles'
 
 const ManageConnectScreen = () => {
-  const { wallets } = useWallets()
-  console.log({ wallets })
+  const [uri, setUri] = useState('')
+  const { wallet } = useWallets()
 
-  const renderConnect = (item: Wallet) => {
-    return (
-      <View key={item.address}>
-        <ThemedText
-          style={{
-            fontSize: 20,
-          }}
-        >
-          {item.address}
-        </ThemedText>
-      </View>
-    )
+  useEffect(() => {
+    let walletKit: TypeWalletKit
+    const initData = async () => {
+      console.log('initData')
+
+      walletKit = await WalletKit.init()
+
+      walletKit.on('session_proposal', (e) => {
+        const { id, params } = e
+        const nameSpaces = WalletKit.formatNameSpaceBySessions(params as any, wallet?.address || '')
+        WalletKit.onSessionProposal(id, params, nameSpaces)
+        setUri('')
+      })
+    }
+    initData()
+
+    return () => {
+      if (walletKit) {
+        walletKit?.off('session_proposal', () => { })
+      }
+    }
+  }, [])
+
+  const handleConnect = async () => {
+    const walletKit = await WalletKit.init()
+    walletKit.pair({ uri })
+  }
+
+  const handleDisconnectAll = async () => {
+    WalletKit.sessionDeleteAll()
   }
 
   return (
@@ -39,12 +60,18 @@ const ManageConnectScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <FlatList
-        keyExtractor={(item) => item.address}
-        contentContainerStyle={{ paddingBottom: 40 }}
-        data={wallets}
-        renderItem={({ item }) => renderConnect(item)}
-      />
+      <ThemedInput value={uri} onChangeText={setUri} />
+      <ThemeTouchableOpacity onPress={handleConnect}>
+        <ThemedText>Connect</ThemedText>
+      </ThemeTouchableOpacity>
+
+      <ThemeTouchableOpacity onPress={handleConnect}>
+        <ThemedText>Connect</ThemedText>
+      </ThemeTouchableOpacity>
+      <ThemeTouchableOpacity onPress={handleDisconnectAll}>
+        <ThemedText>disconnefct all</ThemedText>
+      </ThemeTouchableOpacity>
+      <ListConnect />
     </View>
   )
 }

@@ -2,16 +2,20 @@ import { HDKey } from '@scure/bip32'
 import { mnemonicToSeedSync } from '@scure/bip39'
 import Bignumber from 'bignumber.js'
 import 'react-native-get-random-values'
-import { Address, createWalletClient, custom, Hash, Hex, PrivateKeyAccount, toHex } from 'viem'
+import { Address, createWalletClient, custom, Hash, Hex, isAddress, PrivateKeyAccount, toHex } from 'viem'
 import { english, generateMnemonic, privateKeyToAccount } from 'viem/accounts'
 
 import { KEY_STORAGE } from '@/constants/storage'
 import EVMServices from '@/services/EVM'
 import { ListMnemonic, WalletType } from '@/types/wallet'
+import { Params } from '@/types/walletConnect'
 import { RawTransactionEVM } from '@/types/web3'
+import { walletsZustand } from '@/zustand/wallet'
 
 import { decodeData, encodeData } from '../crypto'
+import { lowercase } from '../functions'
 import { getSecureData, saveSecureData } from '../secureStorage'
+import WalletKit from '../walletKit'
 
 type DerivedAccount = {
   account: PrivateKeyAccount
@@ -172,6 +176,102 @@ const WalletEvmUtil = {
       return signature as Hash
     } catch (error) {
       return Promise.reject(error)
+    }
+  },
+  approveRequest: async (id: number, topic: string, params: Params) => {
+    const walletKit = await WalletKit.init()
+    try {
+      let result: any = { code: -32601, message: 'Method not found' }
+      let msgParams: any = params.request.params[0]
+      let address = params.request.params[1]
+
+      if (!isAddress(address)) {
+        address = params.request.params[0]
+        msgParams = params.request.params[1]
+      }
+      const wallet = walletsZustand.getState().wallets.find((w) => lowercase(w.address) === lowercase(address))!
+      console.log({ msgParams, address, wallet })
+
+      switch (params.request.method) {
+        case 'eth_accounts':
+          result = ['0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb']
+          break
+        case 'eth_sign':
+          result = '0x' + 'abcd'.repeat(32) // Fake signature for demonstration
+          break
+        case 'eth_signTypedData':
+        case 'eth_signTypedData_v4':
+        case 'eth_signTypedData_v3':
+          const typeData = JSON.parse(msgParams)
+          const raw: RawTransactionEVM = {
+            domain: typeData.domain,
+            types: typeData.types,
+            message: typeData.message,
+          }
+
+          // Remove EIP712Domain from types to avoid issues with some libraries
+          if (raw.types.EIP712Domain) {
+            delete raw.types.EIP712Domain
+          }
+          if (typeData.primaryType) {
+            raw.primaryType = typeData.primaryType
+          }
+          console.log({ raw })
+
+          result = await WalletEvmUtil.signTypedData(raw, wallet?.privateKey)
+          break
+        case 'eth_signTransaction':
+          result = '0x' + 'abcd'.repeat(16) // Fake tx hash for demonstration
+          break
+        case 'eth_sendTransaction':
+          result = '0x' + 'abcd'.repeat(16) // Fake tx hash for demonstration
+
+          break
+        case 'personal_sign':
+          const msg = await WalletEvmUtil.signMessage(
+            {
+              message: msgParams,
+            },
+            wallet?.privateKey
+          )
+          result = msg
+
+          break
+
+        case 'wallet_switchEthereumChain':
+        case 'wallet_addEthereumChain':
+        case 'wallet_getPermissions':
+        case 'wallet_requestPermissions':
+        case 'wallet_registerOnboarding':
+        case 'wallet_watchAsset':
+        case 'wallet_scanQRCode':
+        case 'wallet_sendCalls':
+        case 'wallet_getCallsStatus':
+        case 'wallet_showCallsStatus':
+        case 'wallet_getCapabilities':
+          break
+      }
+
+      console.log({ result })
+
+      // await walletKit.respondSessionRequest({
+      //   topic: topic,
+      //   response: {
+      //     id: id,
+      //     jsonrpc: '2.0',
+      //     result: result,
+      //   },
+      // })
+    } catch (error) {
+      // console.error('onApproveRequest error', error)
+      // await walletKit.respondSessionRequest({
+      //   topic: topic,
+      //   response: {
+      //     id: id,
+      //     jsonrpc: '2.0',
+      //     error: { code: -32000, message: (error as Error).message },
+      //   },
+      // })
     }
   },
 }

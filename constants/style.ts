@@ -38,7 +38,7 @@ export const BACKGROUND = {
     backgroundModal: COLORS.black1,
     backgroundContentModal: COLORS.gray1,
     backgroundHeaderPage: COLORS.gray1,
-    backgroundInput: COLORS.gray1,
+    backgroundInput: COLORS.black,
   },
 } as const
 

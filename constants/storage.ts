@@ -10,4 +10,5 @@ export enum KEY_STORAGE {
   Mnemonic = 'Mnemonic',
   ListChain = 'ListChain',
   AllWallet = 'AllWallet',
+  Sessions = 'Sessions',
 }
