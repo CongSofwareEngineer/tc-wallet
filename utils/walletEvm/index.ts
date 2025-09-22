@@ -254,14 +254,14 @@ const WalletEvmUtil = {
 
       console.log({ result })
 
-      // await walletKit.respondSessionRequest({
-      //   topic: topic,
-      //   response: {
-      //     id: id,
-      //     jsonrpc: '2.0',
-      //     result: result,
-      //   },
-      // })
+      await walletKit.respondSessionRequest({
+        topic: topic,
+        response: {
+          id: id,
+          jsonrpc: '2.0',
+          result: result,
+        },
+      })
     } catch (error) {
       // console.error('onApproveRequest error', error)
       // await walletKit.respondSessionRequest({

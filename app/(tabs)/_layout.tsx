@@ -19,6 +19,10 @@ const TabNavigation = () => {
         animation: 'fade',
         headerShown: false,
         tabBarActiveTintColor: mode === MODE.Dark ? COLORS.white : COLORS.black,
+        tabBarStyle: {
+          height: 60,
+          paddingBottom: 0,
+        },
       }}
     >
       <Tab.Screen

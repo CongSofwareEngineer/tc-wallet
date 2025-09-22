@@ -6,6 +6,7 @@ import React from 'react'
 import TabNavigation from '@/app/(tabs)/_layout'
 import ApproveScreen from '@/app/approve'
 import BackupScreen from '@/app/backup'
+import ConnectDAppScreen from '@/app/connect-dapp'
 import CreateWalletScreen from '@/app/create-wallet'
 import useLanguage from '@/hooks/useLanguage'
 import useWallets from '@/hooks/useWallets'
@@ -22,9 +23,15 @@ export const JsStack = withLayoutContext<
 const StackScreen = () => {
   const { translate } = useLanguage()
   const { wallets } = useWallets()
+  console.log({ wallets })
 
   return (
-    <Navigator initialRouteName={wallets.length === 0 ? 'create-wallet' : '(tabs)'}>
+    <Navigator
+      screenOptions={{
+        animation: 'slide_from_right',
+      }}
+      initialRouteName={wallets.length === 0 ? 'create-wallet' : '(tabs)'}
+    >
       <Screen
         name='backup'
         options={{
@@ -37,11 +44,21 @@ const StackScreen = () => {
         component={BackupScreen}
       />
       <Screen
+        name='connect-dapp'
+        options={{
+          title: 'Connect DApp',
+          headerShown: false,
+        }}
+        component={ConnectDAppScreen}
+      />
+      <Screen
         name='create-wallet'
         options={{
           animation: 'none',
           title: 'TC Store',
-          headerStyle: {},
+          contentStyle: {
+            backgroundColor: 'green',
+          },
         }}
         component={CreateWalletScreen}
       />

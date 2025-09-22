@@ -10,16 +10,14 @@ const BackupScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       <ThemedText>BackupScreen</ThemedText>
-      <ThemeTouchableOpacity>
-        <ThemedText
-          onPress={() => {
-            console.log('close modal')
+      <ThemeTouchableOpacity
+        onPress={() => {
+          console.log('close modal', router.canGoBack())
 
-            router.back()
-          }}
-        >
-          Close
-        </ThemedText>
+          router.back()
+        }}
+      >
+        <ThemedText>Close</ThemedText>
       </ThemeTouchableOpacity>
     </View>
   )

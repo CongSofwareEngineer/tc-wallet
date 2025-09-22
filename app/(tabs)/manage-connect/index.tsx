@@ -1,8 +1,8 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
+import { useRouter } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
-import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import useWallets from '@/hooks/useWallets'
@@ -14,6 +14,7 @@ import styles from './styles'
 const ManageConnectScreen = () => {
   const [uri, setUri] = useState('')
   const { wallet } = useWallets()
+  const router = useRouter()
 
   useEffect(() => {
     let walletKit: TypeWalletKit
@@ -48,11 +49,11 @@ const ManageConnectScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, padding: 10 }}>
       <View style={[styles.container]}>
         <View style={[styles.containerHeader]}>
           <ThemedText>Quản lý kết nối</ThemedText>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/connect-dapp')}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
               <ThemedText>Thêm kết nối</ThemedText>
               <AntDesign name='camera' size={20} color={'white'} />
@@ -60,14 +61,7 @@ const ManageConnectScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <ThemedInput value={uri} onChangeText={setUri} />
-      <ThemeTouchableOpacity onPress={handleConnect}>
-        <ThemedText>Connect</ThemedText>
-      </ThemeTouchableOpacity>
 
-      <ThemeTouchableOpacity onPress={handleConnect}>
-        <ThemedText>Connect</ThemedText>
-      </ThemeTouchableOpacity>
       <ThemeTouchableOpacity onPress={handleDisconnectAll}>
         <ThemedText>disconnefct all</ThemedText>
       </ThemeTouchableOpacity>

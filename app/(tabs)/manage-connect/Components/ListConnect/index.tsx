@@ -1,19 +1,22 @@
 import { Image } from 'expo-image'
 import React from 'react'
-import { View } from 'react-native'
+import { FlatList, View } from 'react-native'
 
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { Session } from '@/types/walletConnect'
-import WalletKit from '@/utils/walletKit'
+import { cloneDeep } from '@/utils/functions'
 import { sessionsZustand } from '@/zustand/sessions'
 
 const ListConnect = () => {
-  const sessions = sessionsZustand((state) => state.sessions)
-  console.log({ sessions })
+  const { sessions, setSessions } = sessionsZustand((state) => state)
+  console.log({ sessions, setSessions })
 
   const handleDisconnect = (item: Session) => {
-    WalletKit.disconnectSession(item.topic)
+    const data = cloneDeep(sessions)
+    delete data[item.topic]
+    setSessions({ ...data })
+    // WalletKit.disconnectSession(item.topic)
   }
 
   const renderItem = (item: Session) => {
@@ -52,16 +55,16 @@ const ListConnect = () => {
     )
   }
 
-  // return (
-  //   <FlatList
-  //     refreshing
-  //     keyExtractor={(item) => item.topic}
-  //     contentContainerStyle={{ paddingBottom: 40 }}
-  //     data={sessions ? Object.values(sessions) : []}
-  //     renderItem={({ item }) => renderItem(item)}
-  //   />
-  // )
-  return <View>{sessions && Object.values(sessions).map((item) => renderItem(item))}</View>
+  return (
+    <FlatList
+      style={{ gap: 30 }}
+      keyExtractor={(item) => item.topic}
+      contentContainerStyle={{ paddingBottom: 40 }}
+      data={sessions ? Object.values(sessions) : []}
+      renderItem={({ item }) => renderItem(item)}
+    />
+  )
+  // return <View>{sessions && Object.values(sessions).map((item) => renderItem(item))}</View>
 }
 
 export default ListConnect

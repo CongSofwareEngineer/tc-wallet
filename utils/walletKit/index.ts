@@ -42,17 +42,19 @@ const WalletKit = {
       const sessionsActive = walletKit.getActiveSessions()
       const sessionValid: Sessions = {}
       if (sessionsActive) {
-        for (const key in sessionsActive) {
+        const arrAsync = Object.keys(sessionsActive).map(async (key) => {
           try {
             await walletKit.core.relayer.subscribe(sessionsActive[key].topic)
             sessionValid[key] = sessionsActive[key]
           } catch (error) {
             console.error('reConnect error', error)
           }
-        }
+        })
+        await Promise.all(arrAsync)
+
         console.log({ sessionValid })
 
-        sessionsZustand.getState().setSessions(sessionValid)
+        sessionsZustand.getState().setSessions({ ...sessionValid })
       }
     } catch (error) { }
   },
