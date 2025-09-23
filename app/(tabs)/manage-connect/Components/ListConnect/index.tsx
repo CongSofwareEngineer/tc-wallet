@@ -1,22 +1,26 @@
 import { Image } from 'expo-image'
 import React from 'react'
 import { FlatList, View } from 'react-native'
+import { useDispatch } from 'react-redux'
 
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import { useAppSelector } from '@/redux/hooks'
+import { setSessions } from '@/redux/slices/sessionsSlice'
 import { Session } from '@/types/walletConnect'
 import { cloneDeep } from '@/utils/functions'
-import { sessionsZustand } from '@/zustand/sessions'
+import WalletKit from '@/utils/walletKit'
 
 const ListConnect = () => {
-  const { sessions, setSessions } = sessionsZustand((state) => state)
-  console.log({ sessions, setSessions })
+  const sessions = useAppSelector((state) => state.sessions)
+  const dispatch = useDispatch()
 
   const handleDisconnect = (item: Session) => {
     const data = cloneDeep(sessions)
+
     delete data[item.topic]
-    setSessions({ ...data })
-    // WalletKit.disconnectSession(item.topic)
+    dispatch(setSessions({ ...data }))
+    WalletKit.disconnectSession(item.topic)
   }
 
   const renderItem = (item: Session) => {

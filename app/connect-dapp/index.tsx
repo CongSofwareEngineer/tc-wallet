@@ -2,7 +2,7 @@ import AntDesign from '@expo/vector-icons/AntDesign'
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera'
 import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
@@ -10,7 +10,8 @@ import ThemedText from '@/components/UI/ThemedText'
 import { IsIos } from '@/constants/app'
 import useLanguage from '@/hooks/useLanguage'
 import useWallets from '@/hooks/useWallets'
-import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
+import { sleep } from '@/utils/functions'
+import WalletKit from '@/utils/walletKit'
 
 import styles from './styles'
 
@@ -24,48 +25,26 @@ const ConnectDAppScreen = () => {
   const [permission, requestPermission] = useCameraPermissions()
   const { translate } = useLanguage()
 
-  useEffect(() => {
-    let walletKit: TypeWalletKit
-    const initData = async () => {
-      console.log('initData')
-
-      walletKit = await WalletKit.init()
-
-      walletKit.on('session_proposal', async (e) => {
-        const { id, params } = e
-        const nameSpaces = WalletKit.formatNameSpaceBySessions(params as any, wallet?.address || '')
-        await WalletKit.onSessionProposal(id, params, nameSpaces)
-
-        setTimeout(() => {
-          setUri('')
-          setLoading(false)
-          router.back()
-        }, 500)
-      })
-    }
-    if (permission?.granted) {
-      initData()
-    }
-
-    return () => {
-      console.log('cleanup')
-
-      if (walletKit) {
-        walletKit?.off('session_proposal', () => { })
-      }
-    }
-  }, [permission?.granted, wallet, router])
-
-  const handleConnect = useCallback(async () => {
+  const handleConnect = async (uri = '') => {
+    setLoading(true)
     const walletKit = await WalletKit.init()
-    await walletKit.core.pairing.pair({ uri })
-  }, [uri])
 
-  useEffect(() => {
-    if (uri && uri.startsWith('wc:') && uri?.includes('@2')) {
-      handleConnect()
-    }
-  }, [uri, handleConnect])
+    walletKit.on('session_proposal', async (e) => {
+      const { id, params } = e
+      const nameSpaces = WalletKit.formatNameSpaceBySessions(params as any, wallet?.address || '')
+      console.log({ nameSpaces })
+
+      await WalletKit.onSessionProposal(id, params, nameSpaces)
+
+      setTimeout(() => {
+        setUri('')
+        setLoading(false)
+        router.back()
+      }, 500)
+    })
+    await sleep(500)
+    await walletKit.pair({ uri })
+  }
 
   function toggleCameraFacing() {
     setFacing((current) => (current === 'back' ? 'front' : 'back'))
@@ -81,6 +60,7 @@ const ConnectDAppScreen = () => {
 
     if (text && text.startsWith('wc:') && text?.includes('@2')) {
       setUri(text)
+      handleConnect(text)
     }
   }
   // Show a simple permission gate UI until camera access is granted
@@ -106,9 +86,10 @@ const ConnectDAppScreen = () => {
         facing={facing}
         barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
         onBarcodeScanned={({ data }) => {
-          if (!uri) {
+          if (!uri && data.startsWith('wc:') && data.includes('@2')) {
             setUri(data)
             setLoading(true)
+            handleConnect(data)
           }
         }}
       />

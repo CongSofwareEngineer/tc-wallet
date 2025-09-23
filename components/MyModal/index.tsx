@@ -4,15 +4,19 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 import useModal from '@/hooks/useModal'
 import useTheme from '@/hooks/useTheme'
+import { useAppSelector } from '@/redux/hooks'
 
 const MyModal = () => {
-  const { modal, closeModal } = useModal()
-  const { background } = useTheme()
+  const { background, colors } = useTheme()
+  const modals = useAppSelector((state) => state.modals)
+  const { closeModal } = useModal()
+  console.log({ modals })
+
   return (
     <>
-      {modal?.map((modal, index) => (
+      {modals?.map((modal, index) => (
         <Modal
-          {...modal.config}
+          {...(modal.config as any)}
           style={{
             backgroundColor: background.backgroundModal,
           }}
@@ -47,7 +51,7 @@ const MyModal = () => {
                     style={[
                       styles.content,
                       {
-                        backgroundColor: background.backgroundContentModal,
+                        backgroundColor: colors.black3,
                       },
                     ]}
                   >

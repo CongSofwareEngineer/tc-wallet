@@ -6,8 +6,9 @@ import { Core } from '@walletconnect/core'
 import { ProposalTypes } from '@walletconnect/types'
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
 
+import { setSessions } from '@/redux/slices/sessionsSlice'
+import { store } from '@/redux/store'
 import { EIPNamespaces, Params, Session, Sessions } from '@/types/walletConnect'
-import { sessionsZustand } from '@/zustand/sessions'
 
 import WalletEvmUtil from '../walletEvm'
 
@@ -53,8 +54,7 @@ const WalletKit = {
         await Promise.all(arrAsync)
 
         console.log({ sessionValid })
-
-        sessionsZustand.getState().setSessions({ ...sessionValid })
+        store.dispatch(setSessions({ ...sessionValid }))
       }
     } catch (error) { }
   },
@@ -97,10 +97,9 @@ const WalletKit = {
         id,
         namespaces: approvedNamespaces,
       })
-      const newSessions = sessionsZustand.getState().sessions
-      newSessions[session.topic] = session
 
-      sessionsZustand.getState().setSessions(newSessions)
+      store.getState().sessions[session.topic] = session
+      store.dispatch(setSessions({ ...store.getState().sessions }))
     } catch (error) {
       await walletKit.rejectSession({
         id: id,
@@ -112,11 +111,11 @@ const WalletKit = {
     try {
       const walletKit = await WalletKit.init()
       await walletKit.core.relayer.unsubscribe(topic)
-      const sessions = sessionsZustand.getState().sessions
+      const sessions = store.getState().sessions
       if (sessions[topic]) {
         delete sessions[topic]
       }
-      sessionsZustand.getState().setSessions(sessions)
+      store.dispatch(setSessions({ ...sessions }))
     } catch (error) {
       console.error('onSessionDelete error', error)
     }
@@ -143,7 +142,7 @@ const WalletKit = {
           console.error('sessionDeleteAll error', error)
         }
       }
-      sessionsZustand.getState().setSessions({})
+      store.dispatch(setSessions({}))
     } catch (error) {
       console.error('sessionDeleteAll error', error)
     }

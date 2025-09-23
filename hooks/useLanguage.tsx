@@ -1,10 +1,17 @@
 import { Fragment } from 'react'
+import { useDispatch } from 'react-redux'
 
+import { useAppSelector } from '@/redux/hooks'
+import { setLanguage as setLanguageSlice } from '@/redux/slices/languageSlice'
 import { LANGUAGE_SUPPORT, PATH_LANGUAGE, TYPE_LANGUAGE } from '@/types/language'
-import { languageZustand } from '@/zustand/language'
 
 const useLanguage = () => {
-  const { language, setLanguage } = languageZustand((state) => state)
+  const dispatch = useDispatch()
+  const language = useAppSelector((state) => state.language)
+
+  const setLanguage = (locale: LANGUAGE_SUPPORT) => {
+    dispatch(setLanguageSlice(locale as any))
+  }
 
   const translate = (
     key?: PATH_LANGUAGE<TYPE_LANGUAGE>,

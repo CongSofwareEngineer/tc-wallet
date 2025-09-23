@@ -21,6 +21,7 @@ const SettingScreen = () => {
   const { translate, setLanguage } = useLanguage()
   const { text, colors } = useTheme()
   const { mode, setMode } = useMode()
+
   const router = useRouter()
   const { setWallets } = useWallets()
 

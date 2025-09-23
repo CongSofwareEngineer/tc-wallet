@@ -13,6 +13,8 @@ const CreateWalletScreen = () => {
   const { setWallets, wallets } = useWallets()
 
   const handleCreateWallet = async () => {
+    console.log('handleCreateWallet')
+
     const arrWallet = cloneDeep(wallets)
     arrWallet.forEach((_, index) => {
       delete arrWallet[index].isDefault

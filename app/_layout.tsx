@@ -1,31 +1,29 @@
 import '@/utils/debug/reactotron'
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import '@walletconnect/react-native-compat'
-import { useCameraPermissions } from 'expo-camera'
+import { usePathname } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
-
-import { usePathname } from 'expo-router'
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react'
 
 import ClientRender from '@/components/ClientRender'
 import ReactQueryProvider from '@/components/ReactQueryProvider'
 import StackScreen from '@/components/StackScreen'
-import useMode from '@/hooks/useMode'
+import { persistor, store } from '@/redux/store'
 
 export default function RootLayout() {
-  const { mode } = useMode()
-  const [, requestPermission] = useCameraPermissions()
-  const pathname = usePathname()
-  console.log({ pathname })
+  usePathname()
 
   return (
-    <ThemeProvider value={mode === 'dark' ? DarkTheme : DefaultTheme}>
-      <ClientRender>
-        <ReactQueryProvider>
-          <StackScreen />
-        </ReactQueryProvider>
-        <StatusBar style='auto' />
-      </ClientRender>
-    </ThemeProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ClientRender>
+          <ReactQueryProvider>
+            <StackScreen />
+          </ReactQueryProvider>
+          <StatusBar style='auto' />
+        </ClientRender>
+      </PersistGate>
+    </Provider>
   )
 }

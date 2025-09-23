@@ -6,11 +6,11 @@ import { Address, createWalletClient, custom, Hash, Hex, isAddress, PrivateKeyAc
 import { english, generateMnemonic, privateKeyToAccount } from 'viem/accounts'
 
 import { KEY_STORAGE } from '@/constants/storage'
+import { store } from '@/redux/store'
 import EVMServices from '@/services/EVM'
 import { ListMnemonic, WalletType } from '@/types/wallet'
 import { Params } from '@/types/walletConnect'
 import { RawTransactionEVM } from '@/types/web3'
-import { walletsZustand } from '@/zustand/wallet'
 
 import { decodeData, encodeData } from '../crypto'
 import { lowercase } from '../functions'
@@ -189,7 +189,7 @@ const WalletEvmUtil = {
         address = params.request.params[0]
         msgParams = params.request.params[1]
       }
-      const wallet = walletsZustand.getState().wallets.find((w) => lowercase(w.address) === lowercase(address))!
+      const wallet = store.getState().wallet.wallets.find((w) => lowercase(w.address) === lowercase(address))!
       console.log({ msgParams, address, wallet })
 
       switch (params.request.method) {
