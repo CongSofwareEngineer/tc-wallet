@@ -1,72 +1,22 @@
-import { HDKey } from '@scure/bip32'
-import { mnemonicToSeedSync } from '@scure/bip39'
 import Bignumber from 'bignumber.js'
 import 'react-native-get-random-values'
-import { Address, createWalletClient, custom, Hash, Hex, isAddress, PrivateKeyAccount, toHex } from 'viem'
-import { english, generateMnemonic, privateKeyToAccount } from 'viem/accounts'
+import { Address, createWalletClient, custom, Hash, Hex, isAddress } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
 
-import { KEY_STORAGE } from '@/constants/storage'
 import { store } from '@/redux/store'
 import EVMServices from '@/services/EVM'
-import { ListMnemonic, WalletType } from '@/types/wallet'
 import { Params } from '@/types/walletConnect'
 import { RawTransactionEVM } from '@/types/web3'
 
-import { decodeData, encodeData } from '../crypto'
+import { decodeData } from '../crypto'
 import { lowercase } from '../functions'
-import { getSecureData, saveSecureData } from '../secureStorage'
 import WalletKit from '../walletKit'
 
-type DerivedAccount = {
-  account: PrivateKeyAccount
-  accountIndex: number
-  privateKey: Hex
-}
-
 const WalletEvmUtil = {
-  deriveAccountFromMnemonic: (mnemonic: string, accountIndex: number = 0): DerivedAccount => {
-    const seed = mnemonicToSeedSync(mnemonic)
-
-    const hdKeyString = HDKey.fromMasterSeed(seed)
-
-    const hdKey = hdKeyString.derive(`m/44'/60'/0/0/${accountIndex}`)
-
-    const privateKey = toHex(hdKey.privateKey!)
-
+  createWallet: async (privateKey: Hex): Promise<Address> => {
     const account = privateKeyToAccount(privateKey)
-
-    return { account, accountIndex, privateKey }
-  },
-  getMnemonic: async (indexMnemonic = 0): Promise<string> => {
-    const arrMnemonic: ListMnemonic = (await getSecureData(KEY_STORAGE.Mnemonic)) || []
-
-    if (!arrMnemonic[indexMnemonic]) {
-      arrMnemonic[indexMnemonic] = generateMnemonic(english, 128)
-      saveSecureData(KEY_STORAGE.Mnemonic, arrMnemonic)
-    }
-
-    return arrMnemonic[indexMnemonic]
-  },
-
-  createWallet: async (
-    accountIndex: number = 0,
-    indexMnemonic = 0
-  ): Promise<{
-    mnemonic: string
-    address: Address
-    accountIndex: number
-    privateKey: Hex
-    type: WalletType
-    indexMnemonic: number
-  }> => {
-    const mnemonic = await WalletEvmUtil.getMnemonic(indexMnemonic)
-
-    const { account, privateKey } = WalletEvmUtil.deriveAccountFromMnemonic(mnemonic, accountIndex)
-
     const address = account.address
-    const privateKeyEncode = (await encodeData(privateKey)) as Hex
-
-    return { indexMnemonic: 0, mnemonic, address, accountIndex, privateKey: privateKeyEncode, type: 'evm' }
+    return address
   },
   sendTransaction: async (raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> => {
     try {

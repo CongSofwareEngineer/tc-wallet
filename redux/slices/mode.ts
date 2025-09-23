@@ -8,9 +8,7 @@ const modeSlice = createSlice({
   name: 'mode',
   initialState,
   reducers: {
-    setMode: (state, action: PayloadAction<MODE>) => {
-      console.log({ state, action })
-
+    setMode: (_, action: PayloadAction<MODE>) => {
       return action.payload as any
     },
   },

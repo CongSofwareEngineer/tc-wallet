@@ -4,9 +4,8 @@ import { TouchableOpacity, View } from 'react-native'
 
 import ThemedText from '@/components/UI/ThemedText'
 import useWallets from '@/hooks/useWallets'
-import { Wallet } from '@/types/wallet'
+import AllWalletUtils from '@/utils/allWallet'
 import { cloneDeep } from '@/utils/functions'
-import WalletEvmUtil from '@/utils/walletEvm'
 
 const CreateWalletScreen = () => {
   const router = useRouter()
@@ -20,16 +19,7 @@ const CreateWalletScreen = () => {
       delete arrWallet[index].isDefault
       delete arrWallet[index].name
     })
-    const walletNew = await WalletEvmUtil.createWallet(wallets.length, 0)
-
-    const wallet: Wallet = {
-      address: walletNew.address,
-      type: walletNew.type,
-      indexMnemonic: walletNew.indexMnemonic,
-      privateKey: walletNew.privateKey,
-      indexAccountMnemonic: walletNew.accountIndex,
-      isDefault: true,
-    }
+    const wallet = await AllWalletUtils.createWallet(wallets.length, 0)
     arrWallet.push(wallet)
     setWallets(arrWallet)
     router.replace('/home')
