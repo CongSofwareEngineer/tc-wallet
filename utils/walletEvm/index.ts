@@ -144,7 +144,7 @@ const WalletEvmUtil = {
 
       switch (params.request.method) {
         case 'eth_accounts':
-          result = ['0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb']
+          result = [wallet.address]
           break
         case 'eth_sign':
           result = '0x' + 'abcd'.repeat(32) // Fake signature for demonstration
