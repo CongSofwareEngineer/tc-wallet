@@ -47,16 +47,28 @@ const WalletKit = {
           try {
             await walletKit.core.relayer.subscribe(sessionsActive[key].topic)
             sessionValid[key] = sessionsActive[key]
-          } catch (error) {
-            console.error('reConnect error', error)
-          }
+          } catch { }
         })
         await Promise.all(arrAsync)
 
         console.log({ sessionValid })
+      }
+
+      const pairings = walletKit.core.pairing.getPairings()
+      if (pairings.length > 0) {
+        const arrAsyncPairing = pairings.map(async (pair) => {
+          try {
+            await walletKit.core.relayer.subscribe(pair.topic)
+          } catch {
+            delete sessionValid[pair.topic]
+          }
+        })
+        await Promise.all(arrAsyncPairing)
         store.dispatch(setSessions({ ...sessionValid }))
       }
-    } catch (error) { }
+    } catch (error) {
+      console.error('reConnect error', error)
+    }
   },
 
   formatNameSpaceBySessions: (sessions: Session, address: string): EIPNamespaces => {

@@ -1,6 +1,5 @@
 import '@/utils/debug/reactotron'
 import '@walletconnect/react-native-compat'
-import { usePathname } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 import { Provider } from 'react-redux'
@@ -12,8 +11,6 @@ import StackScreen from '@/components/StackScreen'
 import { persistor, store } from '@/redux/store'
 
 export default function RootLayout() {
-  usePathname()
-
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
