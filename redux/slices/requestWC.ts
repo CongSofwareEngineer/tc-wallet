@@ -7,7 +7,7 @@ export type RequestWC = {
   type: 'connect' | 'request'
   timestamp: number
   params?: Params
-} & Omit<SignClientTypes.BaseEventArgs<ProposalTypes.Struct>, 'topic'> &
+} & Omit<SignClientTypes.BaseEventArgs<ProposalTypes.Struct>, 'params'> &
   Omit<{ params: Params }, 'params'>
 
 const initialState: RequestWC[] = []
