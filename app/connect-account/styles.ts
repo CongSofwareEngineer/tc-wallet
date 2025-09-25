@@ -10,11 +10,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     gap: 5,
-    backgroundColor: 'green',
   },
   containerItem: {
     padding: 10,
-    backgroundColor: COLORS.gray,
+    backgroundColor: COLORS.gray2,
     borderRadius: 8,
     gap: 10,
     flexDirection: 'row',

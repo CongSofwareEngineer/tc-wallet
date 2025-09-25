@@ -41,15 +41,16 @@ const ConnectDAppScreen = () => {
       }, 500)
     }
 
-      ; (async () => {
-        instance = await WalletKit.init()
-        try {
-          // pre-clean to avoid dev double-mount duplicates
-          // @ts-ignore
-          instance.off?.('session_proposal', onSessionProposal)
-        } catch { }
-        instance.on('session_proposal', onSessionProposal)
-      })()
+    const init = async () => {
+      instance = await WalletKit.init()
+      try {
+        // pre-clean to avoid dev double-mount duplicates
+        // @ts-ignore
+        instance.off?.('session_proposal', onSessionProposal)
+      } catch { }
+      instance.on('session_proposal', onSessionProposal)
+    }
+    init()
 
     return () => {
       if (instance) {

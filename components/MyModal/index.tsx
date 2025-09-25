@@ -63,7 +63,7 @@ const MyModal = () => {
                           modal?.onClose?.()
                         }}
                       >
-                        <Ionicons name='close' size={24} color={'red'} />
+                        <Ionicons name='close' size={28} color={'red'} />
                       </TouchableOpacity>
                     )}
 

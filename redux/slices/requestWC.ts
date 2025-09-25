@@ -1,11 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ProposalTypes, SignClientTypes, Verify } from '@walletconnect/types'
+
+import { Params } from '@/types/walletConnect'
 export type RequestWC = {
   verifyContext: Verify.Context
   type: 'connect' | 'request'
   timestamp: number
+  params?: Params
 } & Omit<SignClientTypes.BaseEventArgs<ProposalTypes.Struct>, 'topic'> &
-  Omit<SignClientTypes.BaseEventArgs<ProposalTypes.Struct>, 'params'>
+  Omit<{ params: Params }, 'params'>
 
 const initialState: RequestWC[] = []
 

@@ -11,4 +11,5 @@ export enum KEY_STORAGE {
   ListChain = 'ListChain',
   AllWallet = 'AllWallet',
   Sessions = 'Sessions',
+  PassAuth = 'PassAuth',
 }

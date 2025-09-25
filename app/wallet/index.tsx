@@ -1,14 +1,328 @@
-import React from 'react'
-import { View } from 'react-native'
+import AntDesign from '@expo/vector-icons/AntDesign'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Alert, FlatList, StyleSheet, View } from 'react-native'
 
+import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
+import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import { COLORS, GAP_DEFAULT, MODE } from '@/constants/style'
+import useAuth from '@/hooks/useAuth'
+import useMode from '@/hooks/useMode'
+import useTheme from '@/hooks/useTheme'
+import useWallets from '@/hooks/useWallets'
+import { decodeData } from '@/utils/crypto'
+import { copyToClipboard } from '@/utils/functions'
+import PassPhare from '@/utils/passPhare'
+
+type Item = {
+  address: string
+  indexMnemonic: number
+  mnemonic: string
+  privateKey: string
+  index: number
+}
 
 const WalletScreen = () => {
+  const { wallets: walletList, setWallets } = useWallets()
+  const { colors, text } = useTheme()
+  const { handleAuth } = useAuth()
+  const { mode } = useMode()
+
+  const [items, setItems] = useState<Item[]>([])
+  const [editingAddr, setEditingAddr] = useState<string | null>(null)
+  const [editingName, setEditingName] = useState<string>('')
+  const [showData, setShowData] = useState(false)
+
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      const cache = new Map<number, string>()
+      const result: Item[] = []
+      for (const [i, w] of walletList.entries()) {
+        const idx = w.indexMnemonic ?? 0
+        let mnemonic = cache.get(idx)
+        if (!mnemonic) {
+          try {
+            mnemonic = await PassPhare.getMnemonic(idx)
+            cache.set(idx, mnemonic)
+          } catch {
+            mnemonic = 'N/A'
+          }
+        }
+        let pk = ''
+        try {
+          const decoded = await decodeData(w.privateKey)
+          pk = decoded || ''
+        } catch {
+          pk = ''
+        }
+        result.push({ address: w.address, indexMnemonic: idx, mnemonic: mnemonic!, privateKey: pk, index: i })
+      }
+      if (mounted) setItems(result)
+    }
+    load()
+    return () => {
+      mounted = false
+    }
+  }, [walletList])
+
+  type Group = {
+    indexMnemonic: number
+    mnemonic: string
+    wallets: { address: string; privateKey: string; index: number }[]
+  }
+
+  const groups = useMemo<Group[]>(() => {
+    const map = new Map<number, Group>()
+    for (const it of items) {
+      let g = map.get(it.indexMnemonic)
+      if (!g) {
+        g = { indexMnemonic: it.indexMnemonic, mnemonic: it.mnemonic, wallets: [] }
+        map.set(it.indexMnemonic, g)
+      }
+      g.wallets.push({ address: it.address, privateKey: it.privateKey, index: it.index })
+    }
+    return Array.from(map.values()).sort((a, b) => a.indexMnemonic - b.indexMnemonic)
+  }, [items])
+
+  const palette = useMemo(
+    () => [
+      { bg: colors.black3, border: '#38BDF8' },
+      { bg: colors.black3, border: '#34D399' },
+      { bg: colors.black3, border: '#FB923C' },
+      { bg: colors.black3, border: '#A78BFA' },
+      { bg: colors.black3, border: '#FCA5A5' },
+      { bg: colors.black3, border: '#F0ABFC' },
+    ],
+    [colors]
+  )
+
+  const handleShowData = async () => {
+    try {
+      const result = await handleAuth()
+      if (result) {
+        setShowData((v) => !v)
+      }
+    } catch (error) { }
+  }
+
+  const handleCopyData = (data: string) => {
+    copyToClipboard(data, 'text')
+    Alert.alert('Đã sao chép vào bộ nhớ tạm')
+  }
+
   return (
-    <View>
-      <ThemedText>WalletScreen</ThemedText>
-    </View>
+    <FlatList
+      contentContainerStyle={{ padding: 16, gap: 12 }}
+      data={groups}
+      keyExtractor={(g) => `mnemonic-${g.indexMnemonic}`}
+      renderItem={({ item: group, index }) => {
+        const colors = palette[index % palette.length]
+
+        const renderRow = (addr: { address: string; privateKey: string; index: number }) => {
+          const onRenamePress = () => {
+            setEditingAddr(addr.address)
+            setEditingName(walletList[addr.index]?.name ?? '')
+          }
+
+          const onDeletePress = () => {
+            Alert.alert('Xóa địa chỉ', 'Bạn có chắc muốn xóa địa chỉ này?', [
+              { text: 'Hủy', style: 'cancel' },
+              {
+                text: 'Xóa',
+                style: 'destructive',
+                onPress: async () => {
+                  try {
+                    const result = await handleAuth()
+                    console.log({ result })
+
+                    const next = walletList.filter((_, idx) => idx !== addr.index)
+                    setWallets(next)
+                  } catch (error) {
+                    console.log({ error })
+                  }
+                },
+              },
+            ])
+          }
+
+          return (
+            <View key={addr.address} style={styles.addrBlock}>
+              <View style={styles.headerRow}>
+                {editingAddr === addr.address ? (
+                  <View style={styles.renameRow}>
+                    <ThemedInput value={editingName} onChangeText={setEditingName} placeholder={'Tên tài khoản'} />
+
+                    <ThemeTouchableOpacity
+                      onPress={() => {
+                        const list = [...walletList]
+                        list[addr.index] = { ...list[addr.index], name: editingName }
+                        setWallets(list)
+                        setEditingAddr(null)
+                      }}
+                    >
+                      <ThemedText style={[styles.actionText]}>Lưu</ThemedText>
+                    </ThemeTouchableOpacity>
+                    <ThemeTouchableOpacity onPress={() => setEditingAddr(null)}>
+                      <ThemedText style={[styles.actionText]}>Hủy</ThemedText>
+                    </ThemeTouchableOpacity>
+                  </View>
+                ) : (
+                  <>
+                    {showData && (
+                      <>
+                        <ThemedText style={[styles.title]}>{walletList[addr.index]?.name || `Account ${addr.index + 1}`}</ThemedText>
+                        <View style={styles.headerActions}>
+                          <ThemeTouchableOpacity onPress={onRenamePress}>
+                            <ThemedText style={[styles.actionText]}>Đổi tên</ThemedText>
+                          </ThemeTouchableOpacity>
+                          <ThemeTouchableOpacity onPress={onDeletePress}>
+                            <ThemedText style={[styles.actionText, { color: '#DC2626' }]}>Xóa</ThemedText>
+                          </ThemeTouchableOpacity>
+                        </View>
+                      </>
+                    )}
+                  </>
+                )}
+              </View>
+
+              <View style={styles.contentBlock}>
+                <ThemedText style={[styles.label]}>Address</ThemedText>
+                <ThemedText style={styles.textSub} selectable>
+                  {addr.address}
+                </ThemedText>
+              </View>
+              <View style={[styles.contentBlock, { marginTop: 4 }]}>
+                <ThemedText style={[styles.label]}>Private Key</ThemedText>
+                <ThemedText style={styles.textSub} selectable>
+                  {showData ? addr.privateKey : '••••••••••••••••••••••••••••••••••••••••'}
+                  {showData && <AntDesign onPress={() => handleCopyData(addr.privateKey)} name='copy' size={16} color={text.color} />}
+                </ThemedText>
+              </View>
+            </View>
+          )
+        }
+
+        return (
+          <View style={[styles.card, styles[`card${mode}`]]}>
+            <View style={[styles.contentBlock, { marginBottom: 8 }]}>
+              <View style={{ flexDirection: 'row', alignContent: 'center', gap: GAP_DEFAULT.Gap8 }}>
+                <ThemedText style={[styles.label]}>Mnemonic (index {group.indexMnemonic})</ThemedText>
+
+                <View
+                  style={{
+                    justifyContent: 'center',
+                  }}
+                >
+                  <AntDesign onPress={handleShowData} name='eye' size={20} color={text.color} />
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <ThemedText style={styles.textSub} selectable>
+                  {showData ? group.mnemonic : '••••••••••••••••••••••••••••••••••••••••'}
+                  {showData && <AntDesign onPress={() => handleCopyData(group.mnemonic)} name='copy' size={16} color={text.color} />}
+                </ThemedText>
+              </View>
+            </View>
+            <View style={styles.separator} />
+            {group.wallets.map(renderRow)}
+          </View>
+        )
+      }}
+      ListEmptyComponent={
+        <View style={{ padding: 16 }}>
+          <ThemedText>Chưa có ví nào</ThemedText>
+        </View>
+      }
+    />
   )
 }
 
 export default WalletScreen
+
+const styles = StyleSheet.create({
+  card: {
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  [`card${MODE.Dark}`]: {
+    borderColor: COLORS.gray2,
+    backgroundColor: COLORS.black2,
+  },
+  [`card${MODE.Light}`]: {
+    borderColor: COLORS.gray2,
+    backgroundColor: COLORS.gray1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    backgroundColor: '#FFFFFFAA',
+  },
+  actionText: {
+    fontWeight: '600',
+  },
+  tabsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 8,
+  },
+
+  tabLabel: {
+    fontWeight: '600',
+    color: '#334155',
+  },
+  tabLabelActive: {
+    color: '#0F172A',
+  },
+  contentBlock: {
+    gap: 6,
+  },
+  label: {
+    fontWeight: 'bold',
+  },
+  addrBlock: {
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderTopColor: 'rgba(0,0,0,0.06)',
+  },
+  renameRow: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  input: {
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+  textSub: {
+    opacity: 0.6,
+    fontSize: 13,
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+})

@@ -1,13 +1,16 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import React from 'react'
-import { ScrollView, View } from 'react-native'
+import { Alert, ScrollView, View } from 'react-native'
 
+import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeSwitch from '@/components/UI/ThemeSwitch'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { COLORS, MODE } from '@/constants/style'
+import useAuth from '@/hooks/useAuth'
 import useLanguage from '@/hooks/useLanguage'
+import useModal from '@/hooks/useModal'
 import useMode from '@/hooks/useMode'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
@@ -21,15 +24,40 @@ const SettingScreen = () => {
   const { translate, setLanguage } = useLanguage()
   const { text, colors } = useTheme()
   const { mode, setMode } = useMode()
-
+  const { handleAuth } = useAuth()
+  const { openModal } = useModal()
   const router = useRouter()
   const { setWallets } = useWallets()
 
   const resetApp = async () => {
-    setWallets([])
-    setMode(MODE.Dark)
-    setLanguage(LANGUAGE_SUPPORT.VN)
-    // router.replace('/create-wallet')
+    const callback = async () => {
+      try {
+        const isAuth = await handleAuth()
+        if (isAuth) {
+          setWallets([])
+          setMode(MODE.Dark)
+          setLanguage(LANGUAGE_SUPPORT.VN)
+          router.replace('/create-wallet')
+        }
+      } catch (error) {
+        Alert.alert('Error', 'An error occurred while resetting the app.')
+      }
+    }
+    openModal({
+      showIconClose: false,
+      maskClosable: false,
+
+      content: <ModalWarning type='danger' onConfirm={callback} />,
+    })
+  }
+
+  const handleShowWallet = async () => {
+    try {
+      const isAuth = await handleAuth()
+      if (isAuth) {
+        router.push('/wallet')
+      }
+    } catch (error) { }
   }
 
   return (
@@ -65,7 +93,7 @@ const SettingScreen = () => {
                 <ThemeSwitch value={mode === MODE.Dark} onValueChange={() => setMode(mode === MODE.Dark ? MODE.Light : MODE.Dark)} />
               </View>
             </View>
-            <ThemeTouchableOpacity onPress={() => router.push('/wallet')} style={{ marginBottom: 10 }}>
+            <ThemeTouchableOpacity onPress={handleShowWallet} style={{ marginBottom: 10 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <AntDesign name='eye' size={20} color={COLORS.white} style={{ marginRight: 10 }} />
                 <ThemedText>Quản lý ví</ThemedText>
@@ -129,8 +157,8 @@ const SettingScreen = () => {
             </View>
             <ThemeTouchableOpacity type='danger' onPress={resetApp} style={{ marginBottom: 10 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <AntDesign name='download' size={20} color={COLORS.white} style={{ marginRight: 10 }} />
-                <ThemedText>{translate('setting.backup.backupNow')}</ThemedText>
+                <AntDesign name='rest' size={20} color={COLORS.white} style={{ marginRight: 10 }} />
+                <ThemedText>Reset App</ThemedText>
               </View>
             </ThemeTouchableOpacity>
           </Items>

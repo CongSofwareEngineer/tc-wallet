@@ -1,7 +1,9 @@
+import AntDesign from '@expo/vector-icons/AntDesign'
 import { ParamListBase, StackNavigationState } from '@react-navigation/native'
 import { createNativeStackNavigator, NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack'
-import { usePathname, withLayoutContext } from 'expo-router'
+import { withLayoutContext } from 'expo-router'
 import React from 'react'
+import { TouchableOpacity, View } from 'react-native'
 
 import TabNavigation from '@/app/(tabs)/_layout'
 import BackupScreen from '@/app/backup'
@@ -9,8 +11,11 @@ import ConnectAccountScreen from '@/app/connect-account'
 import ConnectDAppScreen from '@/app/connect-dapp'
 import CreateWalletScreen from '@/app/create-wallet'
 import WalletScreen from '@/app/wallet'
+import ThemedText from '@/components/UI/ThemedText'
+import { COLORS, MODE } from '@/constants/style'
 import useLanguage from '@/hooks/useLanguage'
-import useRequestWC from '@/hooks/useReuestWC'
+import useMode from '@/hooks/useMode'
+import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 
 const { Navigator, Screen } = createNativeStackNavigator()
@@ -25,10 +30,9 @@ export const JsStack = withLayoutContext<
 const StackScreen = () => {
   const { translate } = useLanguage()
   const { wallets } = useWallets()
-  const pathname = usePathname()
-  const { requestWC } = useRequestWC()
-
-  console.log({ pathname, requestWC })
+  const { mode } = useMode()
+  const { text } = useTheme()
+  // debug states if needed
 
   return (
     <Navigator
@@ -73,7 +77,36 @@ const StackScreen = () => {
         options={{
           title: 'Wallet manage',
           animation: 'ios_from_right',
-          headerBackTitle: translate('common.back'),
+          headerShown: true,
+          header: ({ navigation, options }) => (
+            <View
+              style={{
+                height: 70,
+                backgroundColor: mode === MODE.Dark ? '#1a1a24cc' : COLORS.white,
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 16,
+              }}
+            >
+              <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 8, marginRight: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1 }}>
+                  <AntDesign name='arrow-left' size={20} color={text.color} />
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                    <ThemedText style={{ fontSize: 16 }}>{translate('common.back')}</ThemedText>
+                  </View>
+                </View>
+              </TouchableOpacity>
+              <ThemedText style={{ fontWeight: '600', fontSize: 18 }}>{(options?.title as string) || 'Wallet manage'}</ThemedText>
+            </View>
+          ),
+          headerStyle: {
+            backgroundColor: '#f2f3f5',
+          },
+          headerTintColor: '#111',
+          headerTitleStyle: {
+            fontWeight: '600',
+          },
+          headerShadowVisible: false,
         }}
         component={WalletScreen}
       />

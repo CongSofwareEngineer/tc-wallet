@@ -33,7 +33,7 @@ const TabBarLabel = ({
   const { text } = useTheme()
   const isPageCurrent = patchName === `/${url}` || (patchName === '/' && url === 'home')
 
-  const getStyle = (url: string) => {
+  const getStyle = () => {
     if (isPageCurrent) {
       return {
         shadowColor: '#00d4ff4d',
@@ -44,6 +44,14 @@ const TabBarLabel = ({
         padding: 10,
         borderRadius: 10,
         gap: 5,
+
+        // Visible rounded background on Android requires a backgroundColor
+        // backgroundColor: '#00d4ff1a',
+        // Shadows: iOS uses shadow*, Android uses elevation
+        // shadowOpacity: 0.3,
+        // shadowRadius: 1,
+        // shadowOffset: { width: 0, height: 2 },
+        // elevation: 1,
       }
     }
     return {
@@ -57,7 +65,7 @@ const TabBarLabel = ({
   }
   return (
     <View style={{ alignItems: 'center', alignContent: 'center', justifyContent: 'center', padding: 5, opacity: isPageCurrent ? 1 : 0.7 }}>
-      <View style={getStyle(url) as any}>
+      <View style={[getStyle() as any]}>
         {isMaterialIcons ? (
           <MaterialIcons name={nameIcon as any} size={20} color={text.color} />
         ) : (

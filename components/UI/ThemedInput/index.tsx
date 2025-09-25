@@ -45,7 +45,7 @@ const ThemedInput = ({
         )}
         <TextInput
           placeholderTextColor={text.colorPlaceholder}
-          style={[{ color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 }, style]}
+          style={[{ backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 }, style]}
           {...props}
           secureTextEntry={isPassword}
         />
