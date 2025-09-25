@@ -43,3 +43,8 @@ export const copyToClipboard = async (text: string, type: 'text' | 'url' | 'imag
     return
   }
 }
+
+export const ellipsisText = (text?: string, prefixLength = 13, suffixLength = 4): string => {
+  text = text || ''
+  return `${text.substr(0, prefixLength)}...${text.substr(text.length - suffixLength, suffixLength)}`
+}

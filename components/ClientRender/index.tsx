@@ -1,38 +1,81 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { ReactNode, useEffect } from 'react'
+import { useRouter } from 'expo-router'
+import { ReactNode, useEffect, useLayoutEffect } from 'react'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import { KEY_STORAGE } from '@/constants/storage'
+import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
+import useRequestWC from '@/hooks/useReuestWC'
 import useTheme from '@/hooks/useTheme'
-import WalletKit from '@/utils/walletKit'
+import { sleep } from '@/utils/functions'
+import { getDataLocal } from '@/utils/storage'
+import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
 
 import MyModal from '../MyModal'
 
 const ClientRender = ({ children }: { children: ReactNode }) => {
   const { background } = useTheme()
   const { mode } = useMode()
+  const { setLanguage } = useLanguage()
+  const { setRequest } = useRequestWC()
+  const router = useRouter()
+
+  useLayoutEffect(() => {
+    const local = getDataLocal(KEY_STORAGE.Language)
+    if (local) {
+      setLanguage(local)
+    }
+  }, [])
 
   useEffect(() => {
-    const initData = async () => {
-      const walletKit = await WalletKit.init()
+    let instance: TypeWalletKit | null = null
 
-      walletKit.on('session_delete', (e) => {
-        console.log('session_delete', e)
-        const { topic } = e
-        WalletKit.onSessionDelete(topic)
+    const onSessionDelete = (e: any) => {
+      const { topic } = e
+      WalletKit.onSessionDelete(topic)
+    }
+
+    const onSessionRequest = async (e: any) => {
+      console.log({ onSessionRequest: e })
+
+      setRequest({
+        ...(e as any),
+        timestamp: Date.now(),
+        type: 'request',
       })
+      await sleep(300)
+      router.push('/approve')
 
-      walletKit.on('session_request', (e) => {
-        console.log('session_request', e)
-        const { id, params, topic } = e
-        WalletKit.onApproveRequest(id, topic, params)
-      })
+      // const { id, params, topic } = e
+      // WalletKit.onApproveRequest(id, topic, params)
+    }
 
+    const init = async () => {
+      instance = await WalletKit.init()
+      try {
+        // defensively remove existing refs to avoid duplicates
+        // @ts-ignore
+        instance.off?.('session_delete', onSessionDelete)
+        // @ts-ignore
+        instance.off?.('session_request', onSessionRequest)
+      } catch { }
+      instance.on('session_delete', onSessionDelete)
+      instance.on('session_request', onSessionRequest)
       WalletKit.reConnect()
     }
-    initData()
-  }, [])
+    init()
+
+    return () => {
+      if (instance) {
+        try {
+          instance.off('session_delete', onSessionDelete)
+          instance.off('session_request', onSessionRequest)
+        } catch { }
+      }
+    }
+  }, [router, setRequest])
 
   return (
     <ThemeProvider value={mode === 'dark' ? DarkTheme : DefaultTheme}>

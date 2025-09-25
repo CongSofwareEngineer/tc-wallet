@@ -1,5 +1,9 @@
 import 'react-native-get-random-values'
+//
+import '@walletconnect/react-native-compat'
+import 'fast-text-encoding'
 
+///
 import { WalletKit as WalletKitCore, WalletKitTypes } from '@reown/walletkit'
 import { WalletKit as TypeWallet } from '@reown/walletkit/dist/types/client'
 import { Core } from '@walletconnect/core'
@@ -10,6 +14,7 @@ import { setSessions } from '@/redux/slices/sessionsSlice'
 import { store } from '@/redux/store'
 import { EIPNamespaces, Params, Session, Sessions } from '@/types/walletConnect'
 
+import { cloneDeep } from '../functions'
 import WalletEvmUtil from '../walletEvm'
 
 export type TypeWalletKit = TypeWallet
@@ -50,8 +55,6 @@ const WalletKit = {
           } catch { }
         })
         await Promise.all(arrAsync)
-
-        console.log({ sessionValid })
       }
 
       const pairings = walletKit.core.pairing.getPairings()
@@ -64,8 +67,9 @@ const WalletKit = {
           }
         })
         await Promise.all(arrAsyncPairing)
-        store.dispatch(setSessions({ ...sessionValid }))
       }
+
+      store.dispatch(setSessions({ ...sessionValid }))
     } catch (error) {
       console.error('reConnect error', error)
     }
@@ -101,18 +105,16 @@ const WalletKit = {
   ) => {
     try {
       const walletKit = await WalletKit.init()
-      // ------- namespaces builder util ------------ //
       const approvedNamespaces = WalletKit.buildApprovedNamespaces(params, eipNamespaces)
-      // ------- end namespaces builder util ------------ //
 
       const session = await walletKit.approveSession({
         id,
         namespaces: approvedNamespaces,
       })
-
-      store.getState().sessions[session.topic] = session
-      store.dispatch(setSessions({ ...store.getState().sessions }))
-    } catch (error) {
+      const sessions = cloneDeep<Sessions>(store.getState().sessions)
+      sessions[session.topic] = session
+      store.dispatch(setSessions({ ...sessions }))
+    } catch {
       await walletKit.rejectSession({
         id: id,
         reason: getSdkError('USER_REJECTED'),
@@ -123,7 +125,7 @@ const WalletKit = {
     try {
       const walletKit = await WalletKit.init()
       await walletKit.core.relayer.unsubscribe(topic)
-      const sessions = store.getState().sessions
+      const sessions = cloneDeep<Sessions>(store.getState().sessions)
       if (sessions[topic]) {
         delete sessions[topic]
       }
@@ -162,9 +164,34 @@ const WalletKit = {
   onApproveRequest: async (id: number, topic: string, params: Params) => {
     try {
       if (params?.chainId?.includes('eip155')) {
-        await WalletEvmUtil.approveRequest(id, topic, params)
+        const result = await WalletEvmUtil.approveRequest(id, topic, params)
+        console.log({ result })
+        await WalletKit.respondSessionRequest(id, topic, result)
       }
-    } catch (error) { }
+    } catch (error) {
+      await WalletKit.respondSessionRequest(id, topic, error, true)
+    }
+  },
+  respondSessionRequest: async (id: number, topic: string, response: any, isError: boolean = false) => {
+    if (isError) {
+      await walletKit.respondSessionRequest({
+        topic: topic,
+        response: {
+          id: id,
+          jsonrpc: '2.0',
+          error: { code: -32000, message: (response as Error).message },
+        },
+      })
+    } else {
+      await walletKit.respondSessionRequest({
+        topic: topic,
+        response: {
+          id: id,
+          jsonrpc: '2.0',
+          result: response,
+        },
+      })
+    }
   },
 }
 

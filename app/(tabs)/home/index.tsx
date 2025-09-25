@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router'
 import React, { useCallback, useState } from 'react'
 import { FlatList, TouchableOpacity, View } from 'react-native'
 
+import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
 import useModal from '@/hooks/useModal'
 import { useAppSelector } from '@/redux/hooks'
@@ -53,6 +54,24 @@ const HomeScreen = () => {
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('/create-wallet')}>
         <ThemedText>to create </ThemedText>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push('/approve')}>
+        <ThemedText>Approce </ThemedText>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push('/connect-account')}>
+        <ThemedText>Approce account</ThemedText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => {
+          openModal({
+            content: <ModalWarning />,
+          })
+        }}
+      >
+        <ThemedText>Modal warning</ThemedText>
       </TouchableOpacity>
 
       {listChains.length > 0 && (

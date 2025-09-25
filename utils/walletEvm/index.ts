@@ -1,6 +1,6 @@
 import Bignumber from 'bignumber.js'
 import 'react-native-get-random-values'
-import { Address, createWalletClient, custom, Hash, Hex, isAddress } from 'viem'
+import { Address, createWalletClient, custom, Hash, Hex, isAddress, isHex, stringToHex } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 
 import { store } from '@/redux/store'
@@ -104,7 +104,20 @@ const WalletEvmUtil = {
       const privateKeyDecode = await decodeData(privateKey)
 
       const account = privateKeyToAccount(privateKeyDecode)
-      const signature = await account.signMessage({ message: raw.message || ' ' })
+      let signature = ''
+      if (isHex(raw.message)) {
+        signature = await account.signMessage({
+          message: {
+            raw: raw.message || ' ',
+          },
+        })
+      } else {
+        signature = await account.signMessage({
+          message: {
+            raw: stringToHex(raw.message as string),
+          },
+        })
+      }
 
       return signature as Hash
     } catch (error) {
@@ -202,17 +215,9 @@ const WalletEvmUtil = {
           break
       }
 
-      console.log({ result })
-
-      await walletKit.respondSessionRequest({
-        topic: topic,
-        response: {
-          id: id,
-          jsonrpc: '2.0',
-          result: result,
-        },
-      })
+      return result
     } catch (error) {
+      return Promise.reject(error)
       // console.error('onApproveRequest error', error)
       // await walletKit.respondSessionRequest({
       //   topic: topic,

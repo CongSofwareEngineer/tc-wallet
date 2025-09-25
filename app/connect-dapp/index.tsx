@@ -2,16 +2,17 @@ import AntDesign from '@expo/vector-icons/AntDesign'
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera'
 import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
 import { IsIos } from '@/constants/app'
 import useLanguage from '@/hooks/useLanguage'
+import useRequestWC from '@/hooks/useReuestWC'
 import useWallets from '@/hooks/useWallets'
 import { sleep } from '@/utils/functions'
-import WalletKit from '@/utils/walletKit'
+import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
 
 import styles from './styles'
 
@@ -24,26 +25,46 @@ const ConnectDAppScreen = () => {
 
   const [permission, requestPermission] = useCameraPermissions()
   const { translate } = useLanguage()
+  const { setRequest } = useRequestWC()
+
+  useEffect(() => {
+    let instance: TypeWalletKit | null = null
+
+    const onSessionProposal = async (e: any) => {
+      setRequest({
+        ...(e as any),
+        timestamp: Date.now(),
+        type: 'proposal',
+      })
+      setTimeout(() => {
+        router.replace('/connect-account')
+      }, 500)
+    }
+
+      ; (async () => {
+        instance = await WalletKit.init()
+        try {
+          // pre-clean to avoid dev double-mount duplicates
+          // @ts-ignore
+          instance.off?.('session_proposal', onSessionProposal)
+        } catch { }
+        instance.on('session_proposal', onSessionProposal)
+      })()
+
+    return () => {
+      if (instance) {
+        try {
+          instance.off('session_proposal', onSessionProposal)
+        } catch { }
+      }
+    }
+  }, [wallet?.address, router])
 
   const handleConnect = async (uri = '') => {
     setLoading(true)
-    const walletKit = await WalletKit.init()
-
-    walletKit.on('session_proposal', async (e) => {
-      const { id, params } = e
-      const nameSpaces = WalletKit.formatNameSpaceBySessions(params as any, wallet?.address || '')
-      console.log({ nameSpaces })
-
-      await WalletKit.onSessionProposal(id, params, nameSpaces)
-
-      setTimeout(() => {
-        setUri('')
-        setLoading(false)
-        router.back()
-      }, 500)
-    })
+    const kit = await WalletKit.init()
     await sleep(500)
-    await walletKit.pair({ uri })
+    await kit.pair({ uri })
   }
 
   function toggleCameraFacing() {
@@ -52,18 +73,15 @@ const ConnectDAppScreen = () => {
 
   const handleCopyPass = async () => {
     let text: any = await Clipboard.getStringAsync()
-
     if (IsIos && !text) {
       text = await Clipboard.getUrlAsync()
     }
-    console.log({ text })
-
     if (text && text.startsWith('wc:') && text?.includes('@2')) {
       setUri(text)
       handleConnect(text)
     }
   }
-  // Show a simple permission gate UI until camera access is granted
+
   if (!permission?.granted) {
     return (
       <View style={{ flex: 1, gap: 10, justifyContent: 'center' }}>

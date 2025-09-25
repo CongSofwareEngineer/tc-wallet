@@ -4,6 +4,7 @@ export enum KEY_REDUX {
   Wallet = 'wallet',
   Sessions = 'sessions',
   Mode = 'mode',
+  RequestWC = 'requestWC',
 }
 
-export const WHITE_LIST_STORAGE = [KEY_REDUX.Language, KEY_REDUX.Wallet, KEY_REDUX.Mode]
+export const WHITE_LIST_STORAGE = [KEY_REDUX.Wallet, KEY_REDUX.Mode]

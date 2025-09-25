@@ -6,6 +6,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 20,
   },
+  containerTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
 })
 
 export default styles

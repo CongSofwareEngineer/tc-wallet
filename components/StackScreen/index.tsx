@@ -1,14 +1,16 @@
 import { ParamListBase, StackNavigationState } from '@react-navigation/native'
 import { createNativeStackNavigator, NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack'
-import { withLayoutContext } from 'expo-router'
+import { usePathname, withLayoutContext } from 'expo-router'
 import React from 'react'
 
 import TabNavigation from '@/app/(tabs)/_layout'
-import ApproveScreen from '@/app/approve'
 import BackupScreen from '@/app/backup'
+import ConnectAccountScreen from '@/app/connect-account'
 import ConnectDAppScreen from '@/app/connect-dapp'
 import CreateWalletScreen from '@/app/create-wallet'
+import WalletScreen from '@/app/wallet'
 import useLanguage from '@/hooks/useLanguage'
+import useRequestWC from '@/hooks/useReuestWC'
 import useWallets from '@/hooks/useWallets'
 
 const { Navigator, Screen } = createNativeStackNavigator()
@@ -23,12 +25,15 @@ export const JsStack = withLayoutContext<
 const StackScreen = () => {
   const { translate } = useLanguage()
   const { wallets } = useWallets()
-  console.log({ wallets })
+  const pathname = usePathname()
+  const { requestWC } = useRequestWC()
+
+  console.log({ pathname, requestWC })
 
   return (
     <Navigator
       screenOptions={{
-        animation: 'slide_from_right',
+        animation: 'none',
       }}
       initialRouteName={wallets.length === 0 ? 'create-wallet' : '(tabs)'}
     >
@@ -64,11 +69,24 @@ const StackScreen = () => {
       />
       <Screen name='(tabs)' options={{ title: 'TC Store', headerShown: false }} component={TabNavigation} />
       <Screen
-        name='approve'
+        name='wallet'
         options={{
-          title: 'TC Store',
+          title: 'Wallet manage',
+          animation: 'ios_from_right',
+          headerBackTitle: translate('common.back'),
         }}
-        component={ApproveScreen}
+        component={WalletScreen}
+      />
+      <Screen
+        name='connect-account'
+        options={{
+          title: 'Connect Account',
+          animation: 'slide_from_bottom',
+          presentation: 'modal',
+          gestureEnabled: false,
+          headerShown: false,
+        }}
+        component={ConnectAccountScreen}
       />
     </Navigator>
   )

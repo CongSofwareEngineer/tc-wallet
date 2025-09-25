@@ -1,12 +1,14 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { View } from 'react-native'
 
-const Profile = () => {
+import ThemedText from '@/components/UI/ThemedText'
+
+const WalletScreen = () => {
   return (
     <View>
-      <Text>Profile</Text>
+      <ThemedText>WalletScreen</ThemedText>
     </View>
   )
 }
 
-export default Profile
+export default WalletScreen

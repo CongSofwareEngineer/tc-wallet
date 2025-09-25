@@ -1,25 +1,37 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-native'
+import { StyleSheet, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
 
+import MyLoading from '@/components/MyLoading'
 import { COLORS } from '@/constants/style'
 
 type Props = {
   type?: 'default' | 'primary' | 'danger'
+  loading?: boolean
 } & TouchableOpacityProps
 
 const ThemeTouchableOpacity = ({ type = 'default', ...props }: Props) => {
   return (
     <TouchableOpacity
       {...props}
+      activeOpacity={props.loading ? 1 : props.activeOpacity}
       style={[
         {
-          opacity: props.disabled ? 0.5 : 1,
+          opacity: props.disabled || props.loading ? 0.7 : 1,
         },
         styles.container,
         styles[type],
         props.style,
       ]}
-    />
+      disabled={props.disabled || props.loading}
+    >
+      {props.loading ? (
+        <View style={styles.loadingWrapper}>
+          <MyLoading size={20} />
+        </View>
+      ) : (
+        props.children
+      )}
+    </TouchableOpacity>
   )
 }
 
@@ -30,6 +42,11 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 8,
 
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingWrapper: {
+    height: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },

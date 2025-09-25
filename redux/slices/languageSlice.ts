@@ -2,7 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import MessageEN from '@/assets/languages/en.json'
 import { KEY_REDUX } from '@/constants/redux'
+import { KEY_STORAGE } from '@/constants/storage'
 import { TYPE_LANGUAGE } from '@/types/language'
+import { saveDataLocal } from '@/utils/storage'
 
 export enum LANGUAGE_SUPPORT {
   VN = 'vn',
@@ -41,6 +43,7 @@ const languageSlice = createSlice({
     setLanguage(state, action: PayloadAction<LANGUAGE_SUPPORT>) {
       state.locale = action.payload
       state.messages = getLanguage(action.payload).messages
+      saveDataLocal(KEY_STORAGE.Language, action.payload)
     },
   },
 })

@@ -1,4 +1,5 @@
 import '@/utils/debug/reactotron'
+import '@/utils/polyfills/crypto'
 import '@walletconnect/react-native-compat'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'

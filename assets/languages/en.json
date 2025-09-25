@@ -9,7 +9,10 @@
     "profile": "Tài khoản",
     "language": "Ngôn ngữ",
     "back": "Quay lại",
-    "close": "Đóng"
+    "close": "Đóng",
+    "reject": "Từ chối",
+    "approve": "Đồng ý",
+    "confirm": "Xác nhận"
   },
   "userName": "Tên người dùng",
   "password": "Mật khẩu",

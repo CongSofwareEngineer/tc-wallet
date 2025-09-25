@@ -1,71 +1,62 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
+import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
-import useWallets from '@/hooks/useWallets'
-import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
+import useModal from '@/hooks/useModal'
+import { useAppSelector } from '@/redux/hooks'
+import WalletKit from '@/utils/walletKit'
 
 import ListConnect from './Components/ListConnect'
 import styles from './styles'
 
 const ManageConnectScreen = () => {
-  const [uri, setUri] = useState('')
-  const { wallet } = useWallets()
+  const sessions = useAppSelector((state) => state.sessions)
+
   const router = useRouter()
-
-  useEffect(() => {
-    let walletKit: TypeWalletKit
-    const initData = async () => {
-      console.log('initData')
-
-      walletKit = await WalletKit.init()
-
-      walletKit.on('session_proposal', (e) => {
-        const { id, params } = e
-        const nameSpaces = WalletKit.formatNameSpaceBySessions(params as any, wallet?.address || '')
-        WalletKit.onSessionProposal(id, params, nameSpaces)
-        setUri('')
-      })
-    }
-    initData()
-
-    return () => {
-      if (walletKit) {
-        walletKit?.off('session_proposal', () => { })
-      }
-    }
-  }, [])
-
-  const handleConnect = async () => {
-    const walletKit = await WalletKit.init()
-    walletKit.pair({ uri })
-  }
+  const { openModal } = useModal()
 
   const handleDisconnectAll = async () => {
-    WalletKit.sessionDeleteAll()
+    const callback = async () => {
+      await WalletKit.sessionDeleteAll()
+    }
+    openModal({
+      content: <ModalWarning onConfirm={callback} />,
+      maskClosable: false,
+      showIconClose: false,
+    })
   }
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
+    <View style={{ flex: 1, padding: 10, gap: 30 }}>
       <View style={[styles.container]}>
         <View style={[styles.containerHeader]}>
-          <ThemedText>Quản lý kết nối</ThemedText>
+          <ThemedText type='subtitle'> </ThemedText>
+
+          <ThemedText type='subtitle'>Quản lý kết nối</ThemedText>
           <TouchableOpacity onPress={() => router.push('/connect-dapp')}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-              <ThemedText>Thêm kết nối</ThemedText>
-              <AntDesign name='camera' size={20} color={'white'} />
+              <AntDesign name='plus-circle' size={20} color={'white'} />
             </View>
           </TouchableOpacity>
         </View>
       </View>
 
-      <ThemeTouchableOpacity onPress={handleDisconnectAll}>
-        <ThemedText>disconnefct all</ThemedText>
-      </ThemeTouchableOpacity>
-      <ListConnect />
+      {Object.keys(sessions || {}).length === 0 ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ThemedText style={{ textAlign: 'center', color: '#888' }}>Chưa có kết nối nào</ThemedText>
+        </View>
+      ) : (
+        <>
+          <ListConnect />
+          <ThemeTouchableOpacity onPress={handleDisconnectAll}>
+            <ThemedText>disconnefct all</ThemedText>
+          </ThemeTouchableOpacity>
+        </>
+      )}
     </View>
   )
 }

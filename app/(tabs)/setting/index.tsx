@@ -50,24 +50,49 @@ const SettingScreen = () => {
         <ThemedText type='title'>{translate('setting.titlePage')}</ThemedText>
 
         <View style={{ gap: 20, marginTop: 20, width: '100%' }}>
+          {/*manage wallets */}
+          <Items>
+            <View style={styles.containerTitle}>
+              <AntDesign name='security-scan' size={20} color={text.color} style={{ marginRight: 10 }} />
+              <ThemedText type='defaultSemiBold'>Bảo mật</ThemedText>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <View style={{ flex: 1 }}>
+                <ThemedText>Khoá sinh trắc học</ThemedText>
+                <ThemedText opacity={0.7}>Sử dụng vân tay/Face ID để mở khóa ứng dụng</ThemedText>
+              </View>
+              <View>
+                <ThemeSwitch value={mode === MODE.Dark} onValueChange={() => setMode(mode === MODE.Dark ? MODE.Light : MODE.Dark)} />
+              </View>
+            </View>
+            <ThemeTouchableOpacity onPress={() => router.push('/wallet')} style={{ marginBottom: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <AntDesign name='eye' size={20} color={COLORS.white} style={{ marginRight: 10 }} />
+                <ThemedText>Quản lý ví</ThemedText>
+              </View>
+            </ThemeTouchableOpacity>
+          </Items>
+
           {/* // Theme */}
           <Items>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+            <View style={styles.containerTitle}>
               <AntDesign name='sun' size={20} color={text.color} style={{ marginRight: 10 }} />
               <ThemedText type='defaultSemiBold'>Giao Diện</ThemedText>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <View>
+              <View style={{ flex: 1 }}>
                 <ThemedText>Chế độ tối</ThemedText>
-                <ThemedText opacity={0.7}>Chế độ tối</ThemedText>
+                <ThemedText opacity={0.7}>Sử dụng giao diện tối cho ứng dụng</ThemedText>
               </View>
-              <ThemeSwitch value={mode === MODE.Dark} onValueChange={() => setMode(mode === MODE.Dark ? MODE.Light : MODE.Dark)} />
+              <View>
+                <ThemeSwitch value={mode === MODE.Dark} onValueChange={() => setMode(mode === MODE.Dark ? MODE.Light : MODE.Dark)} />
+              </View>
             </View>
           </Items>
 
           {/* // Notification */}
           <Items>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+            <View style={styles.containerTitle}>
               <AntDesign name='notification' size={20} color={text.color} style={{ marginRight: 10 }} />
               <ThemedText type='defaultSemiBold'>{translate('setting.notification')}</ThemedText>
             </View>
