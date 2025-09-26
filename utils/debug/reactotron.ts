@@ -2,11 +2,11 @@
 // Requires: yarn add -D reactotron-react-native @react-native-async-storage/async-storage
 // Open Reactotron app on your computer to see logs.
 
-import { TurboModuleRegistry } from 'react-native'
+import { Platform, TurboModuleRegistry } from 'react-native'
 import Reactotron from 'reactotron-react-native'
 import { reactotronRedux } from 'reactotron-redux'
 
-if (__DEV__) {
+if (__DEV__ && Platform.OS !== 'web') {
   const init = async () => {
     try {
       const scriptURL = TurboModuleRegistry.getEnforcing('SourceCode').getConstants().scriptURL
