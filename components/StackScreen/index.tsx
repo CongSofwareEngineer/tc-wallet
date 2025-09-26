@@ -15,6 +15,7 @@ import ThemedText from '@/components/UI/ThemedText'
 import { COLORS, MODE } from '@/constants/style'
 import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
+import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 
@@ -30,9 +31,10 @@ export const JsStack = withLayoutContext<
 const StackScreen = () => {
   const { translate } = useLanguage()
   const { wallets } = useWallets()
+  const { passPhase } = usePassPhrase()
   const { mode } = useMode()
   const { text } = useTheme()
-  // debug states if needed
+  console.log({ wallets, passPhase })
 
   return (
     <Navigator
@@ -64,10 +66,7 @@ const StackScreen = () => {
         name='create-wallet'
         options={{
           animation: 'none',
-          title: 'TC Store',
-          contentStyle: {
-            backgroundColor: 'green',
-          },
+          headerShown: false,
         }}
         component={CreateWalletScreen}
       />

@@ -12,10 +12,12 @@ import useAuth from '@/hooks/useAuth'
 import useLanguage from '@/hooks/useLanguage'
 import useModal from '@/hooks/useModal'
 import useMode from '@/hooks/useMode'
+import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { LANGUAGE_SUPPORT } from '@/types/language'
 import { width } from '@/utils/systems'
+import WalletKit from '@/utils/walletKit'
 
 import Items from './Components/Item'
 import styles from './styles'
@@ -25,18 +27,22 @@ const SettingScreen = () => {
   const { text, colors } = useTheme()
   const { mode, setMode } = useMode()
   const { handleAuth } = useAuth()
-  const { openModal } = useModal()
+  const { openModal, closeModal } = useModal()
   const router = useRouter()
   const { setWallets } = useWallets()
+  const { removeAllPassphrases } = usePassPhrase()
 
   const resetApp = async () => {
     const callback = async () => {
       try {
-        const isAuth = await handleAuth()
+        const isAuth = await handleAuth(false)
+
         if (isAuth) {
           setWallets([])
+          removeAllPassphrases()
           setMode(MODE.Dark)
           setLanguage(LANGUAGE_SUPPORT.VN)
+          WalletKit.sessionDeleteAll()
           router.replace('/create-wallet')
         }
       } catch (error) {

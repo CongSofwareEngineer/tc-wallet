@@ -1,5 +1,4 @@
 import Bignumber from 'bignumber.js'
-import 'react-native-get-random-values'
 import { Address, createWalletClient, custom, Hash, Hex, isAddress, isHex, stringToHex } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 

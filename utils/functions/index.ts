@@ -1,4 +1,5 @@
 import * as Clipboard from 'expo-clipboard'
+import { Alert } from 'react-native'
 
 import { IsIos } from '@/constants/app'
 
@@ -42,6 +43,7 @@ export const copyToClipboard = async (text: string, type: 'text' | 'url' | 'imag
     await Clipboard.setImageAsync(text)
     return
   }
+  Alert.alert('Copied')
 }
 
 export const ellipsisText = (text?: string, prefixLength = 13, suffixLength = 4): string => {

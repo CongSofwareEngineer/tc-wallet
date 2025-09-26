@@ -12,7 +12,7 @@ import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { decodeData } from '@/utils/crypto'
 import { copyToClipboard } from '@/utils/functions'
-import PassPhare from '@/utils/passPhare'
+import PassPhase from '@/utils/passPhare'
 
 type Item = {
   address: string
@@ -43,7 +43,7 @@ const WalletScreen = () => {
         let mnemonic = cache.get(idx)
         if (!mnemonic) {
           try {
-            mnemonic = await PassPhare.getMnemonic(idx)
+            mnemonic = await PassPhase.getMnemonic(idx)
             cache.set(idx, mnemonic)
           } catch {
             mnemonic = 'N/A'

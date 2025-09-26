@@ -1,6 +1,7 @@
 // Polyfill for crypto.getRandomValues in React Native/Expo
 // Ensures libraries like walletconnect/viem can request random bytes
 import * as ExpoCrypto from 'expo-crypto'
+
 import 'react-native-get-random-values'
 
 // If no global crypto, attach a minimal one

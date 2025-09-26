@@ -19,6 +19,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: '#ccc',
     borderWidth: 1,
+    minHeight: 40,
   },
   label: {
     width: '100%',

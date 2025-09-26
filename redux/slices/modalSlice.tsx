@@ -25,7 +25,7 @@ const modalSlice = createSlice({
   reducers: {
     openModal: (state, action: PayloadAction<ModalItem>) => {
       if (state.length > 0 && !action.payload?.addModal) {
-        state = [action.payload]
+        return [action.payload]
       } else {
         state.push(action.payload)
       }
@@ -37,7 +37,7 @@ const modalSlice = createSlice({
         lastModal?.afterClose()
       }
 
-      state = lastModal ? state : []
+      return lastModal ? state : []
     },
   },
 })

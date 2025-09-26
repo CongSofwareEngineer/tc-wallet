@@ -1,3 +1,4 @@
+import * as ExpoCrypto from 'expo-crypto'
 import * as SecureStore from 'expo-secure-store'
 import { MMKV } from 'react-native-mmkv'
 
@@ -14,11 +15,7 @@ export const checkSupportSecure = async () => {
 export const generateKey = () => {
   // byteLength = số byte random, 32 byte ~ 256-bit
 
-  const randomBytes = []
-
-  for (let i = 0; i < 64; i++) {
-    randomBytes.push(Math.floor(Math.random() * 256))
-  }
+  const randomBytes = ExpoCrypto.getRandomBytes(32)
 
   // Chuyển Uint8Array -> chuỗi Base64
   let binary = ''
@@ -34,7 +31,6 @@ export const getKeyEncode = async () => {
   const isSupportSecure = await checkSupportSecure()
   if (isSupportSecure) {
     let encryptionKey = await SecureStore.getItemAsync(KEY_STORAGE.keyEncrypt, {
-      keychainAccessible: SecureStore.WHEN_UNLOCKED,
       authenticationPrompt: `Auth require ${KEY_STORAGE.keyEncrypt}`,
     })
     if (encryptionKey) {
@@ -42,7 +38,6 @@ export const getKeyEncode = async () => {
     } else {
       encryptionKey = generateKey()
       await SecureStore.setItemAsync(KEY_STORAGE.keyEncrypt, encryptionKey, {
-        keychainAccessible: SecureStore.WHEN_UNLOCKED,
         authenticationPrompt: `Auth require ${KEY_STORAGE.keyEncrypt}`,
       })
       return encryptionKey

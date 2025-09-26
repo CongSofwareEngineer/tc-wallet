@@ -2,7 +2,9 @@ import React, { useMemo, useRef, useState } from 'react'
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 
 import ThemedText from '@/components/UI/ThemedText'
+import { KEY_STORAGE } from '@/constants/storage'
 import useTheme from '@/hooks/useTheme'
+import { getSecureData } from '@/utils/secureStorage'
 
 type Props = {
   callback: (result: boolean) => void
@@ -17,11 +19,13 @@ const ModalAuth = ({ callback }: Props) => {
 
   const boxes = useMemo(() => new Array(PIN_LENGTH).fill(''), [])
 
-  const onChange = (value: string) => {
+  const onChange = async (value: string) => {
+    const pass = await getSecureData(KEY_STORAGE.PassAuth)
+
     // keep only digits and clamp to length
     const digits = value.replace(/\D/g, '').slice(0, PIN_LENGTH)
     setPin(digits)
-    if (digits.length === PIN_LENGTH) {
+    if (digits.length === PIN_LENGTH && digits === pass) {
       // slight delay to allow UI to render last dot
       setTimeout(() => callback(true), 80)
     }

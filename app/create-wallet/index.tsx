@@ -1,41 +1,44 @@
-import { useRouter } from 'expo-router'
-import React from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
+import { ScrollView, View } from 'react-native'
 
-import ThemedText from '@/components/UI/ThemedText'
-import useWallets from '@/hooks/useWallets'
-import AllWalletUtils from '@/utils/allWallet'
-import { cloneDeep } from '@/utils/functions'
+import Step1 from './Components/Step1'
+import Step2 from './Components/Step2'
+import Step3 from './Components/Step3'
+import styles from './styles'
 
 const CreateWalletScreen = () => {
-  const router = useRouter()
-  const { setWallets, wallets } = useWallets()
+  const [step, setStep] = useState(1)
 
-  const handleCreateWallet = async () => {
-    console.log('handleCreateWallet')
+  const handleImportWalletWithPrivateKey = () => {
+    setStep(4)
+  }
 
-    const arrWallet = cloneDeep(wallets)
-    arrWallet.forEach((_, index) => {
-      delete arrWallet[index].isDefault
-      delete arrWallet[index].name
-    })
-    const wallet = await AllWalletUtils.createWallet(wallets.length, 0)
-    arrWallet.push(wallet)
-    setWallets(arrWallet)
-    router.replace('/home')
+  const handleImportWalletWithSeedPhrase = () => {
+    setStep(3)
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ThemedText type='subtitle'>Tạo mới hoặc import</ThemedText>
+    <ScrollView
+      contentContainerStyle={{
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+      }}
+    >
+      <View style={styles.container}>
+        {step === 1 && (
+          <Step1
+            handleCreateWallet={() => setStep(2)}
+            handleImportWalletWithPrivateKey={handleImportWalletWithPrivateKey}
+            handleImportWalletWithSeedPhrase={handleImportWalletWithSeedPhrase}
+          />
+        )}
 
-      <TouchableOpacity onPress={handleCreateWallet}>
-        <ThemedText>Create Wallet</ThemedText>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.replace('/home')}>
-        <ThemedText>to create</ThemedText>
-      </TouchableOpacity>
-    </View>
+        {step === 2 && <Step2 handleClose={() => setStep(1)} />}
+        {step === 3 && <Step3 handleClose={() => setStep(1)} />}
+        {step === 4 && <Step3 type='privateKey' handleClose={() => setStep(1)} />}
+      </View>
+    </ScrollView>
   )
 }
 

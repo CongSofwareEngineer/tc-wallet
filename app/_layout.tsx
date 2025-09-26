@@ -1,6 +1,10 @@
-import '@/utils/debug/reactotron'
-import '@/utils/polyfills/crypto'
 import '@walletconnect/react-native-compat'
+import 'fast-text-encoding'
+import 'react-native-get-random-values'
+//
+import '@/utils/debug/reactotron'
+// import '@/utils/polyfills/crypto'
+
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 import { Provider } from 'react-redux'
@@ -10,7 +14,6 @@ import ClientRender from '@/components/ClientRender'
 import ReactQueryProvider from '@/components/ReactQueryProvider'
 import StackScreen from '@/components/StackScreen'
 import { persistor, store } from '@/redux/store'
-
 export default function RootLayout() {
   return (
     <Provider store={store}>

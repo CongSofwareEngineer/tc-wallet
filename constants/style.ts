@@ -2,7 +2,15 @@ export const TEXT_SIZE = [12, 16, 24, 32, 40, 80] as const
 export const BORDER_RADIUS = [4, 6, 8] as const
 export const BORDER_WIDTH = [1, 2, 4] as const
 
+export enum BORDER_RADIUS_DEFAULT {
+  Radius4 = 4,
+  Radius6 = 6,
+  Radius8 = 8,
+  Radius12 = 12,
+  Radius16 = 16,
+}
 export enum GAP_DEFAULT {
+  Gap4 = 4,
   Gap8 = 8,
   Gap12 = 12,
   Gap16 = 16,

@@ -14,7 +14,6 @@ const Web3Utils = {
   deriveAccountFromMnemonic: (mnemonic: string, accountIndex: number = 0): DerivedAccount => {
     const path: `m/44'/60'/${string}` = `m/44'/60'/${accountIndex}'/0/0`
     const account = mnemonicToAccount(mnemonic, { path })
-
     return { account, path, accountIndex }
   },
 

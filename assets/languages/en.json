@@ -12,7 +12,9 @@
     "close": "Đóng",
     "reject": "Từ chối",
     "approve": "Đồng ý",
-    "confirm": "Xác nhận"
+    "confirm": "Xác nhận",
+    "copy": "Sao chép",
+    "save": "Lưu"
   },
   "userName": "Tên người dùng",
   "password": "Mật khẩu",

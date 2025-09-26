@@ -5,6 +5,7 @@ import { WHITE_LIST_STORAGE } from '@/constants/redux'
 import languageReducer from '@/redux/slices/languageSlice'
 import modalReducer from '@/redux/slices/modalSlice'
 import modeReducer from '@/redux/slices/mode'
+import passPhaseSlice from '@/redux/slices/passPhaseSlice'
 import requestWCSlice from '@/redux/slices/requestWC'
 import sessionsReducer from '@/redux/slices/sessionsSlice'
 import walletReducer from '@/redux/slices/walletSlice'
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   sessions: sessionsReducer,
   mode: modeReducer,
   requestWC: requestWCSlice,
+  passPhase: passPhaseSlice,
 })
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer)

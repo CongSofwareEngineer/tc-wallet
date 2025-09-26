@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { KEY_STORAGE } from '@/constants/storage'
 import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
+import usePreLoadData from '@/hooks/usePreLoadData'
 import useRequestWC from '@/hooks/useReuestWC'
 import useTheme from '@/hooks/useTheme'
 import { sleep } from '@/utils/functions'
@@ -16,6 +17,8 @@ import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
 import MyModal from '../MyModal'
 
 const ClientRender = ({ children }: { children: ReactNode }) => {
+  usePreLoadData()
+
   const { background } = useTheme()
   const { mode } = useMode()
   const { setLanguage } = useLanguage()

@@ -1,18 +1,25 @@
+import '@walletconnect/react-native-compat'
+import 'fast-text-encoding'
+import 'react-native-get-random-values'
+//
+import { utils as baseUtils } from '@scure/base'
 import { HDKey } from '@scure/bip32'
-import { generateMnemonic, mnemonicToSeedSync } from '@scure/bip39'
-import { Hex, toHex } from 'viem'
+import { mnemonicToSeedSync } from '@scure/bip39'
+import * as ExpoCrypto from 'expo-crypto'
+import { Hex, sha256, toHex } from 'viem'
 import { english } from 'viem/accounts'
 
 import { KEY_STORAGE } from '@/constants/storage'
 import { ListMnemonic } from '@/types/wallet'
 
 import { getSecureData, saveSecureData } from '../secureStorage'
+
 type DerivedAccount = {
   privateKey: Hex
   mnemonic: string
 }
 
-const PassPhare = {
+const PassPhase = {
   deriveAccountFromMnemonic: (mnemonic: string, accountIndex: number = 0): DerivedAccount => {
     const seed = mnemonicToSeedSync(mnemonic)
 
@@ -24,16 +31,40 @@ const PassPhare = {
 
     return { privateKey, mnemonic }
   },
-  getMnemonic: async (indexMnemonic = 0): Promise<string> => {
+
+  generateMnemonic: (amount = 12): string => {
+    const calcChecksum = (entropy: Uint8Array) => {
+      const bitsLeft = 8 - entropy.length / 4
+      return new Uint8Array([((sha256(entropy)[0]! as any) >> bitsLeft) << bitsLeft])
+    }
+    const getCoder = (wordlist: string[] = []) => {
+      if (!Array.isArray(wordlist) || wordlist.length !== 2048 || typeof wordlist[0] !== 'string')
+        throw new Error('Wordlist: expected array of 2048 strings')
+      wordlist.forEach((i) => {
+        if (typeof i !== 'string') throw new Error('wordlist: non-string element: ' + i)
+      })
+      return baseUtils.chain(baseUtils.checksum(1, calcChecksum), baseUtils.radix2(11, true), baseUtils.alphabet(wordlist))
+    }
+
+    const a = ExpoCrypto.getRandomBytes(128 / 8)
+    const words = getCoder(english).encode(a)
+
+    return words.join(' ')
+  },
+  getMnemonic: async (indexMnemonic = 0, isSaveLocal = true): Promise<string> => {
     const arrMnemonic: ListMnemonic = (await getSecureData(KEY_STORAGE.Mnemonic)) || []
 
     if (!arrMnemonic[indexMnemonic]) {
-      arrMnemonic[indexMnemonic] = generateMnemonic(english, 128)
-      saveSecureData(KEY_STORAGE.Mnemonic, arrMnemonic)
+      arrMnemonic[indexMnemonic] = PassPhase.generateMnemonic(12)
+      // Newly generated mnemonic stored in secure storage if allowed
+
+      if (isSaveLocal) {
+        saveSecureData(KEY_STORAGE.Mnemonic, arrMnemonic)
+      }
     }
 
     return arrMnemonic[indexMnemonic]
   },
 }
 
-export default PassPhare
+export default PassPhase

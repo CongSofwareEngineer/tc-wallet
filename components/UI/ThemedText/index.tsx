@@ -5,7 +5,7 @@ import useTheme from '@/hooks/useTheme'
 export type ThemedTextProps = TextProps & {
   lightColor?: string
   darkColor?: string
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link'
+  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'small'
   opacity?: number
 }
 
@@ -17,6 +17,7 @@ export default function ThemedText({ opacity = 1, style, lightColor, darkColor, 
       // ellipsizeMode=''
       style={[
         { color: text.color, flexShrink: 1 },
+        type === 'small' ? styles.small : undefined,
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
@@ -32,6 +33,10 @@ export default function ThemedText({ opacity = 1, style, lightColor, darkColor, 
 }
 
 const styles = StyleSheet.create({
+  small: {
+    fontSize: 14,
+    lineHeight: 16,
+  },
   default: {
     fontSize: 16,
     lineHeight: 24,
