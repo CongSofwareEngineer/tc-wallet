@@ -1,6 +1,6 @@
 import { getSdkError } from '@walletconnect/utils'
 import { Image } from 'expo-image'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useMemo, useTransition } from 'react'
 import { FlatList, View } from 'react-native'
 
@@ -23,6 +23,8 @@ const ConnectAccountScreen = () => {
   const { text } = useTheme()
   const { translate } = useLanguage()
   const router = useRouter()
+  const query = useLocalSearchParams<{ params?: string }>()
+  console.log({ query })
 
   const request = useMemo(() => {
     return requestWC[0]
@@ -30,7 +32,7 @@ const ConnectAccountScreen = () => {
 
   const listChains = useMemo(() => {
     if (!request) return []
-    const { requiredNamespaces, optionalNamespaces } = request.params
+    const { requiredNamespaces, optionalNamespaces } = request.params || {}
     const chains: string[] = []
     Object.keys(requiredNamespaces).forEach((key) => {
       const namespace = requiredNamespaces[key]
@@ -47,28 +49,29 @@ const ConnectAccountScreen = () => {
     })
     return chains.map((chain) => chain.split(':')[1])
   }, [request])
-  console.log({ listChains })
 
   const handleReject = async () => {
     const walletKit = await WalletKit.init()
     await walletKit.rejectSession({
-      id: request.id,
+      id: request?.id,
       reason: getSdkError('USER_REJECTED'),
     })
     await sleep(500)
-    removeRequest(request.id)
-    router.replace('/manage-connect')
+    removeRequest(request?.id)
+    router.replace('/home')
   }
 
   const handleConnect = async () => {
     startTransition(async () => {
-      const { id, params } = request
+      const { id, params } = request || {}
       const nameSpaces = WalletKit.formatNameSpaceBySessions(params as any, wallet?.address || '')
 
       await WalletKit.onSessionProposal(id, params, nameSpaces)
       await sleep(500)
+
+      router.replace('/home')
+      await sleep(500)
       removeRequest(request.id)
-      router.replace('/manage-connect')
     })
   }
 

@@ -36,20 +36,28 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
     let instance: TypeWalletKit | null = null
 
     const onSessionDelete = (e: any) => {
-      const { topic } = e
-      WalletKit.onSessionDelete(topic)
+      try {
+        const { topic } = e
+        WalletKit.onSessionDelete(topic)
+      } catch (error) {
+        console.error({ onSessionDelete: error })
+      }
     }
 
     const onSessionRequest = async (e: any) => {
-      console.log({ onSessionRequest: e })
+      try {
+        console.log({ onSessionRequest: e })
 
-      setRequest({
-        ...(e as any),
-        timestamp: Date.now(),
-        type: 'request',
-      })
-      await sleep(300)
-      router.push('/approve')
+        setRequest({
+          ...(e as any),
+          timestamp: Date.now(),
+          type: 'request',
+        })
+        await sleep(300)
+        router.push('/approve')
+      } catch (error) {
+        console.error({ onSessionRequest: error })
+      }
 
       // const { id, params, topic } = e
       // WalletKit.onApproveRequest(id, topic, params)
@@ -60,10 +68,11 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
       try {
         // defensively remove existing refs to avoid duplicates
         // @ts-ignore
-        instance.off?.('session_delete', onSessionDelete)
+        instance.off?.('session_delete', (e) => { })
         // @ts-ignore
-        instance.off?.('session_request', onSessionRequest)
+        instance.off?.('session_request', (e) => { })
       } catch { }
+      await sleep(500)
       instance.on('session_delete', onSessionDelete)
       instance.on('session_request', onSessionRequest)
       WalletKit.reConnect()
@@ -73,8 +82,8 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
     return () => {
       if (instance) {
         try {
-          instance.off('session_delete', onSessionDelete)
-          instance.off('session_request', onSessionRequest)
+          instance.off('session_delete', (e) => { })
+          instance.off('session_request', (e) => { })
         } catch { }
       }
     }

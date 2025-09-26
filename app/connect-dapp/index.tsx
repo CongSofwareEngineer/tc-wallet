@@ -11,6 +11,9 @@ import { IsIos } from '@/constants/app'
 import useLanguage from '@/hooks/useLanguage'
 import useRequestWC from '@/hooks/useReuestWC'
 import useWallets from '@/hooks/useWallets'
+import { useAppSelector } from '@/redux/hooks'
+import { setRequestWC } from '@/redux/slices/requestWC'
+import { store } from '@/redux/store'
 import { sleep } from '@/utils/functions'
 import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
 
@@ -26,16 +29,21 @@ const ConnectDAppScreen = () => {
   const [permission, requestPermission] = useCameraPermissions()
   const { translate } = useLanguage()
   const { setRequest } = useRequestWC()
+  const requestWC = useAppSelector((state) => state.requestWC)
 
   useEffect(() => {
     let instance: TypeWalletKit | null = null
 
     const onSessionProposal = async (e: any) => {
-      setRequest({
-        ...(e as any),
-        timestamp: Date.now(),
-        type: 'proposal',
-      })
+      console.log({ onSessionProposal: e, requestWC })
+
+      store.dispatch(
+        setRequestWC({
+          ...(e as any),
+          timestamp: Date.now(),
+          type: 'proposal',
+        })
+      )
       setTimeout(() => {
         router.replace('/connect-account')
       }, 500)
@@ -46,16 +54,17 @@ const ConnectDAppScreen = () => {
       try {
         // pre-clean to avoid dev double-mount duplicates
         // @ts-ignore
-        instance.off?.('session_proposal', onSessionProposal)
+        instance.off?.('session_proposal', (e) => { })
       } catch { }
-      instance.on('session_proposal', onSessionProposal)
+      await sleep(1000)
+      instance.once('session_proposal', onSessionProposal)
     }
     init()
 
     return () => {
       if (instance) {
         try {
-          instance.off('session_proposal', onSessionProposal)
+          instance.off('session_proposal', (e) => { })
         } catch { }
       }
     }

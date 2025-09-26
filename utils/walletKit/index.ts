@@ -7,7 +7,6 @@ import 'fast-text-encoding'
 import { WalletKit as WalletKitCore, WalletKitTypes } from '@reown/walletkit'
 import { WalletKit as TypeWallet } from '@reown/walletkit/dist/types/client'
 import { Core } from '@walletconnect/core'
-import { ProposalTypes } from '@walletconnect/types'
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
 
 import { setSessions } from '@/redux/slices/sessionsSlice'
@@ -19,59 +18,78 @@ import WalletEvmUtil from '../walletEvm'
 
 export type TypeWalletKit = TypeWallet
 let walletKit: TypeWalletKit
+let initializing: Promise<TypeWalletKit> | null = null
+const subscribedTopics = new Set<string>()
 
 const WalletKit = {
   init: async () => {
     if (walletKit) return walletKit
-    const core = new Core({
-      projectId: '40c7fbd30534a24b3a0c2c92a757a76b',
-    })
-
-    walletKit = await WalletKitCore.init({
-      core, // <- pass the shared `core` instance
-      metadata: {
-        name: 'Demo React Native Wallet',
-        description: 'Demo RN Wallet to interface with Dapps',
-        url: 'www.walletconnect.com',
-        icons: ['https://your_wallet_icon.png'],
-        redirect: {
-          native: 'yourwalletscheme://',
+    if (initializing) return initializing
+    initializing = (async () => {
+      const core = new Core({
+        projectId: '40c7fbd30534a24b3a0c2c92a757a76b',
+      })
+      const instance = await WalletKitCore.init({
+        core,
+        metadata: {
+          name: 'Demo React Native Wallet',
+          description: 'Demo RN Wallet to interface with Dapps',
+          url: 'www.walletconnect.com',
+          icons: ['https://your_wallet_icon.png'],
+          redirect: { native: 'yourwalletscheme://' },
         },
-      },
-    })
-
-    return walletKit
+      })
+      try {
+        // @ts-ignore internal emitter; lift listener cap
+        instance.core.relayer.events?.setMaxListeners?.(50)
+      } catch { }
+      walletKit = instance
+      initializing = null
+      return walletKit
+    })()
+    return initializing
   },
+  safeSubscribe: async (topic: string) => {
+    if (!topic) return
+    if (!walletKit) return
+    if (subscribedTopics.has(topic)) return
+    try {
+      await walletKit.core.relayer.subscribe(topic)
+      subscribedTopics.add(topic)
+    } catch (e) {
+      void e
+    }
+  },
+
+  safeUnsubscribe: async (topic: string) => {
+    if (!topic || !walletKit) return
+    try {
+      await walletKit.core.relayer.unsubscribe(topic)
+    } catch (e) {
+      void e
+    }
+    subscribedTopics.delete(topic)
+  },
+
   reConnect: async () => {
     try {
-      const walletKit = await WalletKit.init()
-      const sessionsActive = walletKit.getActiveSessions()
+      const instance = await WalletKit.init()
+      const sessionsActive = instance.getActiveSessions()
       const sessionValid: Sessions = {}
       if (sessionsActive) {
-        const arrAsync = Object.keys(sessionsActive).map(async (key) => {
-          try {
-            await walletKit.core.relayer.subscribe(sessionsActive[key].topic)
-            sessionValid[key] = sessionsActive[key]
-          } catch { }
-        })
-        await Promise.all(arrAsync)
+        for (const key of Object.keys(sessionsActive)) {
+          const s = sessionsActive[key]
+          await WalletKit.safeSubscribe(s.topic)
+          sessionValid[key] = s
+        }
       }
-
-      const pairings = walletKit.core.pairing.getPairings()
-      if (pairings.length > 0) {
-        const arrAsyncPairing = pairings.map(async (pair) => {
-          try {
-            await walletKit.core.relayer.subscribe(pair.topic)
-          } catch {
-            delete sessionValid[pair.topic]
-          }
-        })
-        await Promise.all(arrAsyncPairing)
+      const pairings = instance.core.pairing.getPairings()
+      for (const pair of pairings) {
+        await WalletKit.safeSubscribe(pair.topic)
       }
-
       store.dispatch(setSessions({ ...sessionValid }))
-    } catch (error) {
-      console.error('reConnect error', error)
+    } catch (e) {
+      void e
     }
   },
 
@@ -91,18 +109,14 @@ const WalletKit = {
     })
     return epi
   },
-  buildApprovedNamespaces: (params: ProposalTypes.Struct, eipNamespaces: EIPNamespaces) => {
+  buildApprovedNamespaces: (params: Params, eipNamespaces: EIPNamespaces) => {
     const approvedNamespaces = buildApprovedNamespaces({
-      proposal: params,
+      proposal: params as any,
       supportedNamespaces: eipNamespaces,
     })
     return approvedNamespaces
   },
-  onSessionProposal: async (
-    id: WalletKitTypes.SessionProposal['id'],
-    params: WalletKitTypes.SessionProposal['params'],
-    eipNamespaces: EIPNamespaces
-  ) => {
+  onSessionProposal: async (id: WalletKitTypes.SessionProposal['id'], params: Params, eipNamespaces: EIPNamespaces) => {
     try {
       const walletKit = await WalletKit.init()
       const approvedNamespaces = WalletKit.buildApprovedNamespaces(params, eipNamespaces)
@@ -123,49 +137,44 @@ const WalletKit = {
   },
   onSessionDelete: async (topic: string) => {
     try {
-      const walletKit = await WalletKit.init()
-      await walletKit.core.relayer.unsubscribe(topic)
       const sessions = cloneDeep<Sessions>(store.getState().sessions)
       if (sessions[topic]) {
         delete sessions[topic]
       }
       store.dispatch(setSessions({ ...sessions }))
-    } catch (error) {
-      console.error('onSessionDelete error', error)
+
+      await WalletKit.init()
+      await WalletKit.safeUnsubscribe(topic)
+    } catch (e) {
+      void e
     }
   },
   disconnectSession: async (topic: string) => {
     try {
       const walletKit = await WalletKit.init()
       await walletKit.disconnectSession({ topic, reason: getSdkError('USER_DISCONNECTED') })
-    } catch (error) { }
+    } catch { }
   },
 
   sessionDeleteAll: async () => {
     try {
-      const walletKit = await WalletKit.init()
-      const sessions = walletKit.getActiveSessions()
+      const instance = await WalletKit.init()
+      const sessions = instance.getActiveSessions()
       for (const key in sessions) {
+        const t = sessions[key].topic
         try {
-          await walletKit.disconnectSession({
-            topic: sessions[key].topic,
-            reason: getSdkError('USER_DISCONNECTED'),
-          })
-          await walletKit.core.relayer.unsubscribe(sessions[key].topic)
-        } catch (error) {
-          console.error('sessionDeleteAll error', error)
-        }
+          await instance.disconnectSession({ topic: t, reason: getSdkError('USER_DISCONNECTED') })
+        } catch { }
+        await WalletKit.safeUnsubscribe(t)
       }
       store.dispatch(setSessions({}))
-    } catch (error) {
-      console.error('sessionDeleteAll error', error)
-    }
+    } catch { }
   },
   onApproveRequest: async (id: number, topic: string, params: Params) => {
     try {
       if (params?.chainId?.includes('eip155')) {
         const result = await WalletEvmUtil.approveRequest(id, topic, params)
-        console.log({ result })
+        // result returned from approveRequest
         await WalletKit.respondSessionRequest(id, topic, result)
       }
     } catch (error) {

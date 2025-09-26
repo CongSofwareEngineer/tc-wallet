@@ -7,7 +7,6 @@ import { TouchableOpacity, View } from 'react-native'
 
 import TabNavigation from '@/app/(tabs)/_layout'
 import BackupScreen from '@/app/backup'
-import ConnectAccountScreen from '@/app/connect-account'
 import ConnectDAppScreen from '@/app/connect-dapp'
 import CreateWalletScreen from '@/app/create-wallet'
 import WalletScreen from '@/app/wallet'
@@ -18,6 +17,8 @@ import useMode from '@/hooks/useMode'
 import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
+
+import ConnectAccountScreen from '@/app/connect-account/[query]'
 
 const { Navigator, Screen } = createNativeStackNavigator()
 

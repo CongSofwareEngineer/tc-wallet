@@ -6,9 +6,8 @@ export type RequestWC = {
   verifyContext: Verify.Context
   type: 'connect' | 'request'
   timestamp: number
-  params?: Params
-} & Omit<SignClientTypes.BaseEventArgs<ProposalTypes.Struct>, 'params'> &
-  Omit<{ params: Params }, 'params'>
+  params: Params & ProposalTypes.Struct
+} & Omit<SignClientTypes.BaseEventArgs<ProposalTypes.Struct>, 'topic' | 'params'>
 
 const initialState: RequestWC[] = []
 
@@ -17,10 +16,10 @@ const requestWCSlice = createSlice({
   initialState,
   reducers: {
     setRequestWC: (state, action: PayloadAction<RequestWC>) => {
-      state.push(action.payload)
+      return [...state, action.payload]
     },
     removeRequestWC: (state, action: PayloadAction<number>) => {
-      return state.filter((req) => req.id !== action.payload)
+      return state.filter((req) => req.id !== action.payload) || []
     },
   },
 })
