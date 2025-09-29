@@ -41,7 +41,8 @@ const WalletKit = {
       })
       try {
         // @ts-ignore internal emitter; lift listener cap
-        instance.core.relayer.events?.setMaxListeners?.(50)
+        instance.core.relayer.events.setMaxListeners?.(50)
+        instance.events.setMaxListeners?.(50)
       } catch { }
       walletKit = instance
       initializing = null
@@ -55,9 +56,10 @@ const WalletKit = {
     if (subscribedTopics.has(topic)) return
     try {
       await walletKit.core.relayer.subscribe(topic)
+
       subscribedTopics.add(topic)
     } catch (e) {
-      void e
+      console.log({ errorsafeSubscribe: e })
     }
   },
 
@@ -66,7 +68,7 @@ const WalletKit = {
     try {
       await walletKit.core.relayer.unsubscribe(topic)
     } catch (e) {
-      void e
+      console.log({ errorUnsubscribe: e })
     }
     subscribedTopics.delete(topic)
   },
@@ -118,15 +120,19 @@ const WalletKit = {
   },
   onSessionProposal: async (id: WalletKitTypes.SessionProposal['id'], params: Params, eipNamespaces: EIPNamespaces) => {
     try {
-      const walletKit = await WalletKit.init()
+      const instance = await WalletKit.init()
       const approvedNamespaces = WalletKit.buildApprovedNamespaces(params, eipNamespaces)
 
-      const session = await walletKit.approveSession({
+      const session = await instance.approveSession({
         id,
         namespaces: approvedNamespaces,
       })
       const sessions = cloneDeep<Sessions>(store.getState().sessions)
       sessions[session.topic] = session
+      // Ensure we are subscribed to the new session's topic so that encryption keys are established
+      try {
+        await WalletKit.safeSubscribe(session.topic)
+      } catch { }
       store.dispatch(setSessions({ ...sessions }))
     } catch {
       await walletKit.rejectSession({
@@ -182,24 +188,60 @@ const WalletKit = {
     }
   },
   respondSessionRequest: async (id: number, topic: string, response: any, isError: boolean = false) => {
-    if (isError) {
-      await walletKit.respondSessionRequest({
-        topic: topic,
-        response: {
-          id: id,
-          jsonrpc: '2.0',
-          error: { code: -32000, message: (response as Error).message },
-        },
-      })
-    } else {
-      await walletKit.respondSessionRequest({
-        topic: topic,
-        response: {
-          id: id,
-          jsonrpc: '2.0',
-          result: response,
-        },
-      })
+    try {
+      const instance = walletKit || (await WalletKit.init())
+      // Validate session/topic exists before responding to avoid core.crypto.encode() failures
+      const activeSessions = instance.getActiveSessions?.() || {}
+      if (!activeSessions[topic]) {
+        // If session missing, surface a structured error
+        await instance.respondSessionRequest({
+          topic,
+          response: {
+            id,
+            jsonrpc: '2.0',
+            error: { code: -32001, message: 'Session not found for topic' },
+          },
+        })
+        return
+      }
+      // Defensive subscribe (no-op if already) to ensure relayer key negotiation completed
+      try {
+        await WalletKit.safeSubscribe(topic)
+      } catch { }
+
+      if (isError) {
+        await instance.respondSessionRequest({
+          topic,
+          response: {
+            id,
+            jsonrpc: '2.0',
+            error: { code: -32000, message: (response as Error)?.message || 'Unknown error' },
+          },
+        })
+      } else {
+        await instance.respondSessionRequest({
+          topic,
+          response: {
+            id,
+            jsonrpc: '2.0',
+            result: response,
+          },
+        })
+      }
+    } catch (e) {
+      // Fallback: last-attempt error payload if even responding failed
+      try {
+        if (walletKit) {
+          await walletKit.respondSessionRequest({
+            topic,
+            response: {
+              id,
+              jsonrpc: '2.0',
+              error: { code: -32002, message: (e as Error).message || 'Failed to respond' },
+            },
+          })
+        }
+      } catch { }
     }
   },
 }

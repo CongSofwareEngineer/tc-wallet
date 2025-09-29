@@ -36,8 +36,8 @@ const TabBarLabel = ({
   const getStyle = () => {
     if (isPageCurrent) {
       return {
-        shadowColor: '#00d4ff4d',
-        boxShadow: '0px 0px 5px 5px #00d4ff4d',
+        // shadowColor: '#00d4ff4d',
+        // boxShadow: '0px 0px 5px 5px #00d4ff4d',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',

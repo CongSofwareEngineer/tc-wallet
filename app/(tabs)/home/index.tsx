@@ -60,7 +60,14 @@ const HomeScreen = () => {
         <ThemedText>Approce </ThemedText>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/connect-account')}>
+      <TouchableOpacity
+        onPress={() => {
+          router.push({
+            pathname: '/connect-account',
+            params: { id: '1' },
+          })
+        }}
+      >
         <ThemedText>Approce account</ThemedText>
       </TouchableOpacity>
 

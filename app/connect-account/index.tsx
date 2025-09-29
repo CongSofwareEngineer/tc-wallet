@@ -23,7 +23,7 @@ const ConnectAccountScreen = () => {
   const { text } = useTheme()
   const { translate } = useLanguage()
   const router = useRouter()
-  const query = useLocalSearchParams<{ params?: string }>()
+  const query = useLocalSearchParams()
   console.log({ query })
 
   const request = useMemo(() => {

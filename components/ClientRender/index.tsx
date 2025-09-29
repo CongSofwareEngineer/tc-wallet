@@ -44,38 +44,39 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    const onSessionRequest = async (e: any) => {
-      try {
-        console.log({ onSessionRequest: e })
-
-        setRequest({
-          ...(e as any),
-          timestamp: Date.now(),
-          type: 'request',
-        })
-        await sleep(300)
-        router.push('/approve')
-      } catch (error) {
-        console.error({ onSessionRequest: error })
-      }
-
-      // const { id, params, topic } = e
-      // WalletKit.onApproveRequest(id, topic, params)
-    }
-
     const init = async () => {
-      instance = await WalletKit.init()
       try {
-        // defensively remove existing refs to avoid duplicates
-        // @ts-ignore
-        instance.off?.('session_delete', (e) => { })
-        // @ts-ignore
-        instance.off?.('session_request', (e) => { })
-      } catch { }
-      await sleep(500)
-      instance.on('session_delete', onSessionDelete)
-      instance.on('session_request', onSessionRequest)
-      WalletKit.reConnect()
+        instance = await WalletKit.init()
+        try {
+          // defensively remove existing refs to avoid duplicates
+          // @ts-ignore
+          instance.off?.('session_delete', (e) => { })
+          // @ts-ignore
+          instance.off?.('session_request', (e) => { })
+        } catch { }
+        await sleep(500)
+        instance.on('session_delete', onSessionDelete)
+        instance.on('session_request', async (e) => {
+          try {
+            console.log({ onSessionRequest: e })
+            if (e.params.request) {
+              setRequest({
+                ...(e as any),
+                timestamp: Date.now(),
+                type: 'request',
+              })
+              await sleep(300)
+              router.push('/approve')
+            }
+          } catch (error) {
+            console.error({ onSessionRequest: error })
+          }
+        })
+        // auto reconnect
+        await WalletKit.reConnect()
+      } catch (error) {
+        console.error({ init: error })
+      }
     }
     init()
 

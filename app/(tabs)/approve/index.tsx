@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router'
 import React, { useMemo, useTransition } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 
@@ -17,12 +16,16 @@ const ApproveScreen = () => {
   const [isApproving, startApprove] = useTransition()
   const [isRejecting, startReject] = useTransition()
   const { translate } = useLanguage()
-  const router = useRouter()
   const sessions = useAppSelector((state) => state.sessions)
   const { requestWC, removeRequest } = useRequestWC()
 
   const requestLasted = useMemo(() => {
-    return requestWC[requestWC.length - 1]
+    if (requestWC[requestWC.length - 1]) {
+      if (requestWC[requestWC.length - 1]?.params?.request) {
+        return requestWC[requestWC.length - 1]
+      }
+    }
+    return null
   }, [requestWC])
 
   const currentSession = useMemo(() => {

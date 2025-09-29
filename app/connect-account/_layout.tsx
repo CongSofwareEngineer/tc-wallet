@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ConnectAccountScreen from './[query]'
+import ConnectAccountScreen from '.'
 
 const ConnectAccountLayout = () => {
   return <ConnectAccountScreen />
