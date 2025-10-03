@@ -38,24 +38,28 @@ const ListConnect = () => {
 
     return (
       <View key={item.topic} style={{ padding: 12, borderColor: '#ccc', borderWidth: 1, gap: 10, borderRadius: 12, marginBottom: 30 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, justifyContent: 'space-between' }}>
-          {item.peer.metadata?.icons && item.peer.metadata?.icons[0] && (
-            <Image style={{ width: 30, height: 30, borderRadius: 25 }} source={{ uri: item.peer.metadata?.icons[0] }} />
-          )}
-          <ThemeTouchableOpacity onPress={() => handleDisconnect(item)}>
-            <ThemedText>Xóa kết nối</ThemedText>
-          </ThemeTouchableOpacity>
-        </View>
-        <ThemedText
-          style={{
-            fontSize: 20,
-          }}
-        >
-          {item.peer.metadata.name}
-        </ThemedText>
-        <ThemedText>{item.peer.metadata.url}</ThemedText>
-        <ThemedText>{`Address ${wallet?.name ? `(${wallet?.name})` : ''} :`}</ThemedText>
-        <ThemedText>{ellipsisText(wallet?.address, 6, 8)}</ThemedText>
+        {item?.peer?.metadata && (
+          <>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, justifyContent: 'space-between' }}>
+              {item?.peer?.metadata?.icons && item.peer.metadata?.icons[0] && (
+                <Image style={{ width: 30, height: 30, borderRadius: 25 }} source={{ uri: item.peer.metadata?.icons[0] }} />
+              )}
+              <ThemeTouchableOpacity onPress={() => handleDisconnect(item)}>
+                <ThemedText>Xóa kết nối</ThemedText>
+              </ThemeTouchableOpacity>
+            </View>
+            <ThemedText
+              style={{
+                fontSize: 20,
+              }}
+            >
+              {item?.peer?.metadata.name}
+            </ThemedText>
+            <ThemedText>{item.peer.metadata.url}</ThemedText>
+            <ThemedText>{`Address ${wallet?.name ? `(${wallet?.name})` : ''} :`}</ThemedText>
+            <ThemedText>{ellipsisText(wallet?.address, 6, 8)}</ThemedText>
+          </>
+        )}
       </View>
     )
   }

@@ -9,15 +9,15 @@ import { RawTransactionEVM } from '@/types/web3'
 
 import { decodeData } from '../crypto'
 import { lowercase } from '../functions'
-import WalletKit from '../walletKit'
 
-const WalletEvmUtil = {
-  createWallet: async (privateKey: Hex): Promise<Address> => {
+class WalletEvmUtil {
+  static async createWallet(privateKey: Hex): Promise<Address> {
     const account = privateKeyToAccount(privateKey)
     const address = account.address
     return address
-  },
-  sendTransaction: async (raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> => {
+  }
+
+  static async sendTransaction(raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> {
     try {
       raw.callbackBefore?.()
 
@@ -61,8 +61,9 @@ const WalletEvmUtil = {
 
       return Promise.reject(error)
     }
-  },
-  signTransaction: async (raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> => {
+  }
+
+  static async signTransaction(raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> {
     try {
       const publicClient = EVMServices.getClient(raw.chainId!)
       const privateKeyDecode = await decodeData(privateKey)
@@ -97,8 +98,9 @@ const WalletEvmUtil = {
     } catch (error) {
       return Promise.reject(error)
     }
-  },
-  signMessage: async (raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> => {
+  }
+
+  static async signMessage(raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> {
     try {
       const privateKeyDecode = await decodeData(privateKey)
 
@@ -122,8 +124,9 @@ const WalletEvmUtil = {
     } catch (error) {
       return Promise.reject(error)
     }
-  },
-  signTypedData: async (raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> => {
+  }
+
+  static async signTypedData(raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> {
     try {
       const privateKeyDecode = await decodeData(privateKey)
 
@@ -139,9 +142,9 @@ const WalletEvmUtil = {
     } catch (error) {
       return Promise.reject(error)
     }
-  },
-  approveRequest: async (id: number, topic: string, params: Params) => {
-    const walletKit = await WalletKit.init()
+  }
+
+  static async approveRequest(id: number, topic: string, params: Params) {
     try {
       let result: any = { code: -32601, message: 'Method not found' }
       let msgParams: any = params.request.params[0]
@@ -152,7 +155,6 @@ const WalletEvmUtil = {
         msgParams = params.request.params[1]
       }
       const wallet = store.getState().wallet.wallets.find((w) => lowercase(w.address) === lowercase(address))!
-      console.log({ msgParams, address, wallet })
 
       switch (params.request.method) {
         case 'eth_accounts':
@@ -178,7 +180,6 @@ const WalletEvmUtil = {
           if (typeData.primaryType) {
             raw.primaryType = typeData.primaryType
           }
-          console.log({ raw })
 
           result = await WalletEvmUtil.signTypedData(raw, wallet?.privateKey)
           break
@@ -227,7 +228,7 @@ const WalletEvmUtil = {
       //   },
       // })
     }
-  },
+  }
 }
 
 export default WalletEvmUtil

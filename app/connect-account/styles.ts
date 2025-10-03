@@ -1,12 +1,11 @@
 import { StyleSheet } from 'react-native'
 
 import { COLORS } from '@/constants/style'
-import { width } from '@/utils/systems'
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: width(100),
+    width: '100%',
     alignItems: 'center',
     padding: 16,
     gap: 5,

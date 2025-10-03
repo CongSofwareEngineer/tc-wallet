@@ -37,7 +37,7 @@ const ThemedInput = ({
   return (
     <View style={[styles.container]}>
       {label && <ThemedText style={styles.label}>{label}</ThemedText>}
-      <View style={[styles.containerSub, { backgroundColor: background.backgroundInput }]}>
+      <View style={[styles.containerSub, { width: '100%', backgroundColor: background.backgroundInput }]}>
         {leftIcon && (
           <TouchableOpacity style={styles.leftIcon} onPress={() => onPressLeftIcon?.()}>
             <ThemedText>{leftIcon}</ThemedText>
@@ -45,7 +45,7 @@ const ThemedInput = ({
         )}
         <TextInput
           placeholderTextColor={text.colorPlaceholder}
-          style={[{ backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 }, style]}
+          style={[{ width: '100%', backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 }, style]}
           {...props}
           secureTextEntry={isPassword}
         />

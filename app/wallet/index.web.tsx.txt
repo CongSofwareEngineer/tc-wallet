@@ -10,7 +10,6 @@ import useAuth from '@/hooks/useAuth'
 import useMode from '@/hooks/useMode'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
-import { Alert } from '@/utils/alert'
 import { decodeData } from '@/utils/crypto'
 import { copyToClipboard } from '@/utils/functions'
 import PassPhase from '@/utils/passPhare'
@@ -109,7 +108,10 @@ const WalletScreen = () => {
 
   const handleCopyData = (data: string) => {
     copyToClipboard(data, 'text')
-    Alert.alert('Đã sao chép vào bộ nhớ tạm')
+    // Web version alert
+    if (typeof window !== 'undefined') {
+      window.alert('Đã sao chép vào bộ nhớ tạm')
+    }
   }
 
   return (
@@ -127,24 +129,22 @@ const WalletScreen = () => {
           }
 
           const onDeletePress = () => {
-            Alert.alert('Xóa địa chỉ', 'Bạn có chắc muốn xóa địa chỉ này?', [
-              { text: 'Hủy', style: 'cancel' },
-              {
-                text: 'Xóa',
-                style: 'destructive',
-                onPress: async () => {
-                  try {
-                    const result = await handleAuth()
-                    console.log({ result })
-
-                    const next = walletList.filter((_, idx) => idx !== addr.index)
-                    setWallets(next)
-                  } catch (error) {
+            // Web version confirmation
+            if (typeof window !== 'undefined') {
+              const confirmed = window.confirm('Bạn có chắc muốn xóa địa chỉ này?')
+              if (confirmed) {
+                handleAuth()
+                  .then((result) => {
+                    if (result) {
+                      const next = walletList.filter((_, idx) => idx !== addr.index)
+                      setWallets(next)
+                    }
+                  })
+                  .catch((error) => {
                     console.log({ error })
-                  }
-                },
-              },
-            ])
+                  })
+              }
+            }
           }
 
           return (

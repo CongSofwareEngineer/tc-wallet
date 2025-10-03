@@ -1,7 +1,7 @@
+// Web version - no React Native polyfills needed
 import { utils as baseUtils } from '@scure/base'
 import { HDKey } from '@scure/bip32'
 import { mnemonicToSeedSync } from '@scure/bip39'
-import * as ExpoCrypto from 'expo-crypto'
 import { Hex, sha256, toHex } from 'viem'
 import { english } from 'viem/accounts'
 
@@ -42,8 +42,11 @@ class PassPhase {
       return baseUtils.chain(baseUtils.checksum(1, calcChecksum), baseUtils.radix2(11, true), baseUtils.alphabet(wordlist))
     }
 
-    const a = ExpoCrypto.getRandomBytes(128 / 8)
-    const words = getCoder(english).encode(a)
+    // Use Web Crypto API for random bytes
+    const randomBytes = new Uint8Array(128 / 8)
+    crypto.getRandomValues(randomBytes)
+
+    const words = getCoder(english).encode(randomBytes)
 
     return words.join(' ')
   }

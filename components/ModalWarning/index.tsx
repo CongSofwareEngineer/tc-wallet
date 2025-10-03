@@ -93,9 +93,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 16,
     minWidth: 280,
-    maxWidth: 360,
     alignSelf: 'center',
     alignItems: 'center',
+    width: '100%',
   },
   iconWrap: {
     alignItems: 'center',
@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: 12,
     marginTop: 16,
+    width: '100%',
   },
   button: {
     flex: 1,

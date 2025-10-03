@@ -123,6 +123,7 @@ const TabNavigation = () => {
           tabBarIconStyle: {
             height: 0,
           },
+          tabBarIcon: () => <></>,
         }}
         name='home'
         component={HomeScreen}
@@ -135,6 +136,7 @@ const TabNavigation = () => {
           tabBarIconStyle: {
             height: 0,
           },
+          tabBarIcon: () => <></>,
         }}
         name='manage-connect'
         component={ManageConnectScreen}
@@ -149,6 +151,7 @@ const TabNavigation = () => {
               height: 0,
             },
             tabBarBadge: requestWCApprove > 0 ? requestWCApprove : undefined,
+            tabBarIcon: () => <></>,
           }}
           name='approve'
           component={ApproveScreen}
@@ -163,6 +166,7 @@ const TabNavigation = () => {
           tabBarIconStyle: {
             height: 0,
           },
+          tabBarIcon: () => <></>,
         }}
         name='setting'
         component={SettingScreen}

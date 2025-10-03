@@ -1,7 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import React, { useState, useTransition } from 'react'
-import { Alert, View } from 'react-native'
+import { View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
 import ThemeCheckBox from '@/components/UI/ThemeCheckBox'
@@ -13,6 +13,7 @@ import useMode from '@/hooks/useMode'
 import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
+import { Alert } from '@/utils/alert'
 import AllWalletUtils from '@/utils/allWallet'
 import { copyToClipboard } from '@/utils/functions'
 import PassPhase from '@/utils/passPhare'
@@ -135,8 +136,8 @@ const Step2 = ({ handleClose }: Props) => {
             <ThemeCheckBox disabled={isCreatingAccount} value={agree} onValueChange={setAgree} />
             <ThemedText>I have safely backed up my seed phrase</ThemedText>
           </View>
-          <ThemeTouchableOpacity loading={isCreatingAccount} disabled={!agree} style={{ opacity: agree ? 1 : 0.5 }}>
-            <ThemedText onPress={handleCreateAccount}>Create Account</ThemedText>
+          <ThemeTouchableOpacity onPress={handleCreateAccount} loading={isCreatingAccount} disabled={!agree} style={{ opacity: agree ? 1 : 0.5 }}>
+            <ThemedText>Create Account</ThemedText>
           </ThemeTouchableOpacity>
         </>
       )}

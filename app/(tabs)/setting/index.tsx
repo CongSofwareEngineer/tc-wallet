@@ -1,7 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import React from 'react'
-import { Alert, ScrollView, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 
 import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
@@ -16,7 +16,7 @@ import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { LANGUAGE_SUPPORT } from '@/types/language'
-import { width } from '@/utils/systems'
+import { Alert } from '@/utils/alert'
 import WalletKit from '@/utils/walletKit'
 
 import Items from './Components/Item'
@@ -79,7 +79,7 @@ const SettingScreen = () => {
             },
           ]}
         >
-          <AntDesign name='setting' size={width(12)} color={text.color} />
+          <AntDesign name='setting' size={30} color={text.color} />
         </View>
         <ThemedText type='title'>{translate('setting.titlePage')}</ThemedText>
 

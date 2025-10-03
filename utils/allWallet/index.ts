@@ -7,8 +7,8 @@ import PassPhase from '../passPhare'
 import WalletEvmUtil from '../walletEvm'
 import WalletSolana from '../walletSolana'
 
-const AllWalletUtils = {
-  createWallet: async (accountIndex: number = 0, indexMnemonic = 0): Promise<Wallet> => {
+class AllWalletUtils {
+  static async createWallet(accountIndex: number = 0, indexMnemonic = 0): Promise<Wallet> {
     const mnemonic = await PassPhase.getMnemonic(indexMnemonic)
     const { privateKey } = PassPhase.deriveAccountFromMnemonic(mnemonic, accountIndex)
 
@@ -26,8 +26,9 @@ const AllWalletUtils = {
       indexAccountMnemonic: accountIndex,
       isDefault: true,
     }
-  },
-  createWalletFromPrivateKey: async (privateKey: Hex): Promise<Wallet> => {
+  }
+
+  static async createWalletFromPrivateKey(privateKey: Hex): Promise<Wallet> {
     const [address, privateKeyEncode] = await Promise.all([WalletEvmUtil.createWallet(privateKey), encodeData(privateKey)])
 
     return {
@@ -37,8 +38,9 @@ const AllWalletUtils = {
       indexAccountMnemonic: -1,
       isDefault: true,
     }
-  },
-  createWalletFromPassPhrase: async (passPhrase: string, accountIndex: number = 0): Promise<Wallet> => {
+  }
+
+  static async createWalletFromPassPhrase(passPhrase: string, accountIndex: number = 0): Promise<Wallet> {
     const { privateKey } = PassPhase.deriveAccountFromMnemonic(passPhrase, accountIndex)
     const [address, privateKeyEncode] = await Promise.all([WalletEvmUtil.createWallet(privateKey), encodeData(privateKey)])
 
@@ -49,7 +51,7 @@ const AllWalletUtils = {
       indexAccountMnemonic: accountIndex,
       isDefault: true,
     }
-  },
+  }
 }
 
 export default AllWalletUtils

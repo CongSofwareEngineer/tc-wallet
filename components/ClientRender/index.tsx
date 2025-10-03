@@ -1,10 +1,11 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useRouter } from 'expo-router'
 import { ReactNode, useEffect, useLayoutEffect } from 'react'
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { KEY_STORAGE } from '@/constants/storage'
+import { COLORS } from '@/constants/style'
 import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import usePreLoadData from '@/hooks/usePreLoadData'
@@ -92,10 +93,35 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
 
   return (
     <ThemeProvider value={mode === 'dark' ? DarkTheme : DefaultTheme}>
-      <View style={{ flex: 1, backgroundColor: background.background }}>
-        <SafeAreaView style={{ flex: 1 }}>{children}</SafeAreaView>
-        <MyModal />
-      </View>
+      {Platform.OS === 'web' ? (
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: background.background,
+            alignItems: 'center',
+          }}
+        >
+          <View
+            style={{
+              borderLeftWidth: 1,
+              borderRightWidth: 1,
+              borderColor: COLORS.black2,
+              flex: 1,
+              backgroundColor: background.background,
+              maxWidth: 576,
+              width: '100%',
+            }}
+          >
+            <SafeAreaView style={{ flex: 1 }}>{children}</SafeAreaView>
+            <MyModal />
+          </View>
+        </View>
+      ) : (
+        <View style={{ flex: 1, backgroundColor: background.background, maxWidth: 576, width: '100%' }}>
+          <SafeAreaView style={{ flex: 1 }}>{children}</SafeAreaView>
+          <MyModal />
+        </View>
+      )}
     </ThemeProvider>
   )
 }

@@ -2,8 +2,9 @@ import { Address, createPublicClient, Hex, http, TransactionRequest } from 'viem
 import { optimism } from 'viem/chains'
 
 import { ChainId, RawTransactionEVM } from '@/types/web3'
-const EVMServices = {
-  getClient: (chainId: ChainId) => {
+
+class EVMServices {
+  static getClient(chainId: ChainId) {
     const listChain = [optimism]
     const chain = listChain.find((item) => item.id.toFixed() === chainId)
 
@@ -13,9 +14,10 @@ const EVMServices = {
     })
 
     return publicClient
-  },
-  estimateGas: async (transaction: RawTransactionEVM) => {
-    const publicClient = EVMServices.getClient(transaction.chainId!)
+  }
+
+  static async estimateGas(transaction: RawTransactionEVM) {
+    const publicClient = this.getClient(transaction.chainId!)
 
     const account = transaction.from
 
@@ -27,9 +29,10 @@ const EVMServices = {
     })
 
     return gas
-  },
-  tracking: async (hash: Hex, chainId: ChainId, limit: number = 20) => {
-    const publicClient = EVMServices.getClient(chainId)
+  }
+
+  static async tracking(hash: Hex, chainId: ChainId, limit: number = 20) {
+    const publicClient = this.getClient(chainId)
     let limitCurrent = 0
     while (true) {
       try {
@@ -45,15 +48,16 @@ const EVMServices = {
           return receipt
         }
         await new Promise((resolve) => setTimeout(resolve, 1500)) // wait for 1 second before checking again
-      } catch (error) {
+      } catch {
         await new Promise((resolve) => setTimeout(resolve, 1500)) // wait for 1 second before checking again
       } finally {
         limitCurrent++
       }
     }
-  },
-  getRawTransactions: async (raw: RawTransactionEVM): Promise<RawTransactionEVM> => {
-    const publicClient = EVMServices.getClient(raw.chainId!)
+  }
+
+  static async getRawTransactions(raw: RawTransactionEVM): Promise<RawTransactionEVM> {
+    const publicClient = this.getClient(raw.chainId!)
     const tx: TransactionRequest = {
       to: raw.to,
       data: raw.data,
@@ -87,7 +91,7 @@ const EVMServices = {
     }
 
     return tx
-  },
+  }
 }
 
 export default EVMServices

@@ -9,6 +9,9 @@ import { useAppSelector } from '@/redux/hooks'
 import ClientServices from '@/services/Client'
 import { ChainInfo } from '@/types/web3'
 
+import InfoWallet from './Components/InfoWallet'
+import Options from './Components/Options'
+
 const HomeScreen = () => {
   const router = useRouter()
   const { openModal } = useModal()
@@ -42,7 +45,9 @@ const HomeScreen = () => {
   }, [fetchChains])
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+      <InfoWallet />
+      <Options />
       <ThemedText type='subtitle'>Tạo mới hoặc import</ThemedText>
 
       <ThemedText>HomeScreen</ThemedText>

@@ -1,7 +1,7 @@
 import * as Clipboard from 'expo-clipboard'
-import { Alert } from 'react-native'
 
 import { IsIos } from '@/constants/app'
+import { Alert } from '@/utils/alert'
 
 export const cloneDeep = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj))

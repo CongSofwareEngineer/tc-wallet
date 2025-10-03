@@ -1,8 +1,6 @@
-import '@walletconnect/react-native-compat'
-import 'fast-text-encoding'
-import 'react-native-get-random-values'
 //
 import '@/utils/debug/reactotron'
+// import '@/utils/polyfills/buffer'
 // import '@/utils/polyfills/crypto'
 
 import { StatusBar } from 'expo-status-bar'

@@ -1,4 +1,4 @@
-// Ensure crypto.getRandomValues is available in React Native.
+// Web version - crypto.getRandomValues is available natively in browsers
 import { Hex } from 'viem'
 import { english, generateMnemonic, mnemonicToAccount, type HDAccount } from 'viem/accounts'
 

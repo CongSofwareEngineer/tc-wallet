@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { View } from 'react-native'
-import { isHex } from 'viem'
+import { hexToString, isHex } from 'viem'
 
 import ThemedText from '@/components/UI/ThemedText'
 import useTheme from '@/hooks/useTheme'
@@ -13,11 +13,17 @@ const PersonalSign = ({ params }: { params: RequestWC }) => {
   const { wallets } = useWallets()
   const { background, colors } = useTheme()
   const message = useMemo(() => {
-    let message = params?.params?.request.params[0]
-    if (isHex(message)) {
-      message = Buffer.from(message.replace('0x', ''), 'hex').toString()
+    try {
+      let message = params?.params?.request.params[0]
+      if (isHex(message)) {
+        message = hexToString(message).toString()
+      }
+      return message
+    } catch (error) {
+      console.log({ error, message: params?.params?.request.params[0] })
+
+      return 'Invalid message'
     }
-    return message
   }, [wallets, params])
   return (
     <View style={[styles.container, { backgroundColor: colors.black3, padding: 12, borderRadius: 12 }]}>

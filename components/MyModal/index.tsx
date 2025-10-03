@@ -86,8 +86,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     padding: 10,
+    alignContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
   content: {
+    maxWidth: 500,
+    width: '100%',
     borderRadius: 8,
     padding: 10,
     shadowColor: '#000',
