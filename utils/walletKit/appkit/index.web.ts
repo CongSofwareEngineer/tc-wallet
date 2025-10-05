@@ -59,7 +59,10 @@ class Appkits {
 
   static async approveSession(params: { id: number; namespaces: any }) {
     if (!Appkits.signClient) throw new Error('SignClient not initialized')
-    return await Appkits.signClient.approve(params)
+
+    const data = await Appkits.signClient.approve(params)
+    const session = await data.acknowledged()
+    return session
   }
 
   static async rejectSession(params: { id: number; reason: any }) {
