@@ -19,17 +19,14 @@ import AppKit from './appkit'
 
 export type TypeWalletKit = TypeWallet
 let walletKit: TypeWalletKit
-let initializing: Promise<TypeWalletKit> | null = null
 const subscribedTopics = new Set<string>()
 class WalletKit {
   static async init(): Promise<TypeWalletKit> {
     if (walletKit) return walletKit
-    if (initializing) return initializing
     const instance = await AppKit.init()
-    initializing = instance as any
     walletKit = instance
 
-    return initializing!
+    return walletKit
   }
 
   static async safeSubscribe(topic: string): Promise<void> {
