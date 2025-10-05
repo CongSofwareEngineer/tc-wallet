@@ -40,6 +40,10 @@ class Appkits {
       getPairings: Appkits.getPairings.bind(Appkits),
     }
   }
+  static async pair({ uri }: { uri: string }) {
+    if (!Appkits.signClient) throw new Error('SignClient not initialized')
+    return await Appkits.signClient.pair({ uri })
+  }
 
   static async getActiveSessions(): Promise<Record<string, SessionTypes.Struct>> {
     if (!Appkits.signClient) return {}
@@ -50,11 +54,6 @@ class Appkits {
       },
       {} as Record<string, SessionTypes.Struct>
     )
-  }
-
-  static async pair(uri: string) {
-    if (!Appkits.signClient) throw new Error('SignClient not initialized')
-    return await Appkits.signClient.pair({ uri })
   }
 
   static async approveSession(params: { id: number; namespaces: any }) {

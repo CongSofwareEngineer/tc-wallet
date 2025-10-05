@@ -71,10 +71,16 @@ const ConnectDAppScreen = () => {
   }, [wallet?.address, router])
 
   const handleConnect = async (uri = '') => {
-    setLoading(true)
-    const kit = await WalletKit.init()
-    await sleep(500)
-    await kit.pair({ uri })
+    try {
+      setLoading(true)
+      const kit = await WalletKit.init()
+      console.log({ kit, uri })
+
+      await sleep(500)
+      await kit.pair({ uri })
+    } catch (error) {
+      console.log({ error })
+    }
   }
 
   function toggleCameraFacing() {
