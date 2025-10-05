@@ -25,8 +25,7 @@ class WalletKit {
   static async init(): Promise<TypeWalletKit> {
     if (walletKit) return walletKit
     if (initializing) return initializing
-    const appkit = new AppKit()
-    const instance = await appkit.init()
+    const instance = await AppKit.init()
     initializing = instance as any
     walletKit = instance
 
