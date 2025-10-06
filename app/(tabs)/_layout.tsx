@@ -1,7 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { usePathname } from 'expo-router'
+import { Tabs, usePathname } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
 
@@ -10,11 +10,6 @@ import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import useRequestWC from '@/hooks/useReuestWC'
 import useTheme from '@/hooks/useTheme'
-
-import ApproveScreen from './approve'
-import HomeScreen from './home'
-import ManageConnectScreen from './manage-connect'
-import SettingScreen from './setting'
 
 const Tab = createBottomTabNavigator()
 
@@ -94,85 +89,130 @@ const TabNavigation = () => {
     if (requestWC.length === 0) return 0
     return requestWC.filter((i) => i.type === 'request').length
   }, [requestWC, isClient])
+  console.log({ requestWCApprove })
 
   return (
-    <Tab.Navigator
-      initialRouteName='home'
+    <Tabs
       screenOptions={{
-        animation: 'fade',
         headerShown: false,
         tabBarActiveTintColor: mode === MODE.Dark ? COLORS.white : COLORS.black,
+
         tabBarStyle: {
-          height: 70,
-          paddingBottom: 0,
-          ...(mode === MODE.Dark
-            ? {
-              backgroundColor: '#1a1a24cc',
-              borderColor: '#ffffff1a',
-              borderTopWidth: 1,
-            }
-            : {}),
+          height: 60,
         },
       }}
     >
-      <Tab.Screen
-        options={{
-          tabBarLabel: () => {
-            return <TabBarLabel url='home' nameIcon='home' title={translate('homeScreen.titlePage')} />
-          },
-          tabBarIconStyle: {
-            height: 0,
-          },
-          tabBarIcon: () => <></>,
-        }}
+      <Tabs.Screen
         name='home'
-        component={HomeScreen}
-      />
-      <Tab.Screen
         options={{
-          tabBarLabel: () => {
-            return <TabBarLabel url='manage-connect' nameIcon='bars' title='Kết nối' />
-          },
-          tabBarIconStyle: {
-            height: 0,
-          },
-          tabBarIcon: () => <></>,
+          title: 'Home',
+          tabBarIcon: ({ color }) => <AntDesign size={16} name='home' color={color} />,
         }}
+      />
+      <Tabs.Screen
         name='manage-connect'
-        component={ManageConnectScreen}
-      />
-      {isClient && (
-        <Tab.Screen
-          options={{
-            tabBarLabel: () => {
-              return <TabBarLabel url='approve' nameIcon='info-circle' title={'Duyệt'} />
-            },
-            tabBarIconStyle: {
-              height: 0,
-            },
-            tabBarBadge: requestWCApprove > 0 ? requestWCApprove : undefined,
-            tabBarIcon: () => <></>,
-          }}
-          name='approve'
-          component={ApproveScreen}
-        />
-      )}
-
-      <Tab.Screen
         options={{
-          tabBarLabel: () => {
-            return <TabBarLabel url='setting' nameIcon='setting' title={translate('setting.titlePage')} />
-          },
-          tabBarIconStyle: {
-            height: 0,
-          },
-          tabBarIcon: () => <></>,
+          title: 'Connect',
+          tabBarIcon: ({ color }) => <AntDesign size={16} name='bars' color={color} />,
         }}
-        name='setting'
-        component={SettingScreen}
       />
-    </Tab.Navigator>
+
+      <Tabs.Screen
+        name='approve'
+        options={{
+          tabBarBadge: requestWCApprove > 0 ? requestWCApprove : undefined,
+          title: 'Approve',
+          tabBarIcon: ({ color }) => <AntDesign size={16} name='info-circle' color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name='setting'
+        options={{
+          title: 'Setting',
+          tabBarIcon: ({ color }) => <AntDesign size={16} name='setting' color={color} />,
+        }}
+      />
+    </Tabs>
   )
+
+  // return (
+  //   <Tab.Navigator
+  //     initialRouteName='home'
+  //     screenOptions={{
+  //       animation: 'fade',
+  //       headerShown: false,
+  //       tabBarActiveTintColor: mode === MODE.Dark ? COLORS.white : COLORS.black,
+  //       tabBarStyle: {
+  //         height: 70,
+  //         paddingBottom: 0,
+  //         ...(mode === MODE.Dark
+  //           ? {
+  //             backgroundColor: '#1a1a24cc',
+  //             borderColor: '#ffffff1a',
+  //             borderTopWidth: 1,
+  //           }
+  //           : {}),
+  //       },
+  //     }}
+  //   >
+  //     <Tab.Screen
+  //       options={{
+  //         tabBarLabel: () => {
+  //           return <TabBarLabel url='home' nameIcon='home' title={translate('homeScreen.titlePage')} />
+  //         },
+  //         tabBarIconStyle: {
+  //           height: 0,
+  //         },
+  //         tabBarIcon: () => <></>,
+  //       }}
+  //       name='home'
+  //       component={HomeScreen}
+  //     />
+  //     <Tab.Screen
+  //       options={{
+  //         tabBarLabel: () => {
+  //           return <TabBarLabel url='manage-connect' nameIcon='bars' title='Kết nối' />
+  //         },
+  //         tabBarIconStyle: {
+  //           height: 0,
+  //         },
+  //         tabBarIcon: () => <></>,
+  //       }}
+  //       name='manage-connect'
+  //       component={ManageConnectScreen}
+  //     />
+  //     {isClient && (
+  //       <Tab.Screen
+  //         options={{
+  //           tabBarLabel: () => {
+  //             return <TabBarLabel url='approve' nameIcon='info-circle' title={'Duyệt'} />
+  //           },
+  //           tabBarIconStyle: {
+  //             height: 0,
+  //           },
+  //           tabBarBadge: requestWCApprove > 0 ? requestWCApprove : undefined,
+  //           tabBarIcon: () => <></>,
+  //         }}
+  //         name='approve'
+  //         component={ApproveScreen}
+  //       />
+  //     )}
+
+  //     <Tab.Screen
+  //       options={{
+  //         tabBarLabel: () => {
+  //           return <TabBarLabel url='setting' nameIcon='setting' title={translate('setting.titlePage')} />
+  //         },
+  //         tabBarIconStyle: {
+  //           height: 0,
+  //         },
+  //         tabBarIcon: () => <></>,
+  //       }}
+  //       name='setting'
+  //       component={SettingScreen}
+  //     />
+  //   </Tab.Navigator>
+  // )
 }
 
 export default TabNavigation

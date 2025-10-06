@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { persistReducer, persistStore } from 'redux-persist'
 
 import { WHITE_LIST_STORAGE } from '@/constants/redux'
+import chainSelectedReducer from '@/redux/slices/chainSelected'
 import languageReducer from '@/redux/slices/languageSlice'
 import modalReducer from '@/redux/slices/modalSlice'
 import modeReducer from '@/redux/slices/mode'
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
   mode: modeReducer,
   requestWC: requestWCSlice,
   passPhase: passPhaseSlice,
+  chainSelected: chainSelectedReducer,
 })
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer)

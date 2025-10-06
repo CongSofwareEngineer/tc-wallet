@@ -16,6 +16,9 @@ export interface Wallet {
   indexMnemonic?: number // which account index in mnemonic derivation
   indexAccountMnemonic?: number // which account index in mnemonic derivation
   isDefault?: boolean
+  avatar?: string
+  isDelete?: boolean
+  isHidden?: boolean
 }
 
 export interface WalletConnect {

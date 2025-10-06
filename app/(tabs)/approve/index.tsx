@@ -84,10 +84,11 @@ const ApproveScreen = () => {
     }
     return <></>
   }
+  console.log({ currentSession, sessions, requestWC })
 
   return (
     <View style={styles.overlay}>
-      {requestLasted ? (
+      {requestLasted && currentSession?.peer ? (
         <>
           <ScrollView contentContainerStyle={{ flex: 1 }}>
             <CurrentSession params={requestLasted} session={currentSession!} />

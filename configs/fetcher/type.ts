@@ -8,7 +8,7 @@ export type IFetch = {
   auth?: string | boolean
   throwError?: boolean
   showError?: boolean
-} & Omit<RequestInit, 'body' | 'headers'>
+} & Partial<RequestInit>
 
 export type ReturnData<T> = {
   statusCode: number

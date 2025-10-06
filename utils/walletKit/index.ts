@@ -59,9 +59,9 @@ class WalletKit {
       const instance = await this.init()
       console.log({ instance })
 
-      const sessionsActive = instance.getActiveSessions()
+      const sessionsActive = await instance.getActiveSessions()
       const sessionValid: Sessions = {}
-      console.log({ sessionValid })
+      console.log({ sessionValid, sessionsActive })
 
       if (sessionsActive) {
         for (const key of Object.keys(sessionsActive)) {

@@ -1,0 +1,15 @@
+.input {
+  &::focus,
+  &::focus-visible {
+    border-color: transparent !important;
+    border-width: 0px !important;
+  }
+}
+.input:focus {
+  border-color: transparent !important;
+  border-width: 0px !important;
+}
+.input:focus-visible {
+  border-color: transparent !important;
+  border-width: 0px !important;
+}

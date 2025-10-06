@@ -1,329 +1,183 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
-import React, { useEffect, useMemo, useState } from 'react'
-import { FlatList, StyleSheet, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import React, { useMemo } from 'react'
+import { SectionList, TouchableOpacity, View } from 'react-native'
 
-import ThemedInput from '@/components/UI/ThemedInput'
+import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
-import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
-import { COLORS, GAP_DEFAULT, MODE } from '@/constants/style'
 import useAuth from '@/hooks/useAuth'
-import useMode from '@/hooks/useMode'
+import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
-import { Alert } from '@/utils/alert'
-import { decodeData } from '@/utils/crypto'
-import { copyToClipboard } from '@/utils/functions'
+import { Wallet } from '@/types/wallet'
+import AllWalletUtils from '@/utils/allWallet'
+import { ellipsisText } from '@/utils/functions'
 import PassPhase from '@/utils/passPhare'
 
-type Item = {
-  address: string
-  indexMnemonic: number
-  mnemonic: string
-  privateKey: string
-  index: number
-}
+import { styles } from './styles'
 
 const WalletScreen = () => {
-  const { wallets: walletList, setWallets } = useWallets()
+  const { wallets: walletList, addWallet, setWalletActive } = useWallets()
   const { colors, text } = useTheme()
   const { handleAuth } = useAuth()
-  const { mode } = useMode()
+  const router = useRouter()
+  const { passPhase, addPassPhrase } = usePassPhrase()
 
-  const [items, setItems] = useState<Item[]>([])
-  const [editingAddr, setEditingAddr] = useState<string | null>(null)
-  const [editingName, setEditingName] = useState<string>('')
-  const [showData, setShowData] = useState(false)
-
-  useEffect(() => {
-    let mounted = true
-    const load = async () => {
-      const cache = new Map<number, string>()
-      const result: Item[] = []
-      for (const [i, w] of walletList.entries()) {
-        const idx = w.indexMnemonic ?? 0
-        let mnemonic = cache.get(idx)
-        if (!mnemonic) {
-          try {
-            mnemonic = await PassPhase.getMnemonic(idx)
-            cache.set(idx, mnemonic)
-          } catch {
-            mnemonic = 'N/A'
-          }
-        }
-        let pk = ''
-        try {
-          const decoded = await decodeData(w.privateKey)
-          pk = decoded || ''
-        } catch {
-          pk = ''
-        }
-        result.push({ address: w.address, indexMnemonic: idx, mnemonic: mnemonic!, privateKey: pk, index: i })
+  // Group wallets by mnemonic/pass phrase
+  const groupedWallets = useMemo(() => {
+    const groups = new Map<
+      number,
+      {
+        indexMnemonic: number
+        mnemonic: string
+        wallets: (Wallet & {
+          indexWallet: number
+        })[]
       }
-      if (mounted) setItems(result)
-    }
-    load()
-    return () => {
-      mounted = false
-    }
-  }, [walletList])
+    >()
 
-  type Group = {
-    indexMnemonic: number
-    mnemonic: string
-    wallets: { address: string; privateKey: string; index: number }[]
-  }
-
-  const groups = useMemo<Group[]>(() => {
-    const map = new Map<number, Group>()
-    for (const it of items) {
-      let g = map.get(it.indexMnemonic)
-      if (!g) {
-        g = { indexMnemonic: it.indexMnemonic, mnemonic: it.mnemonic, wallets: [] }
-        map.set(it.indexMnemonic, g)
+    walletList.forEach((wallet, index) => {
+      if (!wallet.isDelete) {
+        if (groups.has(wallet.indexMnemonic!)) {
+          groups.get(wallet.indexMnemonic!)!.wallets.push({
+            ...wallet,
+            indexWallet: index,
+          })
+        } else {
+          groups.set(wallet.indexMnemonic!, {
+            indexMnemonic: wallet.indexMnemonic!,
+            mnemonic: passPhase[wallet.indexMnemonic!] || 'Unknown',
+            wallets: [
+              {
+                ...wallet,
+                indexWallet: index,
+              },
+            ],
+          })
+        }
       }
-      g.wallets.push({ address: it.address, privateKey: it.privateKey, index: it.index })
-    }
-    return Array.from(map.values()).sort((a, b) => a.indexMnemonic - b.indexMnemonic)
-  }, [items])
+    })
 
-  const palette = useMemo(
-    () => [
-      { bg: colors.black3, border: '#38BDF8' },
-      { bg: colors.black3, border: '#34D399' },
-      { bg: colors.black3, border: '#FB923C' },
-      { bg: colors.black3, border: '#A78BFA' },
-      { bg: colors.black3, border: '#FCA5A5' },
-      { bg: colors.black3, border: '#F0ABFC' },
-    ],
-    [colors]
-  )
+    return Array.from(groups.values()).sort((a, b) => a.indexMnemonic - b.indexMnemonic)
+  }, [walletList, passPhase])
 
-  const handleShowData = async () => {
+  // Flatten data for SectionList
+  const sectionData = useMemo(() => {
+    return groupedWallets.map((group) => ({
+      title: `Seed Phrase ${group.indexMnemonic + 1}`,
+      subtitle: ellipsisText(group.mnemonic, 6, 6),
+      data: group.wallets,
+      indexMnemonic: group.indexMnemonic,
+      fullMnemonic: group.mnemonic,
+    }))
+  }, [groupedWallets])
+
+  // Placeholder avatar generator (replace with your own if needed)
+  const getAvatarColor = (seed: string = 'default') => {
     try {
-      const result = await handleAuth()
-      if (result) {
-        setShowData((v) => !v)
-      }
-    } catch (error) { }
+      // Simple hash to color
+      let hash = 0
+      for (let i = 0; i < seed.length; i++) hash = seed.charCodeAt(i) + ((hash << 5) - hash)
+      const c = (hash & 0x00ffffff).toString(16).toUpperCase()
+      return '#' + '00000'.substring(0, 6 - c.length) + c
+    } catch (error) {
+      return '#000000'
+    }
   }
 
-  const handleCopyData = (data: string) => {
-    copyToClipboard(data, 'text')
-    Alert.alert('Đã sao chép vào bộ nhớ tạm')
+  const handleCreateAccount = async (index: number = 0) => {
+    const mnemonic = sectionData.find((s) => s.indexMnemonic === index)?.fullMnemonic
+    const listWalletByMnemonic = walletList.filter((w) => w.indexMnemonic === index)
+    const walletNew = await AllWalletUtils.createWalletFromPassPhrase(mnemonic as string, listWalletByMnemonic.length)
+    walletNew.indexMnemonic = index
+    addWallet(walletNew)
+  }
+
+  const handleCreateWalletAndPassPhrase = async () => {
+    const mnemonic = await PassPhase.getMnemonic(passPhase.length)
+    addPassPhrase(mnemonic)
+    const walletNew = await AllWalletUtils.createWalletFromPassPhrase(mnemonic as string, 0)
+    walletNew.indexMnemonic = passPhase.length
+    addWallet(walletNew)
+  }
+
+  const handleActiveAccount = (index: number) => {
+    setWalletActive(index)
   }
 
   return (
-    <FlatList
-      contentContainerStyle={{ padding: 16, gap: 12 }}
-      data={groups}
-      keyExtractor={(g) => `mnemonic-${g.indexMnemonic}`}
-      renderItem={({ item: group, index }) => {
-        const colors = palette[index % palette.length]
+    <View style={{ flex: 1 }}>
+      <HeaderScreen title={'Wallets'} />
 
-        const renderRow = (addr: { address: string; privateKey: string; index: number }) => {
-          const onRenamePress = () => {
-            setEditingAddr(addr.address)
-            setEditingName(walletList[addr.index]?.name ?? '')
-          }
-
-          const onDeletePress = () => {
-            Alert.alert('Xóa địa chỉ', 'Bạn có chắc muốn xóa địa chỉ này?', [
-              { text: 'Hủy', style: 'cancel' },
-              {
-                text: 'Xóa',
-                style: 'destructive',
-                onPress: async () => {
-                  try {
-                    const result = await handleAuth()
-                    console.log({ result })
-
-                    const next = walletList.filter((_, idx) => idx !== addr.index)
-                    setWallets(next)
-                  } catch (error) {
-                    console.log({ error })
-                  }
-                },
-              },
-            ])
-          }
+      <View style={styles.tableHeader}>
+        <ThemedText style={styles.headerCellLeft}>Wallet Name</ThemedText>
+        <TouchableOpacity style={styles.addButton} onPress={handleCreateWalletAndPassPhrase}>
+          <AntDesign name='plus' size={20} color={colors.white} />
+          <ThemedText style={styles.addButtonText}>Account</ThemedText>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.separator} />
+      {/* List */}
+      <SectionList
+        sections={sectionData}
+        keyExtractor={(item) => item.address}
+        renderItem={({ item, index }) => {
+          const isActive = item.isDefault
 
           return (
-            <View key={addr.address} style={styles.addrBlock}>
-              <View style={styles.headerRow}>
-                {editingAddr === addr.address ? (
-                  <View style={styles.renameRow}>
-                    <ThemedInput value={editingName} onChangeText={setEditingName} placeholder={'Tên tài khoản'} />
-
-                    <ThemeTouchableOpacity
-                      onPress={() => {
-                        const list = [...walletList]
-                        list[addr.index] = { ...list[addr.index], name: editingName }
-                        setWallets(list)
-                        setEditingAddr(null)
-                      }}
-                    >
-                      <ThemedText style={[styles.actionText]}>Lưu</ThemedText>
-                    </ThemeTouchableOpacity>
-                    <ThemeTouchableOpacity onPress={() => setEditingAddr(null)}>
-                      <ThemedText style={[styles.actionText]}>Hủy</ThemedText>
-                    </ThemeTouchableOpacity>
-                  </View>
-                ) : (
-                  <>
-                    {showData && (
-                      <>
-                        <ThemedText style={[styles.title]}>{walletList[addr.index]?.name || `Account ${addr.index + 1}`}</ThemedText>
-                        <View style={styles.headerActions}>
-                          <ThemeTouchableOpacity onPress={onRenamePress}>
-                            <ThemedText style={[styles.actionText]}>Đổi tên</ThemedText>
-                          </ThemeTouchableOpacity>
-                          <ThemeTouchableOpacity onPress={onDeletePress}>
-                            <ThemedText style={[styles.actionText, { color: '#DC2626' }]}>Xóa</ThemedText>
-                          </ThemeTouchableOpacity>
-                        </View>
-                      </>
-                    )}
-                  </>
-                )}
+            <TouchableOpacity
+              style={[
+                styles.row,
+                isActive && {
+                  backgroundColor: colors.gray2,
+                },
+              ]}
+              activeOpacity={0.7}
+              onPress={() => handleActiveAccount(item.indexWallet)}
+            >
+              {/* Avatar */}
+              <View style={[styles.avatar, { backgroundColor: getAvatarColor(item.address) }]} />
+              {/* Name */}
+              <View style={styles.nameText}>
+                <ThemedText numberOfLines={1}>{item.name || `Account ${index + 1}`}</ThemedText>
+                <ThemedText style={{ fontSize: 12 }}>{ellipsisText(item.address, 6, 8)}</ThemedText>
               </View>
 
-              <View style={styles.contentBlock}>
-                <ThemedText style={[styles.label]}>Address</ThemedText>
-                <ThemedText style={styles.textSub} selectable>
-                  {addr.address}
-                </ThemedText>
-              </View>
-              <View style={[styles.contentBlock, { marginTop: 4 }]}>
-                <ThemedText style={[styles.label]}>Private Key</ThemedText>
-                <ThemedText style={styles.textSub} selectable>
-                  {showData ? addr.privateKey : '••••••••••••••••••••••••••••••••••••••••'}
-                  {showData && <AntDesign onPress={() => handleCopyData(addr.privateKey)} name='copy' size={16} color={text.color} />}
-                </ThemedText>
-              </View>
-            </View>
+              {/* Arrow */}
+              <AntDesign
+                onPress={() => {
+                  router.push(`/wallet-detail/${item.indexWallet}`)
+                }}
+                name='right'
+                size={18}
+                color={text.color}
+                style={{ marginLeft: 8 }}
+              />
+            </TouchableOpacity>
           )
-        }
-
-        return (
-          <View style={[styles.card, styles[`card${mode}`]]}>
-            <View style={[styles.contentBlock, { marginBottom: 8 }]}>
-              <View style={{ flexDirection: 'row', alignContent: 'center', gap: GAP_DEFAULT.Gap8 }}>
-                <ThemedText style={[styles.label]}>Mnemonic (index {group.indexMnemonic})</ThemedText>
-
-                <View
-                  style={{
-                    justifyContent: 'center',
-                  }}
-                >
-                  <AntDesign onPress={handleShowData} name='eye' size={20} color={text.color} />
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row' }}>
-                <ThemedText style={styles.textSub} selectable>
-                  {showData ? group.mnemonic : '••••••••••••••••••••••••••••••••••••••••'}
-                  {showData && <AntDesign onPress={() => handleCopyData(group.mnemonic)} name='copy' size={16} color={text.color} />}
-                </ThemedText>
-              </View>
+        }}
+        renderSectionHeader={({ section }) => (
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionTitleContainer}>
+              <ThemedText style={styles.sectionTitle}>{section.title}</ThemedText>
+              <ThemedText style={styles.sectionSubtitle}>{section.subtitle}</ThemedText>
             </View>
-            <View style={styles.separator} />
-            {group.wallets.map(renderRow)}
+            <TouchableOpacity style={styles.addAccountButton} onPress={() => handleCreateAccount(section.indexMnemonic)}>
+              <AntDesign name='plus' size={16} color={colors.blue} />
+              <ThemedText style={styles.addAccountText}>Add</ThemedText>
+            </TouchableOpacity>
           </View>
-        )
-      }}
-      ListEmptyComponent={
-        <View style={{ padding: 16 }}>
-          <ThemedText>Chưa có ví nào</ThemedText>
-        </View>
-      }
-    />
+        )}
+        ListEmptyComponent={
+          <View style={{ padding: 16 }}>
+            <ThemedText>Chưa có ví nào</ThemedText>
+          </View>
+        }
+        contentContainerStyle={{ padding: 0 }}
+        style={{ flex: 1 }}
+      />
+    </View>
   )
 }
 
 export default WalletScreen
-
-const styles = StyleSheet.create({
-  card: {
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  [`card${MODE.Dark}`]: {
-    borderColor: COLORS.gray2,
-    backgroundColor: COLORS.black2,
-  },
-  [`card${MODE.Light}`]: {
-    borderColor: COLORS.gray2,
-    backgroundColor: COLORS.gray1,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  actionBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    backgroundColor: '#FFFFFFAA',
-  },
-  actionText: {
-    fontWeight: '600',
-  },
-  tabsRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 8,
-  },
-
-  tabLabel: {
-    fontWeight: '600',
-    color: '#334155',
-  },
-  tabLabelActive: {
-    color: '#0F172A',
-  },
-  contentBlock: {
-    gap: 6,
-  },
-  label: {
-    fontWeight: 'bold',
-  },
-  addrBlock: {
-    paddingTop: 8,
-    paddingBottom: 8,
-    borderTopColor: 'rgba(0,0,0,0.06)',
-  },
-  renameRow: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-  textSub: {
-    opacity: 0.6,
-    fontSize: 13,
-  },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    marginTop: 8,
-    marginBottom: 8,
-  },
-})

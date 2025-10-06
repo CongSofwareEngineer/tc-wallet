@@ -36,6 +36,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     paddingLeft: 0,
+    borderColor: 'transparent',
   },
 
   count: {

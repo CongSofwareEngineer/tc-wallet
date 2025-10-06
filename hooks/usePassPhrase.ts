@@ -24,6 +24,12 @@ const usePassPhrase = () => {
     await saveSecureData(KEY_STORAGE.Mnemonic, arr)
   }
 
+  const addPassPhrase = async (value: string) => {
+    const arr = [...passPhase, value]
+    dispatch(setPassPhraseSlice(value))
+    await saveSecureData(KEY_STORAGE.Mnemonic, arr)
+  }
+
   const removePassPhrase = async (index: number) => {
     let walletsClone = cloneDeep<Wallet[]>(wallets)
     let passPhaseClone = cloneDeep<string[]>(passPhase)
@@ -53,6 +59,7 @@ const usePassPhrase = () => {
     setPassPhrase,
     removePassPhrase,
     removeAllPassphrases,
+    addPassPhrase,
     passPhase,
   }
 }

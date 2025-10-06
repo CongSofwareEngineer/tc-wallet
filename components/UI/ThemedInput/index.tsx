@@ -6,6 +6,7 @@ import useTheme from '@/hooks/useTheme'
 import ThemedText from '../ThemedText'
 
 import { styles } from './styles'
+import stylesCss from './styles.module.css'
 
 export type ThemedInputProps = {
   lightColor?: string
@@ -44,8 +45,16 @@ const ThemedInput = ({
           </TouchableOpacity>
         )}
         <TextInput
+          className={stylesCss.input}
           placeholderTextColor={text.colorPlaceholder}
-          style={[{ width: '100%', backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 }, style]}
+          style={[
+            {
+              $$css: true,
+              _: 'input',
+            },
+            { width: '100%', backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 },
+            style,
+          ]}
           {...props}
           secureTextEntry={isPassword}
         />
