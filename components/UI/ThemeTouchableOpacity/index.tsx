@@ -5,7 +5,7 @@ import MyLoading from '@/components/MyLoading'
 import { COLORS } from '@/constants/style'
 
 type Props = {
-  type?: 'default' | 'primary' | 'danger'
+  type?: 'default' | 'primary' | 'danger' | 'text'
   loading?: boolean
 } & TouchableOpacityProps
 
@@ -69,6 +69,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: COLORS.red,
+  },
+  text: {
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+    borderWidth: 0,
+    borderColor: 'transparent',
+    paddingLeft: 0,
+    paddingRight: 0,
+    minHeight: 0,
+    height: 'auto',
   },
 })
 

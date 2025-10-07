@@ -4,10 +4,11 @@ import { useRouter } from 'expo-router'
 import React, { useMemo, useState } from 'react'
 import { FlatList, TouchableOpacity, View } from 'react-native'
 
+import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
 import { CHAIN_DEFAULT } from '@/constants/chain'
 import useChainSelected from '@/hooks/useChainSelected'
-import { Network } from '@/types/web3'
+import { ChainId, Network } from '@/types/web3'
 
 import { styles } from './styles'
 
@@ -23,8 +24,16 @@ const SelectChainScreen = () => {
     return chainCurrent
   }, [chainId])
 
+  const handleChangeChain = (chainId: ChainId) => {
+    setChainId(chainId)
+    router.back()
+  }
+
   const renderNetworkItem = ({ item }: { item: Network }) => (
-    <TouchableOpacity style={[styles.networkItem, chainSelected?.id === item.id && styles.selectedNetworkItem]} onPress={() => setChainId(item.id)}>
+    <TouchableOpacity
+      style={[styles.networkItem, chainSelected?.id === item.id && styles.selectedNetworkItem]}
+      onPress={() => handleChangeChain(item.id)}
+    >
       <View style={styles.networkInfo}>
         <View style={[styles.networkIcon]}>
           {item?.iconChain ? (
@@ -50,13 +59,7 @@ const SelectChainScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <AntDesign name='left' size={24} color='#FFFFFF' />
-        </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>Networks</ThemedText>
-        <View style={styles.placeholder} />
-      </View>
+      <HeaderScreen title='Networks' />
 
       {/* Tabs */}
       <View style={styles.tabsContainer}>

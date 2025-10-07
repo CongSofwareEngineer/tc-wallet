@@ -99,6 +99,7 @@ const TabNavigation = () => {
 
         tabBarStyle: {
           height: 60,
+          paddingBottom: 0,
         },
       }}
     >
@@ -106,6 +107,7 @@ const TabNavigation = () => {
         name='home'
         options={{
           title: 'Home',
+
           tabBarIcon: ({ color }) => <AntDesign size={16} name='home' color={color} />,
         }}
       />
@@ -113,7 +115,7 @@ const TabNavigation = () => {
         name='manage-connect'
         options={{
           title: 'Connect',
-          tabBarIcon: ({ color }) => <AntDesign size={16} name='bars' color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign size={16} name='link' color={color} />,
         }}
       />
 

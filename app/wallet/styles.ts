@@ -40,7 +40,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#333',
   },
   nameText: {
-    flex: 2,
+    flex: 1,
     color: '#fff',
     fontWeight: '600',
     fontSize: 16,

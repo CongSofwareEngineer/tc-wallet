@@ -25,6 +25,9 @@ const StackScreen = () => {
   const { passPhase } = usePassPhrase()
   const { mode } = useMode()
   const { text } = useTheme()
+  console.log('====================================')
+  console.log({ wallets, passPhase: passPhase.length })
+  console.log('====================================')
 
   return (
     <>

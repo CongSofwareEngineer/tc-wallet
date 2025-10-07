@@ -1,9 +1,11 @@
 import { StyleSheet } from 'react-native'
 
+import { PADDING_DEFAULT } from '@/constants/style'
+
 export const styles = StyleSheet.create({
   container: {
+    paddingVertical: PADDING_DEFAULT.Padding16,
     flex: 1,
-    backgroundColor: '#0A0A0A',
   },
   header: {
     flexDirection: 'row',
@@ -11,7 +13,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingBottom: 20,
-    backgroundColor: '#0A0A0A',
+    // backgroundColor: '#0A0A0A',
   },
   addressContainer: {
     flex: 1,
@@ -53,7 +55,6 @@ export const styles = StyleSheet.create({
   },
   balanceSection: {
     alignItems: 'center',
-    paddingVertical: 30,
     paddingHorizontal: 20,
   },
   balanceAmount: {

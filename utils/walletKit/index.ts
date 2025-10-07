@@ -57,11 +57,9 @@ class WalletKit {
   static async reConnect(): Promise<void> {
     try {
       const instance = await this.init()
-      console.log({ instance })
 
       const sessionsActive = await instance.getActiveSessions()
       const sessionValid: Sessions = {}
-      console.log({ sessionValid, sessionsActive })
 
       if (sessionsActive) {
         for (const key of Object.keys(sessionsActive)) {

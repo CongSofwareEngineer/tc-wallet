@@ -6,6 +6,7 @@ import { TouchableOpacity, View } from 'react-native'
 import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import { PADDING_DEFAULT } from '@/constants/style'
 import useModal from '@/hooks/useModal'
 import { useAppSelector } from '@/redux/hooks'
 import WalletKit from '@/utils/walletKit'
@@ -31,7 +32,7 @@ const ManageConnectScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1, padding: 10, gap: 30 }}>
+    <View style={{ flex: 1, padding: PADDING_DEFAULT.Padding16, gap: 30 }}>
       <View style={[styles.container]}>
         <View style={[styles.containerHeader]}>
           <ThemedText type='subtitle'> </ThemedText>

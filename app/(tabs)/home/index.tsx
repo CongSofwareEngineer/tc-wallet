@@ -1,4 +1,5 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
+import Feather from '@expo/vector-icons/Feather'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
@@ -6,8 +7,11 @@ import { FlatList, TouchableOpacity, View } from 'react-native'
 
 import ThemedText from '@/components/UI/ThemedText'
 import { CHAIN_DEFAULT } from '@/constants/chain'
+import { GAP_DEFAULT } from '@/constants/style'
 import useChainSelected from '@/hooks/useChainSelected'
 import useSheet from '@/hooks/useSheet'
+import useWallets from '@/hooks/useWallets'
+import { ellipsisText } from '@/utils/functions'
 
 import { styles } from './styles'
 
@@ -51,12 +55,25 @@ const mockCryptoData: CryptoAsset[] = [
   },
 ]
 
+for (let i = 4; i <= 20; i++) {
+  mockCryptoData.push({
+    id: i.toString(),
+    name: `Crypto ${i}`,
+    symbol: `C${i}`,
+    balance: (Math.random() * 10).toFixed(4),
+    value: `$${(Math.random() * 1000).toFixed(2)}`,
+    change: parseFloat((Math.random() * 10 - 5).toFixed(2)), // Random change between -5% and +5%
+    color: `#${Math.floor(Math.random() * 16777215).toString(16)}`, // Random color
+  })
+}
+
 export default function HomeScreen() {
-  const [activeTab, setActiveTab] = useState('Portfolio')
+  const [activeTab, setActiveTab] = useState('Tokens')
   const [activeNetwork, setActiveNetwork] = useState('All Networks')
   const router = useRouter()
   const { openSheet, closeSheet } = useSheet()
   const { chainId } = useChainSelected()
+  const { wallet } = useWallets()
 
   const renderCryptoItem = ({ item }: { item: CryptoAsset }) => (
     <TouchableOpacity style={styles.cryptoItem}>
@@ -99,15 +116,17 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.addressContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <ThemedText style={styles.addressText}>0x1234...5678</ThemedText>
-            <AntDesign name='down' size={16} color='#FFFFFF' />
-          </View>
-        </TouchableOpacity>
+        <View style={{ width: 150 }}>
+          <TouchableOpacity onPress={() => router.push('/wallet')} style={styles.addressContainer}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap4 }}>
+              <ThemedText style={styles.addressText}>{ellipsisText(wallet?.address, 4, 5)}</ThemedText>
+              <AntDesign name='down' size={14} color='#FFFFFF' />
+            </View>
+          </TouchableOpacity>
+        </View>
 
         <View style={[styles.headerIcons, { flex: 1, justifyContent: 'flex-end' }]}>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>
             <AntDesign name='scan' size={24} color='#FFFFFF' />
           </TouchableOpacity>
           {/* <TouchableOpacity style={styles.iconButton}>
@@ -122,21 +141,27 @@ export default function HomeScreen() {
       {/* Balance Section */}
       <View style={styles.balanceSection}>
         <ThemedText style={styles.balanceAmount}>$1,234.56</ThemedText>
-
-        <TouchableOpacity style={styles.buyButton}>
-          <Ionicons name='add' size={20} color='#FFFFFF' />
-          <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Buy</ThemedText>
-        </TouchableOpacity>
+        {/* <Options /> */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+          <TouchableOpacity style={styles.buyButton}>
+            <Feather name='send' size={20} color='#FFFFFF' />
+            <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buyButton}>
+            <Ionicons name='add' size={20} color='#FFFFFF' />
+            <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Receive</ThemedText>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Navigation Tabs */}
-      {/* <View style={styles.tabsContainer}>
-        {['Portfolio', 'Activity', 'Discover'].map((tab) => (
+      <View style={styles.tabsContainer}>
+        {['Tokens', 'NFTs'].map((tab) => (
           <TouchableOpacity key={tab} style={[styles.tabButton, activeTab === tab && styles.activeTab]} onPress={() => setActiveTab(tab)}>
             <ThemedText style={[styles.tabText, activeTab === tab && { color: '#007AFF' }]}>{tab}</ThemedText>
           </TouchableOpacity>
         ))}
-      </View> */}
+      </View>
 
       {/* Network Filter */}
       {renderChainSelected()}
