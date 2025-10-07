@@ -1,112 +1,154 @@
+import AntDesign from '@expo/vector-icons/AntDesign'
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { useRouter } from 'expo-router'
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { FlatList, TouchableOpacity, View } from 'react-native'
 
-import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
-import useModal from '@/hooks/useModal'
-import { useAppSelector } from '@/redux/hooks'
-import ClientServices from '@/services/Client'
-import { ChainInfo } from '@/types/web3'
+import { CHAIN_DEFAULT } from '@/constants/chain'
+import useChainSelected from '@/hooks/useChainSelected'
+import useSheet from '@/hooks/useSheet'
 
-import InfoWallet from './Components/InfoWallet'
-import Options from './Components/Options'
+import { styles } from './styles'
 
-const HomeScreen = () => {
+type CryptoAsset = {
+  id: string
+  name: string
+  symbol: string
+  balance: string
+  value: string
+  change: number
+  color: string
+}
+
+const mockCryptoData: CryptoAsset[] = [
+  {
+    id: '1',
+    name: 'Bitcoin',
+    symbol: 'BTC',
+    balance: '0.00123',
+    value: '$89.45',
+    change: 2.34,
+    color: '#F7931A',
+  },
+  {
+    id: '2',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    balance: '0.456',
+    value: '$1,234.56',
+    change: -1.23,
+    color: '#627EEA',
+  },
+  {
+    id: '3',
+    name: 'Binance Coin',
+    symbol: 'BNB',
+    balance: '2.5',
+    value: '$678.90',
+    change: 0.89,
+    color: '#F3BA2F',
+  },
+]
+
+export default function HomeScreen() {
+  const [activeTab, setActiveTab] = useState('Portfolio')
+  const [activeNetwork, setActiveNetwork] = useState('All Networks')
   const router = useRouter()
-  const { openModal } = useModal()
-  const modals = useAppSelector((state) => state.modals)
+  const { openSheet, closeSheet } = useSheet()
+  const { chainId } = useChainSelected()
 
-  const [listChains, setListChains] = useState<ChainInfo[]>([])
-  const [refreshing, setRefreshing] = useState(false)
+  const renderCryptoItem = ({ item }: { item: CryptoAsset }) => (
+    <TouchableOpacity style={styles.cryptoItem}>
+      <View style={[styles.cryptoIcon, { backgroundColor: item.color }]}>
+        <ThemedText style={styles.cryptoName}>{item.symbol[0]}</ThemedText>
+      </View>
 
-  const handleCreateWallet = async () => {
-    openModal({
-      content: (
-        <View>
-          <ThemedText>Modal from Home</ThemedText>
-        </View>
-      ),
-    })
+      <View style={styles.cryptoInfo}>
+        <ThemedText style={styles.cryptoName}>{item.name}</ThemedText>
+        <ThemedText style={styles.cryptoBalance}>
+          {item.balance} {item.symbol}
+        </ThemedText>
+      </View>
+
+      <View style={{ alignItems: 'flex-end' }}>
+        <ThemedText style={styles.cryptoBalance}>{item.value}</ThemedText>
+        <ThemedText style={[styles.cryptoChange, { color: item.change >= 0 ? '#00D09C' : '#FF4D4D' }]}>
+          {item.change >= 0 ? '+' : ''}
+          {item.change.toFixed(2)}%
+        </ThemedText>
+      </View>
+    </TouchableOpacity>
+  )
+
+  const renderChainSelected = () => {
+    const chainCurrent = CHAIN_DEFAULT.find((c) => c.id === Number(chainId))
+    console.log({ chainCurrent })
+
+    return (
+      chainCurrent && (
+        <TouchableOpacity onPress={() => router.push('/select-chain')} style={styles.networkFilter}>
+          <ThemedText style={styles.networkFilterText}>{chainCurrent?.name}</ThemedText>
+          <AntDesign name='down' size={16} color='#FFFFFF' />
+        </TouchableOpacity>
+      )
+    )
   }
 
-  const fetchChains = useCallback(async () => {
-    const chains = await ClientServices.getAllChains()
-    if (Array.isArray(chains)) setListChains(chains)
-  }, [])
-
-  const onRefresh = useCallback(async () => {
-    try {
-      setRefreshing(true)
-      await fetchChains()
-    } finally {
-      setRefreshing(false)
-    }
-  }, [fetchChains])
-
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-      <InfoWallet />
-      <Options />
-      <ThemedText type='subtitle'>Tạo mới hoặc import</ThemedText>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.addressContainer}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <ThemedText style={styles.addressText}>0x1234...5678</ThemedText>
+            <AntDesign name='down' size={16} color='#FFFFFF' />
+          </View>
+        </TouchableOpacity>
 
-      <ThemedText>HomeScreen</ThemedText>
-      <TouchableOpacity onPress={handleCreateWallet}>
-        <ThemedText>Press modal</ThemedText>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={fetchChains}>
-        <ThemedText>Fetch on chains</ThemedText>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/create-wallet')}>
-        <ThemedText>to create </ThemedText>
-      </TouchableOpacity>
+        <View style={[styles.headerIcons, { flex: 1, justifyContent: 'flex-end' }]}>
+          <TouchableOpacity style={styles.iconButton}>
+            <AntDesign name='scan' size={24} color='#FFFFFF' />
+          </TouchableOpacity>
+          {/* <TouchableOpacity style={styles.iconButton}>
+            <MaterialIcons name='notifications-none' size={24} color='#FFFFFF' />
+          </TouchableOpacity> */}
+          {/* <TouchableOpacity style={styles.iconButton}>
+            <Ionicons name='settings-outline' size={24} color='#FFFFFF' />
+          </TouchableOpacity> */}
+        </View>
+      </View>
 
-      <TouchableOpacity onPress={() => router.push('/approve')}>
-        <ThemedText>Approce </ThemedText>
-      </TouchableOpacity>
+      {/* Balance Section */}
+      <View style={styles.balanceSection}>
+        <ThemedText style={styles.balanceAmount}>$1,234.56</ThemedText>
 
-      <TouchableOpacity
-        onPress={() => {
-          router.push({
-            pathname: '/connect-account',
-            params: { id: '1' },
-          })
-        }}
-      >
-        <ThemedText>Approce account</ThemedText>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.buyButton}>
+          <Ionicons name='add' size={20} color='#FFFFFF' />
+          <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Buy</ThemedText>
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity
-        onPress={() => {
-          openModal({
-            content: <ModalWarning />,
-          })
-        }}
-      >
-        <ThemedText>Modal warning</ThemedText>
-      </TouchableOpacity>
+      {/* Navigation Tabs */}
+      {/* <View style={styles.tabsContainer}>
+        {['Portfolio', 'Activity', 'Discover'].map((tab) => (
+          <TouchableOpacity key={tab} style={[styles.tabButton, activeTab === tab && styles.activeTab]} onPress={() => setActiveTab(tab)}>
+            <ThemedText style={[styles.tabText, activeTab === tab && { color: '#007AFF' }]}>{tab}</ThemedText>
+          </TouchableOpacity>
+        ))}
+      </View> */}
 
-      {listChains.length > 0 && (
-        <FlatList
-          data={listChains.slice(0, 5)}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          keyExtractor={(item) => String(item.chainId)}
-          contentContainerStyle={{ paddingBottom: 40 }}
-          ListEmptyComponent={<ThemedText>Không có dữ liệu</ThemedText>}
-          renderItem={({ item }) => (
-            <View key={item.chainId} style={{ margin: 10, padding: 10, borderWidth: 1 }}>
-              <ThemedText>
-                {item.name} - {item.chainId}
-              </ThemedText>
-              {Array.isArray(item.rpc) && item.rpc.length > 0 && item.rpc.map((r, i) => <ThemedText key={`rpc-${i}`}>RPC: {r.url}</ThemedText>)}
-              {/* <ThemedText>RPC: {chain?.rpc}</ThemedText> */}
-            </View>
-          )}
-        />
-      )}
+      {/* Network Filter */}
+      {renderChainSelected()}
+
+      {/* Crypto List */}
+      <FlatList
+        data={mockCryptoData}
+        renderItem={renderCryptoItem}
+        keyExtractor={(item) => item.id}
+        style={styles.cryptoList}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   )
 }
-
-export default HomeScreen

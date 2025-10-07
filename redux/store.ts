@@ -9,11 +9,12 @@ import modeReducer from '@/redux/slices/mode'
 import passPhaseSlice from '@/redux/slices/passPhaseSlice'
 import requestWCSlice from '@/redux/slices/requestWC'
 import sessionsReducer from '@/redux/slices/sessionsSlice'
+import sheetReducer from '@/redux/slices/sheetSlice'
 import walletReducer from '@/redux/slices/walletSlice'
 import { getDataLocal, removeDataLocal, saveDataLocal } from '@/utils/storage'
 
 const rootPersistConfig = {
-  key: 'root',
+  key: 'tc-wallet',
   storage: {
     getItem: async (key: string) => {
       const value = await getDataLocal(key)
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   requestWC: requestWCSlice,
   passPhase: passPhaseSlice,
   chainSelected: chainSelectedReducer,
+  sheet: sheetReducer,
 })
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer)

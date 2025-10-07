@@ -16,6 +16,7 @@ import { getDataLocal } from '@/utils/storage'
 import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
 
 import MyModal from '../MyModal'
+import MySheet from '../MySheet'
 
 const ClientRender = ({ children }: { children: ReactNode }) => {
   usePreLoadData()
@@ -97,6 +98,7 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
         <View
           style={{
             flex: 1,
+            width: '100%',
             backgroundColor: background.background,
             alignItems: 'center',
           }}
@@ -114,12 +116,14 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
           >
             <SafeAreaView style={{ flex: 1 }}>{children}</SafeAreaView>
             <MyModal />
+            <MySheet />
           </View>
         </View>
       ) : (
         <View style={{ flex: 1, backgroundColor: background.background, maxWidth: 576, width: '100%' }}>
           <SafeAreaView style={{ flex: 1 }}>{children}</SafeAreaView>
           <MyModal />
+          <MySheet />
         </View>
       )}
     </ThemeProvider>

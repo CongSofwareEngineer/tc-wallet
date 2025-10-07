@@ -50,3 +50,15 @@ export const ellipsisText = (text?: string, prefixLength = 13, suffixLength = 4)
   text = text || ''
   return `${text.substr(0, prefixLength)}...${text.substr(text.length - suffixLength, suffixLength)}`
 }
+
+export const getRadomColor = (seed: string = 'default') => {
+  try {
+    // Simple hash to color
+    let hash = 0
+    for (let i = 0; i < seed.length; i++) hash = seed.charCodeAt(i) + ((hash << 5) - hash)
+    const c = (hash & 0x00ffffff).toString(16).toUpperCase()
+    return '#' + '00000'.substring(0, 6 - c.length) + c
+  } catch (error) {
+    return '#000000'
+  }
+}

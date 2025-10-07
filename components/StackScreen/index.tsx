@@ -55,9 +55,20 @@ const StackScreen = () => {
             animation: 'slide_from_right',
           }}
         />
+
+        <StackExpo.Screen
+          name='select-chain'
+          options={{
+            animation: 'fade_from_bottom',
+            presentation: 'modal',
+            sheetElevation: 0,
+          }}
+        />
       </StackExpo>
 
+      {/* <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} /> */}
       <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} />
+      {/* <Redirect href={'/create-wallet'} /> */}
     </>
   )
 

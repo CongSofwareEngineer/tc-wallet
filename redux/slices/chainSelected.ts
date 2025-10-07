@@ -1,16 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-const initialState = 1
+import { ChainId } from '@/types/web3'
 
-const modeSlice = createSlice({
-  name: 'mode',
+const initialState: ChainId = 1
+
+const chainSelectedSlice = createSlice({
+  name: 'chainSelected',
   initialState,
   reducers: {
-    setChainSelected: (state: number, action: PayloadAction<number>) => {
-      return action.payload ?? initialState
+    setChainSelected: (state: ChainId, action: PayloadAction<ChainId>) => {
+      return (action.payload ?? initialState) as any
     },
   },
 })
 
-export const { setChainSelected } = modeSlice.actions
-export default modeSlice.reducer
+export const { setChainSelected } = chainSelectedSlice.actions
+export default chainSelectedSlice.reducer

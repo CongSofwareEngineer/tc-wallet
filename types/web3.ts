@@ -1,7 +1,7 @@
-import { TransactionRequest } from 'viem'
+import { Chain, TransactionRequest } from 'viem'
 
 export type Hash = `0x${string}`
-export type ChainId = string
+export type ChainId = string | number
 
 export type ChainInfo = {
   name: string
@@ -41,3 +41,7 @@ export type RawTransactionEVM = TransactionRequest &
     types?: any
     primaryType?: string
   }
+
+export type Network = {
+  iconChain: string
+} & Chain
