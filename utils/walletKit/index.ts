@@ -72,6 +72,18 @@ class WalletKit {
       for (const pair of pairings) {
         await this.safeSubscribe(pair.topic)
       }
+
+      const sessions = cloneDeep<Sessions>(store.getState().sessions)
+      // Clean up any stale sessions in Redux that are no longer valid
+      for (const k of Object.keys(sessions)) {
+        if (!sessionValid[k]) {
+          delete sessions[k]
+        }
+      }
+      if (Object.keys(sessions).length > 0) {
+        Object.assign(sessionValid, sessions)
+      }
+
       store.dispatch(setSessions({ ...sessionValid }))
     } catch (e) {
       void e

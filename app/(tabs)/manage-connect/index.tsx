@@ -5,7 +5,6 @@ import { TouchableOpacity, View } from 'react-native'
 
 import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
-import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { PADDING_DEFAULT } from '@/constants/style'
 import useModal from '@/hooks/useModal'
 import { useAppSelector } from '@/redux/hooks'
@@ -53,9 +52,6 @@ const ManageConnectScreen = () => {
       ) : (
         <>
           <ListConnect />
-          <ThemeTouchableOpacity onPress={handleDisconnectAll}>
-            <ThemedText>disconnefct all</ThemedText>
-          </ThemeTouchableOpacity>
         </>
       )}
     </View>

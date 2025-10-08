@@ -1,12 +1,13 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
-import React, { useMemo, useTransition } from 'react'
+import React, { useMemo, useState } from 'react'
 import { SectionList, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ModalLoading from '@/components/ModalLoading'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import { GAP_DEFAULT } from '@/constants/style'
 import useAuth from '@/hooks/useAuth'
 import useModal from '@/hooks/useModal'
 import usePassPhrase from '@/hooks/usePassPhrase'
@@ -25,8 +26,9 @@ const WalletScreen = () => {
   const { handleAuth } = useAuth()
   const router = useRouter()
   const { passPhase, addPassPhrase } = usePassPhrase()
-  const [pendingAddAccount, startAddAccount] = useTransition()
   const { closeModal, openModal } = useModal()
+
+  const [showData, setShowData] = useState(false)
 
   // Group wallets by mnemonic/pass phrase
   const groupedWallets = useMemo(() => {
@@ -70,7 +72,7 @@ const WalletScreen = () => {
   const sectionData = useMemo(() => {
     return groupedWallets.map((group) => ({
       title: `Seed Phrase ${group.indexMnemonic + 1}`,
-      subtitle: ellipsisText(group.mnemonic, 6, 6),
+      subtitle: group.mnemonic,
       data: group.wallets,
       indexMnemonic: group.indexMnemonic,
       fullMnemonic: group.mnemonic,
@@ -112,6 +114,32 @@ const WalletScreen = () => {
 
   const handleActiveAccount = (index: number) => {
     setWalletActive(index)
+  }
+
+  const handleShowData = async () => {
+    try {
+      if (showData) {
+        setShowData(false)
+        return
+      }
+      const isAuth = await handleAuth()
+      if (isAuth) {
+        setShowData(true)
+      }
+    } catch (error) { }
+  }
+
+  const handleDetailAccount = async (indexWallet: number) => {
+    try {
+      if (showData) {
+        router.push(`/wallet-detail/${indexWallet}`)
+      } else {
+        const isAuth = await handleAuth()
+        if (isAuth) {
+          router.push(`/wallet-detail/${indexWallet}`)
+        }
+      }
+    } catch (error) { }
   }
 
   return (
@@ -159,15 +187,9 @@ const WalletScreen = () => {
               </View>
 
               {/* Arrow */}
-              <AntDesign
-                onPress={() => {
-                  router.push(`/wallet-detail/${item.indexWallet}`)
-                }}
-                name='right'
-                size={18}
-                color={text.color}
-                style={{ marginLeft: 8 }}
-              />
+              <TouchableOpacity onPress={() => handleDetailAccount(item.indexWallet)}>
+                <AntDesign name='right' size={18} color={text.color} style={{ marginLeft: 8 }} />
+              </TouchableOpacity>
             </TouchableOpacity>
           )
         }}
@@ -175,14 +197,23 @@ const WalletScreen = () => {
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleContainer}>
               <ThemedText style={styles.sectionTitle}>{section.title}</ThemedText>
-              <ThemedText style={styles.sectionSubtitle}>{section.subtitle}</ThemedText>
+              {showData ? (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+                  <ThemedText style={styles.sectionSubtitle}>{ellipsisText(section.subtitle, 6, 8)}</ThemedText>
+                  <TouchableOpacity onPress={handleShowData}>
+                    <AntDesign name='eye-invisible' size={16} color={text.color} />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+                  <ThemedText style={styles.sectionSubtitle}>******************</ThemedText>
+                  <TouchableOpacity onPress={handleShowData}>
+                    <AntDesign name='eye' size={16} color={text.color} />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
-            <ThemeTouchableOpacity
-              loading={pendingAddAccount}
-              type='text'
-              style={styles.addAccountButton}
-              onPress={() => handleCreateAccount(section.indexMnemonic)}
-            >
+            <ThemeTouchableOpacity type='text' style={styles.addAccountButton} onPress={() => handleCreateAccount(section.indexMnemonic)}>
               <AntDesign name='plus' size={16} color={colors.blue} />
               <ThemedText style={styles.addAccountText}>Add</ThemedText>
             </ThemeTouchableOpacity>

@@ -1,7 +1,8 @@
 import * as Clipboard from 'expo-clipboard'
 
 import { IsIos } from '@/constants/app'
-import { Alert } from '@/utils/alert'
+import { openAlert } from '@/redux/slices/alertSlice'
+import { store } from '@/redux/store'
 
 export const cloneDeep = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj))
@@ -26,7 +27,9 @@ export const numberWithCommas = (num: number | string | bigint | null | undefine
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-export const copyToClipboard = async (text: string, type: 'text' | 'url' | 'image' = 'text') => {
+export const copyToClipboard = async (text: string, duration: number = 2000, type: 'text' | 'url' | 'image' = 'text') => {
+  store.dispatch(openAlert({ text: 'Copied', duration }))
+
   if (type === 'text') {
     await Clipboard.setStringAsync(text)
     return
@@ -43,7 +46,6 @@ export const copyToClipboard = async (text: string, type: 'text' | 'url' | 'imag
     await Clipboard.setImageAsync(text)
     return
   }
-  Alert.alert('Copied')
 }
 
 export const ellipsisText = (text?: string, prefixLength = 13, suffixLength = 4): string => {

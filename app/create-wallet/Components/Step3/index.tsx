@@ -49,6 +49,12 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
           setWallets(walletClone)
           router.replace('/home')
         } else {
+          const walletClone = cloneDeep(wallets)
+          const wallet = await AllWalletUtils.createWalletFromPrivateKey(value.trim() as any)
+
+          walletClone.push(wallet)
+          setWallets(walletClone)
+          router.replace('/home')
         }
       } catch (error) {
         const walletClone = cloneDeep(wallets)

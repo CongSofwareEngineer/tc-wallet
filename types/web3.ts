@@ -44,4 +44,5 @@ export type RawTransactionEVM = TransactionRequest &
 
 export type Network = {
   iconChain: string
+  isCustom?: boolean
 } & Chain

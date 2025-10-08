@@ -60,6 +60,13 @@ const StackScreen = () => {
         />
 
         <StackExpo.Screen
+          name='secure-password'
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+
+        <StackExpo.Screen
           name='select-chain'
           options={{
             animation: 'fade_from_bottom',
@@ -70,8 +77,8 @@ const StackScreen = () => {
       </StackExpo>
 
       {/* <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} /> */}
-      <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} />
-      {/* <Redirect href={'/create-wallet'} /> */}
+      {/* <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} /> */}
+      <Redirect href={'/setting'} />
     </>
   )
 

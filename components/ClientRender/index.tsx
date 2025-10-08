@@ -15,6 +15,7 @@ import { sleep } from '@/utils/functions'
 import { getDataLocal } from '@/utils/storage'
 import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
 
+import MyAlert from '../MyAlert'
 import MyModal from '../MyModal'
 import MySheet from '../MySheet'
 
@@ -55,12 +56,12 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
           instance.off?.('session_delete', (e) => { })
           // @ts-ignore
           instance.off?.('session_request', (e) => { })
+          instance.off?.('session_authenticate', (e) => { })
         } catch { }
         await sleep(500)
         instance.on('session_delete', onSessionDelete)
         instance.on('session_request', async (e) => {
           try {
-            console.log({ onSessionRequest: e })
             if (e.params.request) {
               setRequest({
                 ...(e as any),
@@ -74,6 +75,10 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
             console.error({ onSessionRequest: error })
           }
         })
+        instance.on('session_authenticate', async (e) => {
+          console.log({ session_authenticate: e })
+        })
+
         // auto reconnect
         await WalletKit.reConnect()
       } catch (error) {
@@ -126,6 +131,7 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
           <MySheet />
         </View>
       )}
+      <MyAlert />
     </ThemeProvider>
   )
 }

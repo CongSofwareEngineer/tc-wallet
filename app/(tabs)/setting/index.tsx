@@ -20,6 +20,7 @@ import { Alert } from '@/utils/alert'
 import WalletKit from '@/utils/walletKit'
 
 import Items from './Components/Item'
+import Security from './Components/Security'
 import styles from './styles'
 
 const SettingScreen = () => {
@@ -57,15 +58,6 @@ const SettingScreen = () => {
     })
   }
 
-  const handleShowWallet = async () => {
-    try {
-      const isAuth = await handleAuth()
-      if (isAuth) {
-        router.push('/wallet')
-      }
-    } catch (error) { }
-  }
-
   return (
     <View style={{ flex: 1, padding: 15 }}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -85,27 +77,7 @@ const SettingScreen = () => {
 
         <View style={{ gap: 20, marginTop: 20, width: '100%' }}>
           {/*manage wallets */}
-          <Items>
-            <View style={styles.containerTitle}>
-              <AntDesign name='security-scan' size={20} color={text.color} style={{ marginRight: 10 }} />
-              <ThemedText type='defaultSemiBold'>Bảo mật</ThemedText>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <View style={{ flex: 1 }}>
-                <ThemedText>Khoá sinh trắc học</ThemedText>
-                <ThemedText opacity={0.7}>Sử dụng vân tay/Face ID để mở khóa ứng dụng</ThemedText>
-              </View>
-              <View>
-                <ThemeSwitch value={mode === MODE.Dark} onValueChange={() => setMode(mode === MODE.Dark ? MODE.Light : MODE.Dark)} />
-              </View>
-            </View>
-            <ThemeTouchableOpacity onPress={handleShowWallet} style={{ marginBottom: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <AntDesign name='eye' size={20} color={COLORS.white} style={{ marginRight: 10 }} />
-                <ThemedText>Quản lý ví</ThemedText>
-              </View>
-            </ThemeTouchableOpacity>
-          </Items>
+          <Security />
 
           {/* // Theme */}
           <Items>

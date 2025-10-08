@@ -1,12 +1,12 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { FlatList, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
-import { CHAIN_DEFAULT } from '@/constants/chain'
+import useChains from '@/hooks/useChains'
 import useChainSelected from '@/hooks/useChainSelected'
 import { ChainId, Network } from '@/types/web3'
 
@@ -17,12 +17,8 @@ type NetworkType = 'Popular' | 'Custom'
 const SelectChainScreen = () => {
   const [activeTab, setActiveTab] = useState<NetworkType>('Popular')
   const router = useRouter()
-  const { chainId, setChainId } = useChainSelected()
-
-  const chainSelected = useMemo(() => {
-    const chainCurrent = CHAIN_DEFAULT.find((c) => c.id === Number(chainId))
-    return chainCurrent
-  }, [chainId])
+  const { setChainId } = useChainSelected()
+  const { chainsDefault, chainsCustom, chainCurrent } = useChains()
 
   const handleChangeChain = (chainId: ChainId) => {
     setChainId(chainId)
@@ -30,31 +26,32 @@ const SelectChainScreen = () => {
   }
 
   const renderNetworkItem = ({ item }: { item: Network }) => (
-    <TouchableOpacity
-      style={[styles.networkItem, chainSelected?.id === item.id && styles.selectedNetworkItem]}
-      onPress={() => handleChangeChain(item.id)}
-    >
+    <TouchableOpacity style={[styles.networkItem, chainCurrent?.id === item.id && styles.selectedNetworkItem]}>
       <View style={styles.networkInfo}>
-        <View style={[styles.networkIcon]}>
-          {item?.iconChain ? (
-            <Image source={{ uri: item.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />
-          ) : (
-            <ThemedText style={styles.networkIconText}>{item.name}</ThemedText>
-          )}
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity style={[{ flexDirection: 'row', alignItems: 'center' }]} onPress={() => handleChangeChain(item.id)}>
+            <View style={[styles.networkIcon]}>
+              {item?.iconChain ? (
+                <Image source={{ uri: item.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+              ) : (
+                <ThemedText style={styles.networkIconText}>{item.name}</ThemedText>
+              )}
+            </View>
+            <ThemedText style={styles.networkName}>{item.name}</ThemedText>
+          </TouchableOpacity>
         </View>
-        <ThemedText style={styles.networkName}>{item.name}</ThemedText>
+        <View style={{ flex: 1 }} />
       </View>
 
-      <TouchableOpacity style={styles.menuButton}>
-        <AntDesign name='ellipsis' size={20} color='#FFFFFF' />
+      <TouchableOpacity onPress={() => router.push(`/chain-detail/${item.id}`)} style={styles.menuButton}>
+        <AntDesign name='ellipsis' size={24} color='#FFFFFF' />
       </TouchableOpacity>
     </TouchableOpacity>
   )
 
-  if (!chainSelected) {
+  if (!chainCurrent) {
     return <></>
   }
-  console.log({ chainSelected })
 
   return (
     <View style={styles.container}>
@@ -75,7 +72,7 @@ const SelectChainScreen = () => {
       {/* Network List */}
       <FlatList
         // data={activeTab === 'Popular' ? popularNetworks : []}
-        data={CHAIN_DEFAULT}
+        data={activeTab === 'Popular' ? chainsDefault : chainsCustom}
         renderItem={renderNetworkItem}
         keyExtractor={(item, index) => item.name + item.id.toString() + index.toString()}
         style={styles.networkList}

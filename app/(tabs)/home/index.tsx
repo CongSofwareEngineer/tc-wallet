@@ -12,7 +12,7 @@ import { GAP_DEFAULT } from '@/constants/style'
 import useChainSelected from '@/hooks/useChainSelected'
 import useSheet from '@/hooks/useSheet'
 import useWallets from '@/hooks/useWallets'
-import { ellipsisText } from '@/utils/functions'
+import { copyToClipboard, ellipsisText } from '@/utils/functions'
 
 import { styles } from './styles'
 
@@ -28,7 +28,7 @@ type CryptoAsset = {
 
 const mockCryptoData: CryptoAsset[] = []
 
-for (let i = 0; i <= 20; i++) {
+for (let i = 0; i <= 60; i++) {
   mockCryptoData.push({
     id: i.toString(),
     name: `Crypto ${i}`,
@@ -53,7 +53,7 @@ export default function HomeScreen() {
 
   // Callback when header is fully hidden
   const onHeaderFullyHidden = () => {
-    isShowHeader && setIsShowHeader(false)
+    setIsShowHeader(false)
     console.log('Header is fully hidden!')
     // Add your callback logic here
   }
@@ -97,8 +97,8 @@ export default function HomeScreen() {
 
   // Animation for moving tabs and content up to replace header
   const contentTranslateY = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, isShowHeader ? -180 : 0], // Move up less for smoother effect
+    inputRange: [0, 360],
+    outputRange: [0, -180], // Move up less for smoother effect
     extrapolate: 'clamp',
   })
 
@@ -143,49 +143,54 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container]}>
-      {isShowHeader && (
-        <Animated.View style={[{ opacity: headerOpacity, transform: [{ translateY: headerTranslateY }] }]}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={{ width: 150 }}>
-              <TouchableOpacity onPress={() => router.push('/wallet')} style={styles.addressContainer}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap4 }}>
-                  <ThemedText style={styles.addressText}>{ellipsisText(wallet?.address, 4, 5)}</ThemedText>
-                  <AntDesign name='down' size={14} color='#FFFFFF' />
-                </View>
-              </TouchableOpacity>
-            </View>
-
-            <View style={[styles.headerIcons, { flex: 1, justifyContent: 'flex-end' }]}>
-              <TouchableOpacity onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>
-                <AntDesign name='scan' size={24} color='#FFFFFF' />
-              </TouchableOpacity>
-            </View>
+      <Animated.View style={[{ opacity: headerOpacity, transform: [{ translateY: headerTranslateY }] }]}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={{ width: 150 }}>
+            <TouchableOpacity onPress={() => router.push('/wallet')} style={styles.addressContainer}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap4 }}>
+                <ThemedText style={styles.addressText}>{ellipsisText(wallet?.address, 4, 5)}</ThemedText>
+                <AntDesign name='down' size={14} color='#FFFFFF' />
+              </View>
+            </TouchableOpacity>
           </View>
 
-          {/* Balance Section */}
-          <View style={styles.balanceSection}>
-            <ThemedText style={styles.balanceAmount}>$1,234.56</ThemedText>
-            {/* <Options /> */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-              <TouchableOpacity style={styles.buyButton}>
-                <Feather name='send' size={20} color='#FFFFFF' />
-                <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buyButton}>
-                <Ionicons name='add' size={20} color='#FFFFFF' />
-                <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Receive</ThemedText>
-              </TouchableOpacity>
-            </View>
+          <View style={[styles.headerIcons, { flex: 1, justifyContent: 'flex-end' }]}>
+            <TouchableOpacity onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>
+              <AntDesign name='scan' size={24} color='#FFFFFF' />
+            </TouchableOpacity>
           </View>
-        </Animated.View>
-      )}
+        </View>
 
-      <Animated.View style={[{ flex: 1, transform: [{ translateY: contentTranslateY }] }]}>
+        {/* Balance Section */}
+        <View style={styles.balanceSection}>
+          <ThemedText style={styles.balanceAmount}>$1,234.56</ThemedText>
+          {/* <Options /> */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+            <TouchableOpacity onPress={() => copyToClipboard('sdffsdf')} style={styles.buyButton}>
+              <Feather name='send' size={20} color='#FFFFFF' />
+              <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.buyButton}>
+              <Ionicons name='add' size={20} color='#FFFFFF' />
+              <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Receive</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Animated.View>
+
+      <Animated.View id={`isShowHeader_${isShowHeader}`} style={[{ flex: 1, transform: [{ translateY: contentTranslateY }] }]}>
         {/* Navigation Tabs */}
         <View style={styles.tabsContainer}>
           {['Tokens', 'NFTs'].map((tab) => (
-            <TouchableOpacity key={tab} style={[styles.tabButton, activeTab === tab && styles.activeTab]} onPress={() => setActiveTab(tab)}>
+            <TouchableOpacity
+              key={tab}
+              style={[styles.tabButton, activeTab === tab && styles.activeTab]}
+              onPress={() => {
+                // Alert.alert('Tab pressed', `You pressed the ${tab} tab.`)
+                copyToClipboard('sdffsdf')
+              }}
+            >
               <ThemedText style={[styles.tabText, activeTab === tab && { color: '#007AFF' }]}>{tab}</ThemedText>
             </TouchableOpacity>
           ))}
@@ -196,6 +201,10 @@ export default function HomeScreen() {
 
         {/* Crypto List */}
         <Animated.FlatList
+          onContentSizeChange={() => {
+            console.log('Content size changed')
+          }}
+          id={`FlatList_${isShowHeader}`}
           data={mockCryptoData}
           renderItem={renderCryptoItem}
           keyExtractor={(item) => item.id}

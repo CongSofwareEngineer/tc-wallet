@@ -16,18 +16,26 @@ const ModalAuth = ({ callback }: Props) => {
   const { background, text, colors } = useTheme()
   const inputRef = useRef<TextInput>(null)
   const [pin, setPin] = useState('')
+  const [error, setError] = useState('')
 
   const boxes = useMemo(() => new Array(PIN_LENGTH).fill(''), [])
 
   const onChange = async (value: string) => {
-    const pass = await getSecureData(KEY_STORAGE.PassAuth)
+    const pass = await getSecureData(KEY_STORAGE.PasscodeAuth)
 
     // keep only digits and clamp to length
     const digits = value.replace(/\D/g, '').slice(0, PIN_LENGTH)
     setPin(digits)
-    if (digits.length === PIN_LENGTH && digits === pass) {
+    if (digits.length === PIN_LENGTH) {
+      if (digits === pass) {
+        setTimeout(() => callback(true), 80)
+      } else {
+        setError('Passwords do not match')
+      }
       // slight delay to allow UI to render last dot
-      setTimeout(() => callback(true), 80)
+    }
+    if (digits.length < PIN_LENGTH && error) {
+      setError('')
     }
   }
 
@@ -36,6 +44,9 @@ const ModalAuth = ({ callback }: Props) => {
   return (
     <View style={[styles.wrapper]}>
       <ThemedText style={[styles.title]}>{'Nhập mật khẩu'}</ThemedText>
+      <ThemedText style={{ textAlign: 'center', marginBottom: 12, marginTop: 5, opacity: 0.7 }} type='small'>
+        {'Bảo vệ các dữ liệu nhạy cảm'}
+      </ThemedText>
 
       <TouchableOpacity activeOpacity={1} onPress={focusInput} style={styles.pinRow}>
         {boxes.map((_, i) => {
@@ -68,6 +79,7 @@ const ModalAuth = ({ callback }: Props) => {
           autoFocus
         />
       </TouchableOpacity>
+      <ThemedText style={{ color: 'red', textAlign: 'center', minHeight: 20 }}>{error}</ThemedText>
     </View>
   )
 }
@@ -85,7 +97,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 16,
   },
   pinRow: {
     flexDirection: 'row',

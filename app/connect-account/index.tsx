@@ -1,3 +1,4 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { getSdkError } from '@walletconnect/utils'
 import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -24,11 +25,11 @@ const ConnectAccountScreen = () => {
   const { translate } = useLanguage()
   const router = useRouter()
   const query = useLocalSearchParams()
-  console.log({ query })
 
   const request = useMemo(() => {
     return requestWC[0]
   }, [requestWC])
+  console.log({ query, request })
 
   const listChains = useMemo(() => {
     if (!request) return []
@@ -58,7 +59,7 @@ const ConnectAccountScreen = () => {
     })
     await sleep(500)
     removeRequest(request?.id)
-    router.replace('/home')
+    router.replace('/(tabs)/home')
   }
 
   const handleConnect = async () => {
@@ -69,7 +70,7 @@ const ConnectAccountScreen = () => {
       await WalletKit.onSessionProposal(id, params, nameSpaces)
       await sleep(500)
 
-      router.replace('/home')
+      router.replace('/(tabs)/home')
       await sleep(500)
       removeRequest(request.id)
     })
@@ -79,8 +80,27 @@ const ConnectAccountScreen = () => {
     <View style={styles.container}>
       {request && (
         <>
-          <ThemedText type='subtitle'>Kết nối Dapp</ThemedText>
+          <ThemedText style={{ marginBottom: 10 }} type='subtitle'>
+            Kết nối Dapp
+          </ThemedText>
+
           <Image style={{ width: 50, height: 50 }} source={{ uri: request.params.proposer.metadata.icons[0] }} />
+          {request?.verifyContext?.verified?.validation === 'VALID' && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 5,
+                backgroundColor: '#4CAF50',
+                padding: 5,
+                borderRadius: 5,
+                marginVertical: 5,
+              }}
+            >
+              <MaterialIcons name='verified' size={12} color='#FFFFFF' />
+              <ThemedText type='small'>Verified</ThemedText>
+            </View>
+          )}
           <ThemedText type='subtitle'>{request.params.proposer.metadata.name}</ThemedText>
           <ThemedText style={[text.size_12]}>{request.params.proposer.metadata.url}</ThemedText>
 
