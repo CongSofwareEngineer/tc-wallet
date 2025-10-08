@@ -77,8 +77,8 @@ const StackScreen = () => {
       </StackExpo>
 
       {/* <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} /> */}
-      {/* <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} /> */}
-      <Redirect href={'/setting'} />
+      <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} />
+      {/* <Redirect href={'/setting'} /> */}
     </>
   )
 

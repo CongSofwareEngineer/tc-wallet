@@ -33,6 +33,8 @@ export const getSecureData = async (key: KEY_STORAGE, defaultData: any = null) =
   try {
     const storage = await create()
     const jsonValue = storage.getItem(key) ?? ''
+    console.log({ jsonValue })
+
     const data = await decodeData(jsonValue)
     return JSON.parse(data)
   } catch {

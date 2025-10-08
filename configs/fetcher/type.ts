@@ -14,6 +14,7 @@ export type ReturnData<T> = {
   statusCode: number
   data: T | null
   message: string
+  result: T
 }
 
 export type GetListResult<T> = {

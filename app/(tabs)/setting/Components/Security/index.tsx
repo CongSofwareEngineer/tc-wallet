@@ -30,6 +30,8 @@ const Security = () => {
   const setting = useAppSelector((state) => state.settings)
 
   const handleChangePasscode = () => {
+    console.log('handleChangePasscode', setting)
+
     const callbackDisable = async () => {
       try {
         const isAuth = await handleAuth(false)
@@ -49,6 +51,8 @@ const Security = () => {
   }
 
   const handleEditPasscode = async () => {
+    console.log('handleEditPasscode')
+
     const callbackDisable = async () => {
       try {
         const isAuth = await handleAuth(false)

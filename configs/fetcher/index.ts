@@ -59,6 +59,7 @@ export default async function fetcher<T = any>(options: IFetch): Promise<ReturnD
   const resFetch = await fetch(callUrl.href, fetchInit)
 
   const resJson = await resFetch.json()
+  console.log({ resJson })
 
   // console.log('🚀 ~ resJson:', resJson)
   // console.log('🚀 ~ resJson:', resJson)

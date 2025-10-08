@@ -1,6 +1,8 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Feather from '@expo/vector-icons/Feather'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import BigNumber from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
@@ -9,9 +11,11 @@ import { Animated, TouchableOpacity, View } from 'react-native'
 import ThemedText from '@/components/UI/ThemedText'
 import { CHAIN_DEFAULT } from '@/constants/chain'
 import { GAP_DEFAULT } from '@/constants/style'
+import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChainSelected from '@/hooks/useChainSelected'
 import useSheet from '@/hooks/useSheet'
 import useWallets from '@/hooks/useWallets'
+import { Token } from '@/services/moralis/type'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
 
 import { styles } from './styles'
@@ -49,6 +53,9 @@ export default function HomeScreen() {
   const { openSheet, closeSheet } = useSheet()
   const { chainId } = useChainSelected()
   const { wallet } = useWallets()
+  const { data: listTokens, isLoading: loadingListTokens, refetch } = useBalanceToken()
+  console.log({ listTokens, env: process.env.EXPO_PUBLIC_MORALIS_API_KEY })
+
   const scrollY = useRef(new Animated.Value(0)).current
 
   // Callback when header is fully hidden
@@ -102,24 +109,30 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   })
 
-  const renderCryptoItem = ({ item }: { item: CryptoAsset }) => (
+  const renderCryptoItem = ({ item }: { item: Token }) => (
     <TouchableOpacity style={styles.cryptoItem}>
-      <View style={[styles.cryptoIcon, { backgroundColor: item.color }]}>
-        <ThemedText style={styles.cryptoName}>{item.symbol[0]}</ThemedText>
+      <View style={[styles.cryptoIcon]}>
+        {item.logo || item.thumbnail ? (
+          <Image source={{ uri: item.logo || item.thumbnail }} style={{ width: 40, height: 40 }} />
+        ) : (
+          // item.symbol
+          <MaterialIcons name='token' size={40} color='black' />
+          // <AntDesign name='tik-tok' size={40} color='#FFFFFF' />
+        )}
       </View>
 
       <View style={styles.cryptoInfo}>
         <ThemedText style={styles.cryptoName}>{item.name}</ThemedText>
         <ThemedText style={styles.cryptoBalance}>
-          {item.balance} {item.symbol}
+          {BigNumber(item.balance_formatted).decimalPlaces(6, BigNumber.ROUND_DOWN).toFormat()} {item.symbol}
         </ThemedText>
       </View>
 
       <View style={{ alignItems: 'flex-end' }}>
-        <ThemedText style={styles.cryptoBalance}>{item.value}</ThemedText>
-        <ThemedText style={[styles.cryptoChange, { color: item.change >= 0 ? '#00D09C' : '#FF4D4D' }]}>
-          {item.change >= 0 ? '+' : ''}
-          {item.change.toFixed(2)}%
+        <ThemedText style={styles.cryptoBalance}>{BigNumber(item.usd_value).decimalPlaces(4, BigNumber.ROUND_DOWN).toFormat()}$</ThemedText>
+        <ThemedText style={[styles.cryptoChange, { color: item.usd_price_24hr_percent_change >= 0 ? '#00D09C' : '#FF4D4D' }]}>
+          {item.usd_price_24hr_percent_change >= 0 ? '+' : ''}
+          {item.usd_price_24hr_percent_change.toFixed(2)}%
         </ThemedText>
       </View>
     </TouchableOpacity>
@@ -205,10 +218,10 @@ export default function HomeScreen() {
             console.log('Content size changed')
           }}
           id={`FlatList_${isShowHeader}`}
-          data={mockCryptoData}
+          data={listTokens || []}
           renderItem={renderCryptoItem}
-          keyExtractor={(item) => item.id}
-          style={{ flex: 1, paddingHorizontal: 20 }}
+          keyExtractor={(item) => item.token_address}
+          style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
           scrollEventThrottle={16}

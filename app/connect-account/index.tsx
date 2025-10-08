@@ -2,7 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { getSdkError } from '@walletconnect/utils'
 import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import React, { useMemo, useTransition } from 'react'
+import React, { useMemo, useState } from 'react'
 import { FlatList, View } from 'react-native'
 
 import ThemedText from '@/components/UI/ThemedText'
@@ -18,7 +18,8 @@ import WalletKit from '@/utils/walletKit'
 import styles from './styles'
 
 const ConnectAccountScreen = () => {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
+
   const { requestWC, removeRequest } = useRequestWC()
   const { wallet } = useWallets()
   const { text } = useTheme()
@@ -52,18 +53,24 @@ const ConnectAccountScreen = () => {
   }, [request])
 
   const handleReject = async () => {
-    const walletKit = await WalletKit.init()
-    await walletKit.rejectSession({
-      id: request?.id,
-      reason: getSdkError('USER_REJECTED'),
-    })
-    await sleep(500)
-    removeRequest(request?.id)
-    router.replace('/(tabs)/home')
+    try {
+      const walletKit = await WalletKit.init()
+      await walletKit.rejectSession({
+        id: request?.id,
+        reason: getSdkError('USER_REJECTED'),
+      })
+      await sleep(500)
+      removeRequest(request?.id)
+      router.replace('/(tabs)/home')
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const handleConnect = async () => {
-    startTransition(async () => {
+    try {
+      if (!wallet) return
+      setIsPending(true)
       const { id, params } = request || {}
       const nameSpaces = WalletKit.formatNameSpaceBySessions(params as any, wallet?.address || '')
 
@@ -73,7 +80,11 @@ const ConnectAccountScreen = () => {
       router.replace('/(tabs)/home')
       await sleep(500)
       removeRequest(request.id)
-    })
+      setIsPending(false)
+    } catch (error) {
+      setIsPending(false)
+      console.error(error)
+    }
   }
 
   return (

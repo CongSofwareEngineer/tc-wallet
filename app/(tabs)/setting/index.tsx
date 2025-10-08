@@ -59,8 +59,8 @@ const SettingScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1, padding: 15 }}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={[styles.container]}>
         <View
           style={[
             {

@@ -1,29 +1,52 @@
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 
 import { KEY_REACT_QUERY } from '@/constants/reactQuery'
 import MoralisService from '@/services/moralis'
+import { Token } from '@/services/moralis/type'
 import { TQueryKey } from '@/types/reactQuery'
 import { ChainId } from '@/types/web3'
 
 import useChainSelected from '../useChainSelected'
+import useWallets from '../useWallets'
 
 const getData = async ({ queryKey }: TQueryKey): Promise<any> => {
-  const [, params, chainId] = queryKey as [string, { address: string; limit?: number }, ChainId]
-  return MoralisService.getBalancesTokenByAddress({
-    ...params,
-    chain: chainId?.toString() || '0x1',
+  const [, address, chainId] = queryKey as [string, string, ChainId]
+  const data = await MoralisService.getBalancesTokenByAddress({
+    address,
+    chainId,
+    limit: 100,
   })
+
+  return data
 }
 
-const useBalanceToken = (params: { address: string; limit?: number }) => {
+const useBalanceToken = (isFilterNonUSD = false) => {
   const { chainId } = useChainSelected()
+  const { wallet } = useWallets()
+
   const queries = useQuery({
-    queryKey: [KEY_REACT_QUERY.getBalancesTokenByAddress, params, chainId],
+    queryKey: [KEY_REACT_QUERY.getBalancesTokenByAddress, wallet?.address || '0x', chainId],
     queryFn: getData,
-    enabled: !!params.address && !!chainId,
+    enabled: !!wallet?.address && !!chainId,
+    refetchInterval: false,
+    refetchIntervalInBackground: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   })
 
-  return queries
+  const dataQuery = useMemo(() => {
+    let arrSort: Token[] = []
+    if (!isFilterNonUSD) {
+      arrSort = queries?.data || []
+    } else {
+      arrSort = queries?.data?.filter((token: Token) => token?.usd_value > 0.001) || []
+    }
+    return arrSort.sort((a, b) => (b.usd_value || 0) - (a.usd_value || 0))
+  }, [queries?.data, isFilterNonUSD])
+
+  return { ...queries, data: dataQuery }
 }
 
 export default useBalanceToken

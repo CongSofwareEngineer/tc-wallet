@@ -15,6 +15,7 @@ const useAuth = () => {
   const handleAuth = async (isNewModal = true) => {
     return await new Promise<boolean>(async (resolve, reject) => {
       const data = await getSecureData(KEY_STORAGE.PasscodeAuth)
+      console.log({ data })
 
       if (data) {
         openModal({

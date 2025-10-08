@@ -35,8 +35,8 @@ const SecurePasswordScreen = () => {
   const maxLength = 4
 
   const handleKeyPress = useCallback(
-    (key: string) => {
-      startTransition(async () => {
+    async (key: string) => {
+      try {
         if (currentPassword.length >= maxLength) return
 
         setPressedKey(key)
@@ -66,11 +66,11 @@ const SecurePasswordScreen = () => {
                 content: <ModalLoading />,
               })
               Vibration.vibrate(100)
-              saveSecureData(KEY_STORAGE.PasscodeAuth, password)
+              await saveSecureData(KEY_STORAGE.PasscodeAuth, password)
               dispatch(setPasscode(true))
               await sleep(2000)
-              router.back()
               closeModal()
+              router.back()
             } else {
               setError('Passwords do not match')
               Vibration.vibrate([100, 100, 100])
@@ -81,9 +81,9 @@ const SecurePasswordScreen = () => {
             }
           }
         }
-      })
+      } catch (error) { }
     },
-    [step, password, confirmPassword, maxLength, currentPassword.length]
+    [step, password, confirmPassword, maxLength, currentPassword.length, closeModal, dispatch, openModal]
   )
 
   const handleDelete = useCallback(() => {
