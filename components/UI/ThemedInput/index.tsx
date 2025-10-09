@@ -5,7 +5,7 @@ import useTheme from '@/hooks/useTheme'
 
 import ThemedText from '../ThemedText'
 
-import { styles } from './styles'
+import { styles } from './styles'\
 import stylesCss from './styles.module.css'
 
 export type ThemedInputProps = {

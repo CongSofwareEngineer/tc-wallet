@@ -1,0 +1,56 @@
+/* Simple circular spinner with customizable CSS variables */
+
+:root {
+  /* Default values (can be overridden where you use the spinner) */
+  --spinner-size: 40px;
+  --spinner-color: #ffffff;
+  --spinner-track-color: rgba(255, 255, 255, 0.2);
+  --spinner-speed: 0.8s;
+}
+
+.spinner {
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  border-radius: 50%;
+  border: calc(var(--spinner-size) / 10) solid var(--spinner-track-color);
+  border-top-color: var(--spinner-color);
+  animation: spinner-rotate var(--spinner-speed) linear infinite;
+  box-sizing: border-box;
+}
+
+/* Size variants */
+.spinner--sm {
+  --spinner-size: 24px;
+}
+
+.spinner--md {
+  --spinner-size: 40px;
+}
+
+.spinner--lg {
+  --spinner-size: 56px;
+}
+
+/* Dark theme helper (optional) */
+.spinner--dark {
+  --spinner-color: #ffffff;
+  --spinner-track-color: rgba(255, 255, 255, 0.2);
+}
+
+.spinner--light {
+  --spinner-color: #0a0a0a;
+  --spinner-track-color: rgba(10, 10, 10, 0.15);
+}
+
+/* Centering utility (optional) */
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

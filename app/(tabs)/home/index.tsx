@@ -8,12 +8,11 @@ import { useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
 import { Animated, TouchableOpacity, View } from 'react-native'
 
+import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
 import { GAP_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
-import useChainSelected from '@/hooks/useChainSelected'
-import useSheet from '@/hooks/useSheet'
 import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
@@ -46,30 +45,24 @@ for (let i = 0; i <= 60; i++) {
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('Tokens')
-  const [activeNetwork, setActiveNetwork] = useState('All Networks')
   const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const [isShowHeader, setIsShowHeader] = useState(true)
   const router = useRouter()
-  const { openSheet, closeSheet } = useSheet()
-  const { chainId } = useChainSelected()
   const { chainCurrent } = useChains()
   const { wallet } = useWallets()
-  const { data: listTokens, isLoading: loadingListTokens, refetch } = useBalanceToken()
-  console.log({ listTokens, env: process.env.EXPO_PUBLIC_MORALIS_API_KEY })
+  const { data: listTokens, isLoading: loadingListTokens } = useBalanceToken()
 
   const scrollY = useRef(new Animated.Value(0)).current
 
   // Callback when header is fully hidden
   const onHeaderFullyHidden = () => {
     setIsShowHeader(false)
-    console.log('Header is fully hidden!')
     // Add your callback logic here
   }
 
   // Callback when header is visible again
   const onHeaderVisible = () => {
     setIsShowHeader(true)
-    console.log('Header is visible again!')
     // Add your callback logic here
   }
 
@@ -201,8 +194,7 @@ export default function HomeScreen() {
               key={tab}
               style={[styles.tabButton, activeTab === tab && styles.activeTab]}
               onPress={() => {
-                // Alert.alert('Tab pressed', `You pressed the ${tab} tab.`)
-                copyToClipboard('sdffsdf')
+                setActiveTab(tab)
               }}
             >
               <ThemedText style={[styles.tabText, activeTab === tab && { color: '#007AFF' }]}>{tab}</ThemedText>
@@ -214,18 +206,25 @@ export default function HomeScreen() {
         {renderChainSelected()}
 
         {/* Crypto List */}
-        <Animated.FlatList
-          onContentSizeChange={() => { }}
-          id={`FlatList_${isShowHeader}`}
-          data={listTokens || []}
-          renderItem={renderCryptoItem}
-          keyExtractor={(item) => item.token_address}
-          style={{ flex: 1 }}
-          showsVerticalScrollIndicator={false}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
-          scrollEventThrottle={16}
-          contentContainerStyle={{ paddingBottom: 100 }}
-        />
+        {!loadingListTokens ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
+            <MyLoading size={48} />
+            <ThemedText style={{ color: '#999999', marginTop: 12 }}>Loading tokens…</ThemedText>
+          </View>
+        ) : (
+          <Animated.FlatList
+            onContentSizeChange={() => { }}
+            id={`FlatList_${isShowHeader}`}
+            data={listTokens || []}
+            renderItem={renderCryptoItem}
+            keyExtractor={(item) => item.token_address}
+            style={{ flex: 1 }}
+            showsVerticalScrollIndicator={false}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+            scrollEventThrottle={16}
+            contentContainerStyle={{ paddingBottom: 100 }}
+          />
+        )}
       </Animated.View>
     </View>
   )
