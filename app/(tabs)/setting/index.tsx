@@ -26,7 +26,7 @@ import styles from './styles'
 const SettingScreen = () => {
   const { translate, setLanguage } = useLanguage()
   const { text, colors } = useTheme()
-  const { mode, setMode } = useMode()
+  const { setMode, isDark } = useMode()
   const { handleAuth } = useAuth()
   const { openModal, closeModal } = useModal()
   const router = useRouter()
@@ -91,7 +91,7 @@ const SettingScreen = () => {
                 <ThemedText opacity={0.7}>Sử dụng giao diện tối cho ứng dụng</ThemedText>
               </View>
               <View>
-                <ThemeSwitch value={mode === MODE.Dark} onValueChange={() => setMode(mode === MODE.Dark ? MODE.Light : MODE.Dark)} />
+                <ThemeSwitch value={isDark} onValueChange={() => setMode(isDark ? MODE.Light : MODE.Dark)} />
               </View>
             </View>
           </Items>
@@ -107,7 +107,7 @@ const SettingScreen = () => {
                 <ThemedText>Chế độ tối</ThemedText>
                 <ThemedText opacity={0.7}>Chế độ tối</ThemedText>
               </View>
-              <ThemeSwitch value={mode === MODE.Dark} onValueChange={() => setMode(mode === MODE.Dark ? MODE.Light : MODE.Dark)} />
+              <ThemeSwitch value={isDark} onValueChange={() => setMode(isDark ? MODE.Light : MODE.Dark)} />
             </View>
           </Items>
 

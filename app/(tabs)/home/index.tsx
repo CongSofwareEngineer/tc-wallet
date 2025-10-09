@@ -9,9 +9,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Animated, TouchableOpacity, View } from 'react-native'
 
 import ThemedText from '@/components/UI/ThemedText'
-import { CHAIN_DEFAULT } from '@/constants/chain'
 import { GAP_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
+import useChains from '@/hooks/useChains'
 import useChainSelected from '@/hooks/useChainSelected'
 import useSheet from '@/hooks/useSheet'
 import useWallets from '@/hooks/useWallets'
@@ -52,6 +52,7 @@ export default function HomeScreen() {
   const router = useRouter()
   const { openSheet, closeSheet } = useSheet()
   const { chainId } = useChainSelected()
+  const { chainCurrent } = useChains()
   const { wallet } = useWallets()
   const { data: listTokens, isLoading: loadingListTokens, refetch } = useBalanceToken()
   console.log({ listTokens, env: process.env.EXPO_PUBLIC_MORALIS_API_KEY })
@@ -122,7 +123,9 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.cryptoInfo}>
-        <ThemedText style={styles.cryptoName}>{item.name}</ThemedText>
+        <ThemedText style={[styles.cryptoName]} numberOfLines={1} ellipsizeMode='tail'>
+          {item.name}
+        </ThemedText>
         <ThemedText style={styles.cryptoBalance}>
           {BigNumber(item.balance_formatted).decimalPlaces(6, BigNumber.ROUND_DOWN).toFormat()} {item.symbol}
         </ThemedText>
@@ -139,8 +142,6 @@ export default function HomeScreen() {
   )
 
   const renderChainSelected = () => {
-    const chainCurrent = CHAIN_DEFAULT.find((c) => c.id === Number(chainId))
-
     return (
       chainCurrent && (
         <TouchableOpacity onPress={() => router.push('/select-chain')} style={styles.networkFilter}>
@@ -162,7 +163,7 @@ export default function HomeScreen() {
           <View style={{ width: 150 }}>
             <TouchableOpacity onPress={() => router.push('/wallet')} style={styles.addressContainer}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap4 }}>
-                <ThemedText style={styles.addressText}>{ellipsisText(wallet?.address, 4, 5)}</ThemedText>
+                <ThemedText style={styles.addressText}>{wallet?.name || ellipsisText(wallet?.address, 4, 5)}</ThemedText>
                 <AntDesign name='down' size={14} color='#FFFFFF' />
               </View>
             </TouchableOpacity>
@@ -184,7 +185,7 @@ export default function HomeScreen() {
               <Feather name='send' size={20} color='#FFFFFF' />
               <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buyButton}>
+            <TouchableOpacity onPress={() => router.push('/qr-info-address')} style={styles.buyButton}>
               <Ionicons name='add' size={20} color='#FFFFFF' />
               <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Receive</ThemedText>
             </TouchableOpacity>
@@ -214,9 +215,7 @@ export default function HomeScreen() {
 
         {/* Crypto List */}
         <Animated.FlatList
-          onContentSizeChange={() => {
-            console.log('Content size changed')
-          }}
+          onContentSizeChange={() => { }}
           id={`FlatList_${isShowHeader}`}
           data={listTokens || []}
           renderItem={renderCryptoItem}

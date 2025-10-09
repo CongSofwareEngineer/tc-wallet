@@ -20,8 +20,7 @@ const ListConnect = () => {
   const sessions = useAppSelector((state) => state.sessions)
   const dispatch = useDispatch()
   const wallets = useAppSelector((state) => state.wallet)
-  const { mode } = useMode()
-  const isDark = mode === 'dark'
+  const { mode, isDark } = useMode()
 
   const sessionsSorted = useMemo(() => {
     if (!sessions) return []

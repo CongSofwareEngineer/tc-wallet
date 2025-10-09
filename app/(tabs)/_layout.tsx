@@ -5,7 +5,7 @@ import { Tabs, usePathname } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
 
-import { COLORS, MODE } from '@/constants/style'
+import { COLORS } from '@/constants/style'
 import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import useRequestWC from '@/hooks/useReuestWC'
@@ -74,7 +74,7 @@ const TabBarLabel = ({
 
 const TabNavigation = () => {
   const [isClient, setIsClient] = useState(false)
-  const { mode } = useMode()
+  const { isDark } = useMode()
   const { translate } = useLanguage()
   const { requestWC } = useRequestWC()
 
@@ -95,7 +95,7 @@ const TabNavigation = () => {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: mode === MODE.Dark ? COLORS.white : COLORS.black,
+        tabBarActiveTintColor: isDark ? COLORS.white : COLORS.black,
 
         tabBarStyle: {
           height: 60,

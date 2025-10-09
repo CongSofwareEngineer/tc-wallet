@@ -83,7 +83,7 @@ export const createStyles = (isDark: boolean) =>
     keypadButton: {
       width: 80,
       height: 80,
-      borderRadius: 40,
+      borderRadius: 8,
       justifyContent: 'center',
       alignItems: 'center',
       marginHorizontal: 20,
@@ -117,7 +117,7 @@ export const createStyles = (isDark: boolean) =>
     keypadActionButton: {
       width: 80,
       height: 80,
-      borderRadius: 40,
+      borderRadius: 8,
       justifyContent: 'center',
       alignItems: 'center',
       marginHorizontal: 20,

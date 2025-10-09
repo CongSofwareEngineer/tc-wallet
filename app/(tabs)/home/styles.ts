@@ -148,6 +148,8 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600',
     marginBottom: 2,
+    flexShrink: 1,
+    maxWidth: '95%',
   },
   cryptoBalance: {
     fontSize: 14,

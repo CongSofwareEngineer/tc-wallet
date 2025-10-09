@@ -3,6 +3,7 @@ import { createNativeStackNavigator, NativeStackNavigationEventMap, NativeStackN
 import { Navigator as NavigatorExpo, Redirect, Stack as StackExpo, withLayoutContext } from 'expo-router'
 import React from 'react'
 
+import useDeepLink from '@/hooks/useDeepLink'
 import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import usePassPhrase from '@/hooks/usePassPhrase'
@@ -20,14 +21,13 @@ export const JsStack = withLayoutContext<
 >(Navigator)
 
 const StackScreen = () => {
+  useDeepLink()
+
   const { translate } = useLanguage()
   const { wallets } = useWallets()
   const { passPhase } = usePassPhrase()
   const { mode } = useMode()
   const { text } = useTheme()
-  console.log('====================================')
-  console.log({ wallets, passPhase: passPhase.length })
-  console.log('====================================')
 
   return (
     <>
@@ -74,11 +74,19 @@ const StackScreen = () => {
             sheetElevation: 0,
           }}
         />
+
+        <StackExpo.Screen
+          name='qr-info-address'
+          options={{
+            animation: 'fade_from_bottom',
+            presentation: 'modal',
+          }}
+        />
       </StackExpo>
 
       {/* <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} /> */}
       <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} />
-      {/* <Redirect href={'/setting'} /> */}
+      {/* <Redirect href={'/qr-info-address'} /> */}
     </>
   )
 

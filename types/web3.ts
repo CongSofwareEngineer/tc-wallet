@@ -28,7 +28,7 @@ export type ChainInfo = {
 }
 export type Callback = {
   callbackSuccess?: (hash?: Hash) => void
-  callbackError?: (error: any) => void
+  callbackError?: (error?: any) => void
   callbackPending?: () => void
   callbackBefore?: () => void
 }

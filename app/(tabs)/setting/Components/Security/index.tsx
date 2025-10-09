@@ -9,6 +9,7 @@ import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeSwitch from '@/components/UI/ThemeSwitch'
 import { KEY_STORAGE } from '@/constants/storage'
+import useAlert from '@/hooks/useAlert'
 import useAuth from '@/hooks/useAuth'
 import useModal from '@/hooks/useModal'
 import useMode from '@/hooks/useMode'
@@ -23,6 +24,7 @@ import Items from '../Item'
 const Security = () => {
   const { text, colors } = useTheme()
   const { mode, setMode } = useMode()
+  const { showAlert } = useAlert()
   const { handleAuth } = useAuth()
   const router = useRouter()
   const dispatch = useDispatch()
@@ -87,7 +89,7 @@ const Security = () => {
       if (isSupport) {
         await LocalAuthentication.cancelAuthenticate()
         const isEnrolled = await LocalAuthentication.isEnrolledAsync()
-        const dataFaceId = await LocalAuthentication.authenticateAsync({
+        const dataFaceId: any = await LocalAuthentication.authenticateAsync({
           biometricsSecurityLevel: 'strong',
           promptMessage: 'Xác thực sinh trắc học',
           cancelLabel: 'Huỷ',
@@ -95,6 +97,12 @@ const Security = () => {
           disableDeviceFallback: true,
           requireConfirmation: true,
         })
+        if (dataFaceId?.error) {
+          showAlert({ text: 'Hệ thống ko hộ trợ' })
+        }
+        if (dataFaceId.success) {
+          showAlert({ text: 'Xác thực thành công' })
+        }
 
         console.log({ isEnrolled, dataFaceId })
       } else {

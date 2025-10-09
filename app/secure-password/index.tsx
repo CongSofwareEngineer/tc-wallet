@@ -17,8 +17,7 @@ import { saveSecureData } from '@/utils/secureStorage'
 import { createStyles } from './styles'
 
 const SecurePasswordScreen = () => {
-  const { mode } = useMode()
-  const isDark = mode === 'dark'
+  const { isDark } = useMode()
   const styles = createStyles(isDark)
   const [isPending, startTransition] = useTransition()
   const { openModal, closeModal } = useModal()

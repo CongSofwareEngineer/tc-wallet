@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react'
 import { Animated, Dimensions, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 
-import { MODE } from '@/constants/style'
 import useMode from '@/hooks/useMode'
 import useTheme from '@/hooks/useTheme'
 import { useAppSelector } from '@/redux/hooks'
@@ -15,7 +14,7 @@ const { width: screenWidth } = Dimensions.get('window')
 const MyAlert = () => {
   const alert = useAppSelector((state) => state.alert)
   const dispatch = useDispatch()
-  const { mode } = useMode()
+  const { isDark } = useMode()
   const { colors } = useTheme()
 
   const fadeAnim = useRef(new Animated.Value(0)).current
@@ -82,7 +81,7 @@ const MyAlert = () => {
         style={{
           opacity: fadeAnim,
           transform: [{ translateY: translateYAnim }],
-          backgroundColor: mode === MODE.Dark ? colors?.black3 : colors?.white,
+          backgroundColor: isDark ? colors?.black3 : colors?.white,
           paddingHorizontal: 20,
           paddingVertical: 12,
           borderRadius: 12,
@@ -93,11 +92,11 @@ const MyAlert = () => {
             width: 0,
             height: 4,
           },
-          shadowOpacity: mode === MODE.Dark ? 0.4 : 0.2,
+          shadowOpacity: isDark ? 0.4 : 0.2,
           shadowRadius: 8,
           elevation: 8,
-          borderWidth: mode === MODE.Dark ? 1 : 0,
-          borderColor: mode === MODE.Dark ? colors?.gray2 : 'transparent',
+          borderWidth: isDark ? 1 : 0,
+          borderColor: isDark ? colors?.gray2 : 'transparent',
         }}
       >
         <ThemedText

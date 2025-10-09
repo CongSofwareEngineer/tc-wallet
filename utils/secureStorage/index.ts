@@ -2,6 +2,7 @@ import * as ExpoCrypto from 'expo-crypto'
 import * as SecureStore from 'expo-secure-store'
 import { MMKV } from 'react-native-mmkv'
 
+import { SECURITY_CONFIG } from '@/constants/appConfig'
 import { KEY_STORAGE } from '@/constants/storage'
 
 export const checkSupportSecure = async () => {
@@ -43,7 +44,8 @@ export const getKeyEncode = async () => {
       return encryptionKey
     }
   } else {
-    return process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE as string
+    // Sử dụng key encode default từ app config thay vì environment variable
+    return process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE || SECURITY_CONFIG.defaultKeyEncode
   }
 }
 

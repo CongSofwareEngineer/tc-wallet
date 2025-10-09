@@ -6,10 +6,14 @@
   }
 }
 .input:focus {
-  border-color: transparent !important;
-  border-width: 0px !important;
+  outline: none !important;
 }
 .input:focus-visible {
-  border-color: transparent !important;
-  border-width: 0px !important;
+  outline: none !important;
+}
+.input::placeholder {
+  outline: none !important;
+}
+.input:disabled {
+  outline: none !important;
 }

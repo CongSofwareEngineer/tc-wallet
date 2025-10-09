@@ -12,9 +12,11 @@ const useMode = () => {
   const setMode = (mode: MODE) => {
     dispatch(setModeSlice(mode))
   }
+
   return {
     mode,
     setMode,
+    isDark: mode === MODE.Dark,
   }
 }
 

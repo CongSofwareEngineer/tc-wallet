@@ -2,73 +2,26 @@ import AntDesign from '@expo/vector-icons/AntDesign'
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera'
 import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
 import { IsIos } from '@/constants/app'
 import useLanguage from '@/hooks/useLanguage'
-import useRequestWC from '@/hooks/useReuestWC'
-import useWallets from '@/hooks/useWallets'
-import { useAppSelector } from '@/redux/hooks'
-import { setRequestWC } from '@/redux/slices/requestWC'
-import { store } from '@/redux/store'
 import { sleep } from '@/utils/functions'
-import WalletKit, { TypeWalletKit } from '@/utils/walletKit'
+import WalletKit from '@/utils/walletKit'
 
 import styles from './styles'
 
 const ConnectDAppScreen = () => {
   const router = useRouter()
-  const { wallet } = useWallets()
   const [uri, setUri] = useState('')
   const [loading, setLoading] = useState(false)
   const [facing, setFacing] = useState<CameraType>('back')
 
   const [permission, requestPermission] = useCameraPermissions()
   const { translate } = useLanguage()
-  const { setRequest } = useRequestWC()
-  const requestWC = useAppSelector((state) => state.requestWC)
-
-  useEffect(() => {
-    let instance: TypeWalletKit | null = null
-
-    const onSessionProposal = async (e: any) => {
-      console.log({ onSessionProposal: e, requestWC })
-
-      store.dispatch(
-        setRequestWC({
-          ...(e as any),
-          timestamp: Date.now(),
-          type: 'proposal',
-        })
-      )
-      setTimeout(() => {
-        router.replace('/connect-account')
-      }, 500)
-    }
-
-    const init = async () => {
-      instance = await WalletKit.init()
-      try {
-        // pre-clean to avoid dev double-mount duplicates
-        // @ts-ignore
-        instance.off?.('session_proposal', (e) => { })
-      } catch { }
-      await sleep(1000)
-      instance.once('session_proposal', onSessionProposal)
-    }
-    init()
-
-    return () => {
-      if (instance) {
-        try {
-          instance.off('session_proposal', (e) => { })
-        } catch { }
-      }
-    }
-  }, [wallet?.address, router])
 
   const handleConnect = async (uri = '') => {
     try {

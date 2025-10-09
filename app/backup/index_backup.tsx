@@ -1,18 +1,16 @@
 import { Ionicons } from '@expo/vector-icons'
-import * as DocumentPicker from 'expo-document-picker'
-import { EncodingType, readAsStringAsync, StorageAccessFramework } from 'expo-file-system/legacy'
+import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy'
 import { useRouter } from 'expo-router'
 import React, { useCallback, useState } from 'react'
-import { Animated, KeyboardAvoidingView, PermissionsAndroid, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Animated, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
-import { APP_CONFIG } from '@/constants/appConfig'
+import { APP_INFO } from '@/constants/appConfig'
 import { useAlert } from '@/hooks/useAlert'
 import useMode from '@/hooks/useMode'
 import { useAppSelector } from '@/redux/hooks'
-import { decodeData, encodeData } from '@/utils/crypto'
-import { getDataLocal, saveDataLocal } from '@/utils/storage'
+import { encodeData } from '@/utils/crypto'
 
 import { createStyles } from './styles'
 
@@ -37,53 +35,44 @@ const BackupScreen = () => {
   const handleBackup = useCallback(async () => {
     if (!isValidForm) return
 
-    const requestStoragePermission = async () => {
-      if (Platform.OS === 'android') {
-        try {
-          const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, {
-            title: 'Storage Permission',
-            message: 'App needs access to storage to save backup files to Downloads folder',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          })
-          return granted === PermissionsAndroid.RESULTS.GRANTED
-        } catch {
-          return false
-        }
-      }
-      return true
-    }
-
     setIsLoading(true)
     try {
       let timestamp = new Date().toISOString()
       timestamp = timestamp.replaceAll(':', '_')
       timestamp = timestamp.replaceAll('-', '_')
       timestamp = timestamp.replaceAll('.', '_')
-
       // Tạo backup data với password để tăng security
       const backupData = {
-        version: APP_CONFIG.appVersion,
+        version: '1.0',
         timestamp: timestamp,
         wallets: wallets.wallets,
+        password: password, // Include password in encryption
       }
 
       // Sử dụng encodeData từ crypto utils (AES encryption)
-      const backupText = await encodeData(backupData, password)
+      const encryptedData = await encodeData(backupData, password + timestamp)
 
-      if (!backupText) {
+      if (!encryptedData) {
         throw new Error('Failed to encrypt backup data')
       }
 
-      // Tạo file TXT
-      const fileName = `tc-wallet-backup_${timestamp}.txt`
+      const backupObject = {
+        encrypted: true,
+        data: encryptedData,
+        timestamp: timestamp,
+        app: APP_INFO.displayName,
+        version: APP_INFO.version,
+        identifier: APP_INFO.identifier,
+      }
 
-      // Tạo nội dung text cho file backup
+      // Tạo file JSON
+      const fileName = `tc-wallet-backup_${timestamp}.json`
+
+      const backupText = JSON.stringify(backupObject, null, 2)
 
       if (Platform.OS === 'web') {
-        // Trên web, download file trực tiếp
-        const blob = new Blob([backupText], { type: 'text/plain' })
+        // Trên web, download file
+        const blob = new Blob([backupText], { type: 'application/json' })
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
@@ -93,33 +82,27 @@ const BackupScreen = () => {
         document.body.removeChild(link)
         URL.revokeObjectURL(url)
       } else {
-        const urlDefault = getDataLocal('default_backup_location') || null
+        // Trên mobile, lưu file trực tiếp vào Documents directory
+        const fileUri = documentDirectory + fileName
+        await writeAsStringAsync(fileUri, backupText)
 
-        const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync(urlDefault)
-
-        if (permissions.granted) {
-          // Gets SAF URI from response
-          const uri = permissions.directoryUri
-          saveDataLocal('default_backup_location', uri)
-          const fileUri = await StorageAccessFramework.createFileAsync(uri, fileName, 'text/plain')
-
-          // Gets all files inside of selected directory
-          await StorageAccessFramework.writeAsStringAsync(fileUri, backupText, {
-            encoding: EncodingType.UTF8,
-          })
-
-          showSuccess('Backup saved to custom location!')
-          router.back()
-        } else {
-          showError('No location selected. Please try again.')
-        }
+        // Thông báo file đã được lưu thành công
+        Alert.alert(
+          'Backup Saved Successfully! 🎉',
+          `File saved to:\n${fileUri}\n\nFile name: ${fileName}\n\nYour wallet backup has been saved to your device's Documents folder.`,
+          [
+            {
+              text: 'OK',
+              style: 'default',
+            },
+          ]
+        )
       }
 
-      // showSuccess('Backup process completed!')
-      // router.back()
-    } catch (error) {
-      console.log({ error })
+      showSuccess('Backup file saved to your device successfully!')
 
+      router.back()
+    } catch {
       showError('Failed to create backup file. Please try again.')
     } finally {
       setIsLoading(false)
@@ -154,24 +137,6 @@ const BackupScreen = () => {
       color: colors[score] || colors[0],
       feedback,
     }
-  }
-
-  const handleImport = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'text/plain',
-        copyToCacheDirectory: true,
-      })
-      const fileUri = result.assets[0].uri
-      console.log('📂 Selected file:', fileUri)
-
-      const content = await readAsStringAsync(fileUri, {
-        encoding: EncodingType.UTF8,
-      })
-
-      const contentDecode = await decodeData(content, 'Diencong12@5')
-      console.log({ content, contentDecode: contentDecode?.wallets })
-    } catch (error) { }
   }
 
   const renderPasswordInput = (
@@ -210,24 +175,19 @@ const BackupScreen = () => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-      enabled
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <HeaderScreen title='Backup Wallet' />
 
       <ScrollView
-        style={{ flex: 1 }}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps='handled'
-        automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
-        bounces={false}
+        automaticallyAdjustKeyboardInsets={true}
       >
         <View style={styles.headerSection}>
           <ThemedText style={styles.title}>Create Backup</ThemedText>
-          <ThemedText style={styles.subtitle}>
-            Secure your wallet data with a password-protected backup text file. Choose Downloads, custom location, or share to save.
-          </ThemedText>
+          <ThemedText style={styles.subtitle}>Secure your wallet data with a password-protected backup file saved to your device</ThemedText>
         </View>
 
         <View style={styles.warningSection}>

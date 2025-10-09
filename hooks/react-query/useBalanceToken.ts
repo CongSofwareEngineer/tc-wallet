@@ -6,16 +6,29 @@ import MoralisService from '@/services/moralis'
 import { Token } from '@/services/moralis/type'
 import { TQueryKey } from '@/types/reactQuery'
 import { ChainId } from '@/types/web3'
+import { sleep } from '@/utils/functions'
+import { getDataLocal, saveDataLocal } from '@/utils/storage'
 
 import useChainSelected from '../useChainSelected'
 import useWallets from '../useWallets'
 
 const getData = async ({ queryKey }: TQueryKey): Promise<any> => {
+  let dataLocal = getDataLocal('balanceToken')
   const [, address, chainId] = queryKey as [string, string, ChainId]
+
+  if (dataLocal && dataLocal[`${chainId}_${address}`]) {
+    return dataLocal[`${chainId}_${address}`]
+  }
+
   const data = await MoralisService.getBalancesTokenByAddress({
     address,
     chainId,
     limit: 100,
+  })
+
+  saveDataLocal('balanceToken', {
+    ...dataLocal,
+    [`${chainId}_${address}`]: data,
   })
 
   return data
@@ -46,7 +59,17 @@ const useBalanceToken = (isFilterNonUSD = false) => {
     return arrSort.sort((a, b) => (b.usd_value || 0) - (a.usd_value || 0))
   }, [queries?.data, isFilterNonUSD])
 
-  return { ...queries, data: dataQuery }
+  const refetch = async () => {
+    let dataLocal = getDataLocal('balanceToken')
+    if (dataLocal && dataLocal[`${chainId}_${wallet?.address}`]) {
+      delete dataLocal[`${chainId}_${wallet?.address}`]
+      saveDataLocal('balanceToken', dataLocal)
+    }
+    await sleep(100)
+    queries.refetch()
+  }
+
+  return { ...queries, data: dataQuery, refetch }
 }
 
 export default useBalanceToken
