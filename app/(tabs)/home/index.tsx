@@ -114,7 +114,7 @@ export default function HomeScreen() {
     <TouchableOpacity style={styles.cryptoItem}>
       <View style={[styles.cryptoIcon]}>
         {item.logo || item.thumbnail ? (
-          <Image source={{ uri: item.logo || item.thumbnail }} style={{ width: 40, height: 40 }} />
+          <Image source={{ uri: item.logo || item.thumbnail }} style={{ width: 36, height: 36 }} />
         ) : (
           // item.symbol
           <MaterialIcons name='token' size={40} color='black' />
@@ -146,7 +146,7 @@ export default function HomeScreen() {
       chainCurrent && (
         <TouchableOpacity onPress={() => router.push('/select-chain')} style={styles.networkFilter}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-            {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent?.iconChain }} style={{ width: 24, height: 24, borderRadius: 12 }} />}
+            {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent?.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />}
             <ThemedText style={styles.networkFilterText}>{chainCurrent?.name}</ThemedText>
           </View>
           <AntDesign name='down' size={16} color='#FFFFFF' />

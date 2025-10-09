@@ -133,12 +133,12 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
   },
   cryptoIcon: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 15,
+    marginRight: 12,
   },
   cryptoInfo: {
     flex: 1,
