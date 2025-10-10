@@ -8,15 +8,16 @@ import ThemedText from '@/components/UI/ThemedText'
 import ThemeSwitch from '@/components/UI/ThemeSwitch'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { COLORS, MODE } from '@/constants/style'
+import useAlert from '@/hooks/useAlert'
 import useAuth from '@/hooks/useAuth'
 import useLanguage from '@/hooks/useLanguage'
 import useModal from '@/hooks/useModal'
 import useMode from '@/hooks/useMode'
 import usePassPhrase from '@/hooks/usePassPhrase'
+import useSetting from '@/hooks/useSetting'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { LANGUAGE_SUPPORT } from '@/types/language'
-import { Alert } from '@/utils/alert'
 import WalletKit from '@/utils/walletKit'
 
 import Items from './Components/Item'
@@ -32,11 +33,16 @@ const SettingScreen = () => {
   const router = useRouter()
   const { setWallets } = useWallets()
   const { removeAllPassphrases } = usePassPhrase()
+  const { settings, resetSetting } = useSetting()
+  const { showAlert } = useAlert()
 
   const resetApp = async () => {
     const callback = async () => {
       try {
-        const isAuth = await handleAuth(false)
+        let isAuth = true
+        if (settings?.isPasscode) {
+          isAuth = await handleAuth(false)
+        }
 
         if (isAuth) {
           setWallets([])
@@ -44,10 +50,11 @@ const SettingScreen = () => {
           setMode(MODE.Dark)
           setLanguage(LANGUAGE_SUPPORT.VN)
           WalletKit.sessionDeleteAll()
+          resetSetting()
           router.replace('/create-wallet')
         }
       } catch (error) {
-        Alert.alert('Error', 'An error occurred while resetting the app.')
+        showAlert({ text: 'Lỗi xác thực' })
       }
     }
     openModal({

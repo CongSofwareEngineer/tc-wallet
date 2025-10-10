@@ -106,6 +106,7 @@ const Security = () => {
 
         console.log({ isEnrolled, dataFaceId })
       } else {
+        showAlert({ text: 'Hệ thống ko hộ trợ' })
       }
     }
   }

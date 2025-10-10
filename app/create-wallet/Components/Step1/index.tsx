@@ -1,4 +1,5 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
+import { useRouter } from 'expo-router'
 import React from 'react'
 import { View } from 'react-native'
 
@@ -18,6 +19,7 @@ type Props = {
 const Step1 = ({ handleCreateWallet, handleImportWalletWithPrivateKey, handleImportWalletWithSeedPhrase }: Props) => {
   const { mode } = useMode()
   const { text } = useTheme()
+  const router = useRouter()
 
   return (
     <View style={[styles.containerContent, styles[`containerContent${mode}`]]}>
@@ -50,6 +52,12 @@ const Step1 = ({ handleCreateWallet, handleImportWalletWithPrivateKey, handleImp
       <View>
         <ThemeTouchableOpacity style={styles.button} onPress={handleImportWalletWithPrivateKey}>
           <ThemedText>Import with Private Key</ThemedText>
+        </ThemeTouchableOpacity>
+      </View>
+
+      <View style={{ marginTop: GAP_DEFAULT.Gap8 }}>
+        <ThemeTouchableOpacity style={styles.button} onPress={() => router.push('/restore')}>
+          <ThemedText>Restore file</ThemedText>
         </ThemeTouchableOpacity>
       </View>
     </View>

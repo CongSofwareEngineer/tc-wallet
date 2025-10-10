@@ -31,8 +31,14 @@ const settingsSlice = createSlice({
     setNotification: (state, action: PayloadAction<boolean>) => {
       state.isNotification = action.payload
     },
+    setSetting: (state, action: PayloadAction<Setting>) => {
+      return { ...state, ...action.payload }
+    },
+    resetSetting: () => {
+      return initialState
+    },
   },
 })
 
-export const { setFaceId, setPasscode, setBiometric, setNotification } = settingsSlice.actions
+export const { setFaceId, setPasscode, setBiometric, setNotification, setSetting, resetSetting } = settingsSlice.actions
 export default settingsSlice.reducer

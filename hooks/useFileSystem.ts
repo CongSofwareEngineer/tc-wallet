@@ -13,10 +13,10 @@ interface FileSystemOptions {
   encoding?: EncodingType
 }
 
-interface SaveOptions extends FileSystemOptions {
-  shareTitle?: string
-  mimeType?: string
-}
+// interface SaveOptions extends FileSystemOptions {
+//   shareTitle?: string
+//   mimeType?: string
+// }
 
 interface ReadFileResult {
   content: string | null
@@ -37,7 +37,7 @@ type SaveFileParams = {
 } & Callback
 
 export const useFileSystem = () => {
-  const { showSuccess, showError } = useAlert()
+  const { showError } = useAlert()
 
   // Tạo thư mục nếu chưa tồn tại
   const ensureDirectoryExists = async (dirPath: string): Promise<boolean> => {
@@ -78,13 +78,21 @@ export const useFileSystem = () => {
         type: options?.type || 'text/plain',
         copyToCacheDirectory: true,
       })
+      // result contains file assets when user selects a file
 
       if (result.canceled || !result.assets || !result.assets[0]) {
         return { content: null, error: 'No file selected' }
       }
 
       const file = result.assets[0]
-      const content = await readAsStringAsync(file.uri, { encoding: EncodingType.UTF8 })
+      let content: string
+      if (Platform.OS === 'web') {
+        // On web, use fetch to read file content
+        content = await (await fetch(file.uri)).text()
+      } else {
+        content = await readAsStringAsync(file.uri, { encoding: EncodingType.UTF8 })
+      }
+      // File content read successfully
 
       return { content }
     } catch {
@@ -95,9 +103,14 @@ export const useFileSystem = () => {
   // Đọc file từ path cụ thể
   const readFile = async (filePath: string, options?: FileSystemOptions): Promise<ReadFileResult> => {
     try {
-      const content = await readAsStringAsync(filePath, {
-        encoding: options?.encoding || EncodingType.UTF8,
-      })
+      let content: string
+      if (Platform.OS === 'web') {
+        content = await (await fetch(filePath)).text()
+      } else {
+        content = await readAsStringAsync(filePath, {
+          encoding: options?.encoding || EncodingType.UTF8,
+        })
+      }
       return { content }
     } catch {
       return { content: null, error: 'Failed to read file' }

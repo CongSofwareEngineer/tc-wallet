@@ -4,25 +4,32 @@ import { View } from 'react-native'
 import { isAddress } from 'viem'
 
 import ThemedText from '@/components/UI/ThemedText'
+import useWallets from '@/hooks/useWallets'
 import { RequestWC } from '@/redux/slices/requestWC'
 import { Session } from '@/types/walletConnect'
 import { ellipsisText } from '@/utils/functions'
 
 const CurrentSession = ({ session, params }: { session: Session; params: RequestWC }) => {
-  const address = useMemo(() => {
+  const { wallets } = useWallets()
+
+  const wallet = useMemo(() => {
     let address = params?.params?.request.params[0]
-    if (isAddress(address)) {
-      return address
+    if (!isAddress(address)) {
+      address = params?.params?.request.params[1]
     }
-    return params?.params?.request.params[1]
-  }, [params])
+    const walletCurrent = wallets.find((w) => w.address.toLowerCase() === address.toLowerCase())
+    return walletCurrent
+  }, [wallets, params])
+
   return (
     <View style={{ padding: 12, borderColor: '#ccc', borderWidth: 1, gap: 10, borderRadius: 12, marginBottom: 30 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, justifyContent: 'space-between' }}>
         {session.peer.metadata?.icons && session.peer.metadata?.icons[0] && (
           <Image style={{ width: 30, height: 30, borderRadius: 25 }} source={{ uri: session.peer.metadata?.icons[0] }} />
         )}
-        <ThemedText>Address: {ellipsisText(address, 5, 6)}</ThemedText>
+        <ThemedText>
+          {wallet?.name || `Account`}: {ellipsisText(wallet?.address, 5, 6)}
+        </ThemedText>
       </View>
       <ThemedText
         style={{

@@ -5,6 +5,7 @@ import { useAppSelector } from '@/redux/hooks'
 import {
   removeAllPassphrases as removeAllPassphrasesSlice,
   removePassPhrase as removePassPhraseSlice,
+  setListPassPhrase as setListPassPhraseSlice,
   setPassPhrase as setPassPhraseSlice,
 } from '@/redux/slices/passPhaseSlice'
 import { Wallet } from '@/types/wallet'
@@ -21,6 +22,12 @@ const usePassPhrase = () => {
   const setPassPhrase = async (value: string) => {
     const arr = [...passPhase, value]
     dispatch(setPassPhraseSlice(value))
+    await saveSecureData(KEY_STORAGE.Mnemonic, arr)
+  }
+
+  const setListPassPhrase = async (value: string[]) => {
+    const arr = [...passPhase, ...value]
+    dispatch(setListPassPhraseSlice(arr))
     await saveSecureData(KEY_STORAGE.Mnemonic, arr)
   }
 
@@ -61,6 +68,7 @@ const usePassPhrase = () => {
     removeAllPassphrases,
     addPassPhrase,
     passPhase,
+    setListPassPhrase,
   }
 }
 

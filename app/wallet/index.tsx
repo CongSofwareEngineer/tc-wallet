@@ -27,57 +27,77 @@ const WalletScreen = () => {
   const router = useRouter()
   const { passPhase, addPassPhrase } = usePassPhrase()
   const { closeModal, openModal } = useModal()
+  // wallets available in state
 
   const [showData, setShowData] = useState(false)
 
-  // Group wallets by mnemonic/pass phrase
-  const groupedWallets = useMemo(() => {
+  // Group wallets by mnemonic/pass phrase and collect imported accounts (index* === -1)
+  const sectionData = useMemo(() => {
+    type WalletRow = Wallet & { indexWallet: number }
+    type Section = {
+      title: string
+      subtitle?: string
+      data: WalletRow[]
+      indexMnemonic?: number
+      fullMnemonic?: string
+      isImported?: boolean
+    }
+
     const groups = new Map<
       number,
       {
         indexMnemonic: number
         mnemonic: string
-        wallets: (Wallet & {
-          indexWallet: number
-        })[]
+        wallets: WalletRow[]
       }
     >()
+    const imported: WalletRow[] = []
 
     walletList.forEach((wallet, index) => {
-      if (!wallet.isDelete) {
-        if (groups.has(wallet.indexMnemonic!)) {
-          groups.get(wallet.indexMnemonic!)!.wallets.push({
-            ...wallet,
-            indexWallet: index,
-          })
-        } else {
-          groups.set(wallet.indexMnemonic!, {
-            indexMnemonic: wallet.indexMnemonic!,
-            mnemonic: passPhase[wallet.indexMnemonic!] || 'Unknown',
-            wallets: [
-              {
-                ...wallet,
-                indexWallet: index,
-              },
-            ],
-          })
-        }
+      if (wallet.isDelete) return
+
+      const isImported = wallet.indexAccountMnemonic === -1 || wallet.indexMnemonic === -1
+
+      if (isImported) {
+        imported.push({ ...wallet, indexWallet: index })
+        return
+      }
+
+      const key = wallet.indexMnemonic!
+      if (groups.has(key)) {
+        groups.get(key)!.wallets.push({ ...wallet, indexWallet: index })
+      } else {
+        groups.set(key, {
+          indexMnemonic: key,
+          mnemonic: passPhase[key] || 'Unknown',
+          wallets: [{ ...wallet, indexWallet: index }],
+        })
       }
     })
 
-    return Array.from(groups.values()).sort((a, b) => a.indexMnemonic - b.indexMnemonic)
-  }, [walletList, passPhase])
+    const sections: Section[] = []
 
-  // Flatten data for SectionList
-  const sectionData = useMemo(() => {
-    return groupedWallets.map((group) => ({
-      title: `Seed Phrase ${group.indexMnemonic + 1}`,
-      subtitle: group.mnemonic,
-      data: group.wallets,
-      indexMnemonic: group.indexMnemonic,
-      fullMnemonic: group.mnemonic,
-    }))
-  }, [groupedWallets])
+    if (imported.length > 0) {
+      sections.push({
+        title: 'Imported Accounts',
+        data: imported,
+        isImported: true,
+      })
+    }
+
+    const grouped = Array.from(groups.values()).sort((a, b) => a.indexMnemonic - b.indexMnemonic)
+    for (const group of grouped) {
+      sections.push({
+        title: `Seed Phrase ${group.indexMnemonic + 1}`,
+        subtitle: group.mnemonic,
+        data: group.wallets,
+        indexMnemonic: group.indexMnemonic,
+        fullMnemonic: group.mnemonic,
+      })
+    }
+
+    return sections
+  }, [walletList, passPhase])
 
   // Placeholder avatar generator (replace with your own if needed)
 
@@ -126,7 +146,9 @@ const WalletScreen = () => {
       if (isAuth) {
         setShowData(true)
       }
-    } catch (error) { }
+    } catch {
+      // ignore
+    }
   }
 
   const handleDetailAccount = async (indexWallet: number) => {
@@ -139,7 +161,9 @@ const WalletScreen = () => {
           router.push(`/wallet-detail/${indexWallet}`)
         }
       }
-    } catch (error) { }
+    } catch {
+      // ignore
+    }
   }
 
   return (
@@ -197,26 +221,32 @@ const WalletScreen = () => {
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleContainer}>
               <ThemedText style={styles.sectionTitle}>{section.title}</ThemedText>
-              {showData ? (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-                  <ThemedText style={styles.sectionSubtitle}>{ellipsisText(section.subtitle, 6, 8)}</ThemedText>
-                  <TouchableOpacity onPress={handleShowData}>
-                    <AntDesign name='eye-invisible' size={16} color={text.color} />
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-                  <ThemedText style={styles.sectionSubtitle}>******************</ThemedText>
-                  <TouchableOpacity onPress={handleShowData}>
-                    <AntDesign name='eye' size={16} color={text.color} />
-                  </TouchableOpacity>
-                </View>
+              {!section.isImported && (
+                <>
+                  {showData ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+                      <ThemedText style={styles.sectionSubtitle}>{ellipsisText(section.subtitle as string, 6, 8)}</ThemedText>
+                      <TouchableOpacity onPress={handleShowData}>
+                        <AntDesign name='eye-invisible' size={16} color={text.color} />
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+                      <ThemedText style={styles.sectionSubtitle}>******************</ThemedText>
+                      <TouchableOpacity onPress={handleShowData}>
+                        <AntDesign name='eye' size={16} color={text.color} />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </>
               )}
             </View>
-            <ThemeTouchableOpacity type='text' style={styles.addAccountButton} onPress={() => handleCreateAccount(section.indexMnemonic)}>
-              <AntDesign name='plus' size={16} color={colors.blue} />
-              <ThemedText style={styles.addAccountText}>Add</ThemedText>
-            </ThemeTouchableOpacity>
+            {!section.isImported && (
+              <ThemeTouchableOpacity type='text' style={styles.addAccountButton} onPress={() => handleCreateAccount(section.indexMnemonic!)}>
+                <AntDesign name='plus' size={16} color={colors.blue} />
+                <ThemedText style={styles.addAccountText}>Add</ThemedText>
+              </ThemeTouchableOpacity>
+            )}
           </View>
         )}
         ListEmptyComponent={

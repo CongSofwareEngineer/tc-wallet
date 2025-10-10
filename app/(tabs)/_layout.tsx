@@ -120,14 +120,6 @@ const TabNavigation = () => {
       />
 
       <Tabs.Screen
-        name='approve'
-        options={{
-          tabBarBadge: requestWCApprove > 0 ? requestWCApprove : undefined,
-          title: 'Approve',
-          tabBarIcon: ({ color }) => <AntDesign size={16} name='info-circle' color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name='setting'
         options={{
           title: 'Setting',

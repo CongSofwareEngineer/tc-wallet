@@ -59,6 +59,11 @@ const useBalanceToken = (isFilterNonUSD = false) => {
     return arrSort.sort((a, b) => (b.usd_value || 0) - (a.usd_value || 0))
   }, [queries?.data, isFilterNonUSD])
 
+  const totalUSD = useMemo(() => {
+    if (!dataQuery || dataQuery.length === 0) return 0
+    return dataQuery.reduce((acc: number, token: Token) => acc + (token?.usd_value || 0), 0)
+  }, [dataQuery])
+
   const refetch = async () => {
     let dataLocal = getDataLocal('balanceToken')
     if (dataLocal && dataLocal[`${chainId}_${wallet?.address}`]) {
@@ -69,7 +74,7 @@ const useBalanceToken = (isFilterNonUSD = false) => {
     queries.refetch()
   }
 
-  return { ...queries, data: dataQuery, refetch }
+  return { ...queries, totalUSD, data: dataQuery, refetch }
 }
 
 export default useBalanceToken

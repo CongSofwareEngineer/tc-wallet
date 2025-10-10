@@ -2,11 +2,11 @@ import AntDesign from '@expo/vector-icons/AntDesign'
 import Feather from '@expo/vector-icons/Feather'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import BigNumber from 'bignumber.js'
+import Big from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
-import { Animated, TouchableOpacity, View } from 'react-native'
+import { Animated, RefreshControl, TouchableOpacity, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
@@ -15,7 +15,7 @@ import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
 import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
-import { copyToClipboard, ellipsisText } from '@/utils/functions'
+import { ellipsisText } from '@/utils/functions'
 
 import { styles } from './styles'
 
@@ -50,7 +50,7 @@ export default function HomeScreen() {
   const router = useRouter()
   const { chainCurrent } = useChains()
   const { wallet } = useWallets()
-  const { data: listTokens, isLoading: loadingListTokens } = useBalanceToken()
+  const { data: listTokens, isLoading: loadingListTokens, totalUSD, refetch, isRefetching } = useBalanceToken()
 
   const scrollY = useRef(new Animated.Value(0)).current
 
@@ -120,12 +120,12 @@ export default function HomeScreen() {
           {item.name}
         </ThemedText>
         <ThemedText style={styles.cryptoBalance}>
-          {BigNumber(item.balance_formatted).decimalPlaces(6, BigNumber.ROUND_DOWN).toFormat()} {item.symbol}
+          {Big(item.balance_formatted).decimalPlaces(6, Big.ROUND_DOWN).toFormat()} {item.symbol}
         </ThemedText>
       </View>
 
       <View style={{ alignItems: 'flex-end' }}>
-        <ThemedText style={styles.cryptoBalance}>{BigNumber(item.usd_value).decimalPlaces(4, BigNumber.ROUND_DOWN).toFormat()}$</ThemedText>
+        <ThemedText style={styles.cryptoBalance}>{Big(item.usd_value).decimalPlaces(4, Big.ROUND_DOWN).toFormat()}$</ThemedText>
         <ThemedText style={[styles.cryptoChange, { color: item.usd_price_24hr_percent_change >= 0 ? '#00D09C' : '#FF4D4D' }]}>
           {item.usd_price_24hr_percent_change >= 0 ? '+' : ''}
           {item.usd_price_24hr_percent_change.toFixed(2)}%
@@ -171,10 +171,10 @@ export default function HomeScreen() {
 
         {/* Balance Section */}
         <View style={styles.balanceSection}>
-          <ThemedText style={styles.balanceAmount}>$1,234.56</ThemedText>
+          <ThemedText style={styles.balanceAmount}>${Big(totalUSD).decimalPlaces(6, Big.ROUND_DOWN).toFormat()}</ThemedText>
           {/* <Options /> */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-            <TouchableOpacity onPress={() => copyToClipboard('sdffsdf')} style={styles.buyButton}>
+            <TouchableOpacity onPress={() => router.push(`/send-token/${wallet?.address}`)} style={styles.buyButton}>
               <Feather name='send' size={20} color='#FFFFFF' />
               <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
             </TouchableOpacity>
@@ -206,7 +206,7 @@ export default function HomeScreen() {
         {renderChainSelected()}
 
         {/* Crypto List */}
-        {!loadingListTokens ? (
+        {loadingListTokens ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
             <MyLoading size={48} />
             <ThemedText style={{ color: '#999999', marginTop: 12 }}>Loading tokens…</ThemedText>
@@ -223,6 +223,7 @@ export default function HomeScreen() {
             onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
             scrollEventThrottle={16}
             contentContainerStyle={{ paddingBottom: 100 }}
+            refreshControl={<RefreshControl refreshing={!!isRefetching} onRefresh={refetch} tintColor='#FFFFFF' colors={['#007AFF']} />}
           />
         )}
       </Animated.View>

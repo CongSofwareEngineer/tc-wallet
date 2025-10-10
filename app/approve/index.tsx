@@ -1,4 +1,5 @@
-import React, { useMemo, useTransition } from 'react'
+import { useRouter } from 'expo-router'
+import React, { useMemo, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
@@ -13,11 +14,12 @@ import PersonalSign from './Comonent/Personalsign'
 import SignTypedData from './Comonent/SignTypedData'
 
 const ApproveScreen = () => {
-  const [isApproving, startApprove] = useTransition()
-  const [isRejecting, startReject] = useTransition()
+  const [isApproving, setApproving] = useState(false)
+  const [isRejecting, setRejecting] = useState(false)
   const { translate } = useLanguage()
   const sessions = useAppSelector((state) => state.sessions)
   const { requestWC, removeRequest } = useRequestWC()
+  const router = useRouter()
 
   const requestLasted = useMemo(() => {
     if (requestWC[requestWC.length - 1]) {
@@ -36,26 +38,37 @@ const ApproveScreen = () => {
   }, [requestLasted, sessions])
 
   const handleReject = async () => {
-    if (requestLasted?.id) {
-      startReject(async () => {
+    try {
+      setRejecting(true)
+      if (requestLasted?.id) {
         const WalletKit = await import('@/utils/walletKit').then((mod) => mod.default)
         await WalletKit.respondSessionRequest(requestLasted.id, requestLasted.topic, 'USER_REJECTED', true)
         await sleep(500)
         removeRequest(requestLasted.id)
-      })
+      }
+    } catch {
+    } finally {
+      setRejecting(false)
+      router.dismissAll()
     }
   }
 
   const handleApprove = async () => {
-    if (requestLasted?.id) {
-      startApprove(async () => {
+    try {
+      setApproving(true)
+
+      if (requestLasted?.id) {
         const WalletKit = await import('@/utils/walletKit').then((mod) => mod.default)
 
         const { id, params, topic } = requestLasted
         WalletKit.onApproveRequest(id, topic, params as any)
         await sleep(500)
         removeRequest(requestLasted.id)
-      })
+      }
+    } catch {
+    } finally {
+      setApproving(false)
+      router.dismissAll()
     }
   }
 

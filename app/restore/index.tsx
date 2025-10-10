@@ -1,13 +1,16 @@
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
 import { useAlert } from '@/hooks/useAlert'
 import { useFileSystem } from '@/hooks/useFileSystem'
 import useMode from '@/hooks/useMode'
+import usePassPhrase from '@/hooks/usePassPhrase'
+import useWallets from '@/hooks/useWallets'
+import { decodeData } from '@/utils/crypto'
 
 import { createStyles } from './styles'
 
@@ -16,6 +19,8 @@ const RestoreScreen = () => {
   const { showSuccess, showError } = useAlert()
   const { isDark } = useMode()
   const { readFileFromPicker } = useFileSystem()
+  const { setWallets } = useWallets()
+  const { setListPassPhrase } = usePassPhrase()
   const styles = createStyles(isDark)
 
   const [password, setPassword] = useState('')
@@ -30,6 +35,7 @@ const RestoreScreen = () => {
   const handleSelectFile = async () => {
     try {
       const result = await readFileFromPicker({ type: 'text/plain' })
+      console.log({ result })
 
       if (result.content) {
         // Simulate file object for UI display
@@ -53,39 +59,24 @@ const RestoreScreen = () => {
   }
 
   const handleRestore = async () => {
-    if (!isValidForm) return
-
-    Alert.alert('Confirm Restore', 'This will replace your current wallet data with the backup. Are you sure you want to continue?', [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {
-        text: 'Restore',
-        style: 'destructive',
-        onPress: performRestore,
-      },
-    ])
-  }
-
-  const performRestore = async () => {
-    if (!fileContent) {
-      showError('No file content available')
-      return
-    }
-
-    setIsLoading(true)
     try {
-      // TODO: Implement restore logic here
-      // 1. Decrypt file content with password: decodeData(fileContent, password)
-      // 2. Validate backup format
-      // 3. Restore wallet data to Redux store
+      if (!fileContent) {
+        showError('No file content available')
+        return
+      }
 
-      // For now, just simulate success
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate processing time
+      setIsLoading(true)
 
-      showSuccess('Wallet restored successfully!')
-      router.back()
+      const dataDecode = await decodeData(fileContent, password)
+      if (dataDecode?.wallets && dataDecode?.passphrases && dataDecode?.timestamp && dataDecode?.wallets?.length > 0) {
+        console.log({ dataDecode })
+        setWallets(dataDecode.wallets)
+        setListPassPhrase(dataDecode.passphrases)
+        showSuccess('Wallet restored successfully!')
+        router.replace('/home')
+      } else {
+        showError('Please check your password and try again.')
+      }
     } catch {
       showError('Failed to restore wallet. Please check your password and try again.')
     } finally {

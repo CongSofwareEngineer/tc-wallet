@@ -7,7 +7,9 @@ import 'fast-text-encoding'
 import { WalletKitTypes } from '@reown/walletkit'
 import { WalletKit as TypeWallet } from '@reown/walletkit/dist/types/client'
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
+import moment from 'moment'
 
+import { openAlert } from '@/redux/slices/alertSlice'
 import { setSessions } from '@/redux/slices/sessionsSlice'
 import { store } from '@/redux/store'
 import { EIPNamespaces, Params, Session, Sessions } from '@/types/walletConnect'
@@ -178,6 +180,13 @@ class WalletKit {
 
   static async onApproveRequest(id: number, topic: string, params: Params): Promise<void> {
     try {
+      const expiryTimestamp = params.request.expiryTimestamp
+      const nowSecUTC = moment().utc().unix()
+
+      if (expiryTimestamp && nowSecUTC > expiryTimestamp) {
+        store.dispatch(openAlert({ text: 'Request expired', duration: 2000 }))
+        return
+      }
       if (params?.chainId?.includes('eip155')) {
         const result = await WalletEvmUtil.approveRequest(id, topic, params)
         // result returned from approveRequest
@@ -192,7 +201,8 @@ class WalletKit {
     try {
       const instance = walletKit || (await this.init())
       // Validate session/topic exists before responding to avoid core.crypto.encode() failures
-      const activeSessions = instance.getActiveSessions?.() || {}
+      const activeSessions = (await instance.getActiveSessions?.()) || {}
+
       if (!activeSessions[topic]) {
         // If session missing, surface a structured error
         await instance.respondSessionRequest({

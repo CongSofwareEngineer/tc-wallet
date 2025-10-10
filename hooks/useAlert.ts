@@ -8,7 +8,7 @@ export const useAlert = () => {
 
   const showAlert = useCallback(
     (alert: MyAlert) => {
-      dispatch(openAlert(alert))
+      dispatch(openAlert({ duration: 3000, ...alert }))
     },
     [dispatch]
   )

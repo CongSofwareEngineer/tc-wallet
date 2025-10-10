@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons'
-import * as DocumentPicker from 'expo-document-picker'
-import { EncodingType, readAsStringAsync, StorageAccessFramework } from 'expo-file-system/legacy'
+import { EncodingType, StorageAccessFramework } from 'expo-file-system/legacy'
 import { useRouter } from 'expo-router'
-import React, { useCallback, useState } from 'react'
-import { Animated, KeyboardAvoidingView, PermissionsAndroid, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
+import { Animated, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
@@ -11,7 +10,7 @@ import { APP_CONFIG } from '@/constants/appConfig'
 import { useAlert } from '@/hooks/useAlert'
 import useMode from '@/hooks/useMode'
 import { useAppSelector } from '@/redux/hooks'
-import { decodeData, encodeData } from '@/utils/crypto'
+import { encodeData } from '@/utils/crypto'
 import { getDataLocal, saveDataLocal } from '@/utils/storage'
 
 import { createStyles } from './styles'
@@ -23,6 +22,7 @@ const BackupScreen = () => {
   const styles = createStyles(isDark)
 
   const wallets = useAppSelector((state) => state.wallet)
+  const passphrases = useAppSelector((state) => state.passPhase)
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -32,28 +32,10 @@ const BackupScreen = () => {
   const [focusedInput, setFocusedInput] = useState<string | null>(null)
 
   const passwordStrength = getPasswordStrength(password)
-  const isValidForm = password.length >= 4 && password === confirmPassword && passwordStrength.score >= 3
+  const isValidForm = password.length >= 4 && password === confirmPassword && passwordStrength.score >= 1
 
-  const handleBackup = useCallback(async () => {
+  const handleBackup = async () => {
     if (!isValidForm) return
-
-    const requestStoragePermission = async () => {
-      if (Platform.OS === 'android') {
-        try {
-          const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, {
-            title: 'Storage Permission',
-            message: 'App needs access to storage to save backup files to Downloads folder',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          })
-          return granted === PermissionsAndroid.RESULTS.GRANTED
-        } catch {
-          return false
-        }
-      }
-      return true
-    }
 
     setIsLoading(true)
     try {
@@ -67,6 +49,7 @@ const BackupScreen = () => {
         version: APP_CONFIG.appVersion,
         timestamp: timestamp,
         wallets: wallets.wallets,
+        passphrases: passphrases,
       }
 
       // Sử dụng encodeData từ crypto utils (AES encryption)
@@ -92,6 +75,7 @@ const BackupScreen = () => {
         link.click()
         document.body.removeChild(link)
         URL.revokeObjectURL(url)
+        showSuccess('Backup saved to custom location!')
       } else {
         const urlDefault = getDataLocal('default_backup_location') || null
 
@@ -124,7 +108,7 @@ const BackupScreen = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [isValidForm, wallets, password, showSuccess, showError, router])
+  }
 
   function getPasswordStrength(pwd: string) {
     let score = 0
@@ -146,7 +130,7 @@ const BackupScreen = () => {
     else feedback.push('Special character')
 
     const levels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong']
-    const colors = ['#FF4444', '#FF8800', '#FFBB00', '#88CC00', '#44AA00']
+    const colors = ['#b14608', '#FF8800', '#f19429', '#FFBB00', '#a3f204', '#44AA00', '#44AA00']
 
     return {
       score,
@@ -154,24 +138,6 @@ const BackupScreen = () => {
       color: colors[score] || colors[0],
       feedback,
     }
-  }
-
-  const handleImport = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'text/plain',
-        copyToCacheDirectory: true,
-      })
-      const fileUri = result.assets[0].uri
-      console.log('📂 Selected file:', fileUri)
-
-      const content = await readAsStringAsync(fileUri, {
-        encoding: EncodingType.UTF8,
-      })
-
-      const contentDecode = await decodeData(content, 'Diencong12@5')
-      console.log({ content, contentDecode: contentDecode?.wallets })
-    } catch (error) { }
   }
 
   const renderPasswordInput = (
