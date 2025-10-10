@@ -5,6 +5,7 @@ import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useMemo, useRef, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import { encodeFunctionData, erc20Abi } from 'viem'
 
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
@@ -17,7 +18,8 @@ import useSheet from '@/hooks/useSheet'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
-import { ellipsisText } from '@/utils/functions'
+import { ellipsisText, getRadomColor } from '@/utils/functions'
+import WalletEvmUtil from '@/utils/walletEvm'
 
 import { createStyles } from './styles'
 
@@ -28,7 +30,7 @@ const SendTokenScreen = () => {
   const { text } = useTheme()
   const styles = createStyles(isDark)
   const { chainCurrent } = useChains()
-  const { wallet, wallets } = useWallets()
+  const { wallet, wallets, indexWalletActive } = useWallets()
   const { data: tokens } = useBalanceToken(true)
   const { openSheet, closeSheet } = useSheet()
 
@@ -37,6 +39,9 @@ const SendTokenScreen = () => {
   const [amountToken, setAmountToken] = useState<string>('')
   const [amountUsd, setAmountUsd] = useState<string>('')
   const [activeAmountField, setActiveAmountField] = useState<'token' | 'usd'>('token')
+  const [isSending, setIsSending] = useState(false)
+  const [txHash, setTxHash] = useState<string | null>(null)
+  const [txError, setTxError] = useState<string | null>(null)
 
   const tokenUsdPrice = useMemo(() => (selectedToken?.usd_price ? Number(selectedToken.usd_price) : 0), [selectedToken])
   const balanceFormatted = useMemo(() => Number(selectedToken?.balance_formatted || 0), [selectedToken])
@@ -135,47 +140,58 @@ const SendTokenScreen = () => {
     })
   }
 
-  const applyKey = (key: string) => {
-    const target = activeAmountField === 'token' ? amountToken : amountUsd
-    // Only allow digits and comma separator
-    if (key === 'back') {
-      const next = target.slice(0, -1)
-      if (activeAmountField === 'token') {
-        setAmountToken(next)
-      } else {
-        setAmountUsd(next)
-      }
-      return
-    }
-    if (key === 'clear') {
-      if (activeAmountField === 'token') {
-        setAmountToken('')
-      } else {
-        setAmountUsd('')
-      }
-      return
-    }
-    if (!/^[0-9,]$/.test(key)) return
+  // Removed custom keypad handler
 
-    const next = `${target}${key}`
-    // normalize comma to dot for internal calc
-    const normalized = next.replace(/,/g, '.')
-    if (activeAmountField === 'token') {
-      setAmountToken(next)
-      const usd = tokenUsdPrice
-        ? Big(normalized || 0)
-          .multipliedBy(tokenUsdPrice)
-          .toFixed()
-        : '0'
-      setAmountUsd(usd)
-    } else {
-      setAmountUsd(next)
-      const token = tokenUsdPrice
-        ? Big(normalized || 0)
-          .dividedBy(tokenUsdPrice)
-          .toFixed()
-        : '0'
-      setAmountToken(token)
+  const handleSend = async () => {
+    try {
+      setTxHash(null)
+      setTxError(null)
+      if (!wallet || !selectedToken || !toAddress || !amountToken) return
+
+      const decimals = selectedToken.decimals || 18
+      const amountStr = Big(amountToken.replace(/,/g, '.')).multipliedBy(Big(10).pow(decimals)).decimalPlaces(0, Big.ROUND_DOWN).toFixed(0)
+      const isNative = !!selectedToken.native_token
+
+      const rawBase = {
+        from: wallet.address as any,
+        chainId: (chainCurrent?.id as any) ?? 1,
+        isTracking: true,
+        callbackBefore: () => setIsSending(true),
+        callbackPending: () => setIsSending(true),
+        callbackSuccess: (hash?: any) => {
+          setIsSending(false)
+          setTxHash((hash as string) || null)
+        },
+        callbackError: (err?: any) => {
+          setIsSending(false)
+          setTxError((err?.message as string) || String(err))
+        },
+      }
+
+      if (isNative) {
+        await WalletEvmUtil.sendTransaction(
+          {
+            ...rawBase,
+            to: toAddress as any,
+            value: BigInt(amountStr),
+          } as any,
+          wallet.privateKey as any
+        )
+      } else {
+        const data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [toAddress as any, BigInt(amountStr)] })
+        await WalletEvmUtil.sendTransaction(
+          {
+            ...rawBase,
+            to: selectedToken.token_address as any,
+            data: data as any,
+            value: 0n,
+          } as any,
+          wallet.privateKey as any
+        )
+      }
+    } catch (err: any) {
+      setIsSending(false)
+      setTxError(err?.message || String(err))
     }
   }
 
@@ -195,15 +211,29 @@ const SendTokenScreen = () => {
         <ScrollView contentContainerStyle={{ padding: PADDING_DEFAULT.Padding16, gap: 16 }} keyboardShouldPersistTaps='handled'>
           {/* From wallet */}
           <View style={styles.card}>
-            <ThemedText style={{ marginBottom: 6, color: '#9AA0A6' }}>From</ThemedText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <ThemedText style={{ color: '#9AA0A6' }}>From</ThemedText>
+              <ThemeTouchableOpacity
+                style={{ paddingHorizontal: 12, paddingVertical: 6, opacity: isSending ? 0.7 : 1 }}
+                disabled={!toAddress || !selectedToken || !amountToken || isSending}
+                onPress={handleSend}
+              >
+                <ThemedText>{isSending ? 'Sending…' : 'Send'}</ThemedText>
+              </ThemeTouchableOpacity>
+            </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-              <View style={styles.avatar} />
+              {wallet?.avatar ? (
+                <Image source={{ uri: wallet?.avatar }} style={{ width: 32, height: 32, borderRadius: 16 }} />
+              ) : (
+                <View style={[styles.avatar, { backgroundColor: getRadomColor(wallet?.address) }]} />
+              )}
+
               <View style={{ flex: 1 }}>
-                <ThemedText>{wallet?.name || 'My Wallet'}</ThemedText>
+                <ThemedText>{wallet?.name || `Account ${indexWalletActive + 1}`}</ThemedText>
                 <ThemedText style={{ color: '#9AA0A6' }}>{ellipsisText(wallet?.address || '', 6, 6)}</ThemedText>
               </View>
               {chainCurrent?.iconChain ? (
-                <Image source={{ uri: chainCurrent.iconChain }} style={{ width: 24, height: 24, borderRadius: 12 }} />
+                <Image source={{ uri: chainCurrent.iconChain }} style={{ width: 32, height: 32, borderRadius: 16 }} />
               ) : null}
             </View>
           </View>
@@ -294,16 +324,6 @@ const SendTokenScreen = () => {
               </View>
             </View>
           </View>
-
-          {/* Custom keypad */}
-          <View style={styles.keypad}>
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'back'].map((k) => (
-              <TouchableOpacity key={k} style={styles.key} onPress={() => applyKey(k)}>
-                {k === 'back' ? <AntDesign name='arrow-left' size={18} color={'#FFFFFF'} /> : <ThemedText style={styles.keyText}>{k}</ThemedText>}
-              </TouchableOpacity>
-            ))}
-          </View>
-
           {/* Fee */}
           <View style={styles.card}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -315,10 +335,29 @@ const SendTokenScreen = () => {
             </View>
           </View>
 
-          {/* Send button */}
-          <ThemeTouchableOpacity style={{ marginTop: 4 }} disabled={!toAddress || !selectedToken || !amountToken}>
-            <ThemedText>Send</ThemedText>
-          </ThemeTouchableOpacity>
+          {/* Removed custom keypad as requested */}
+
+          {/* Send button moved to From row */}
+
+          {/* Tx result */}
+          {!!txHash && (
+            <View style={[styles.card, { marginTop: 8 }]}>
+              <ThemedText type='subtitle'>Transaction Hash</ThemedText>
+              <ThemedText selectable style={{ marginTop: 6 }}>
+                {txHash}
+              </ThemedText>
+            </View>
+          )}
+          {!!txError && (
+            <View style={[styles.card, { marginTop: 8 }]}>
+              <ThemedText type='subtitle' style={{ color: '#FF5252' }}>
+                Error
+              </ThemedText>
+              <ThemedText selectable style={{ marginTop: 6 }}>
+                {txError}
+              </ThemedText>
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

@@ -67,6 +67,13 @@ const StackScreen = () => {
         />
 
         <StackExpo.Screen
+          name='send-token/[address]'
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+
+        <StackExpo.Screen
           name='select-chain'
           options={{
             animation: 'fade_from_bottom',

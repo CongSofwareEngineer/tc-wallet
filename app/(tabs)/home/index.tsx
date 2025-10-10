@@ -5,103 +5,86 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import Big from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
-import React, { useEffect, useRef, useState } from 'react'
-import { Animated, RefreshControl, TouchableOpacity, View } from 'react-native'
+import React, { useMemo, useRef, useState } from 'react'
+import { Animated, Platform, RefreshControl, TouchableOpacity, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
-import { GAP_DEFAULT } from '@/constants/style'
+import { GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
+import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
 import { ellipsisText } from '@/utils/functions'
 
 import { styles } from './styles'
 
-type CryptoAsset = {
-  id: string
-  name: string
-  symbol: string
-  balance: string
-  value: string
-  change: number
-  color: string
-}
+// Token list is typed via services/moralis/type Token
 
-const mockCryptoData: CryptoAsset[] = []
-
-for (let i = 0; i <= 60; i++) {
-  mockCryptoData.push({
-    id: i.toString(),
-    name: `Crypto ${i}`,
-    symbol: `C${i}`,
-    balance: (Math.random() * 10).toFixed(4),
-    value: `$${(Math.random() * 1000).toFixed(2)}`,
-    change: parseFloat((Math.random() * 10 - 5).toFixed(2)), // Random change between -5% and +5%
-    color: `#${Math.floor(Math.random() * 16777215).toString(16)}`, // Random color
-  })
-}
+const HEIGHT_HEADER_SCROLL = 200
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('Tokens')
-  const [isHeaderHidden, setIsHeaderHidden] = useState(false)
-  const [isShowHeader, setIsShowHeader] = useState(true)
+  // const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const router = useRouter()
   const { chainCurrent } = useChains()
   const { wallet } = useWallets()
+  const { background } = useTheme()
   const { data: listTokens, isLoading: loadingListTokens, totalUSD, refetch, isRefetching } = useBalanceToken()
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false)
+  const [hideSpam, setHideSpam] = useState(false)
+  const [hideLowUSD, setHideLowUSD] = useState(false)
 
   const scrollY = useRef(new Animated.Value(0)).current
+  const [headerHeight, setHeaderHeight] = useState(HEIGHT_HEADER_SCROLL)
 
-  // Callback when header is fully hidden
-  const onHeaderFullyHidden = () => {
-    setIsShowHeader(false)
-    // Add your callback logic here
-  }
+  // // Callback when header is fully hidden
+  // const onHeaderFullyHidden = () => {
+  //   setIsShowHeader(false)
+  //   // Add your callback logic here
+  // }
 
-  // Callback when header is visible again
-  const onHeaderVisible = () => {
-    setIsShowHeader(true)
-    // Add your callback logic here
-  }
+  // // Callback when header is visible again
+  // const onHeaderVisible = () => {
+  //   setIsShowHeader(true)
+  //   // Add your callback logic here
+  // }
 
-  // Listen to scroll changes and detect when header is hidden
-  useEffect(() => {
-    const listener = scrollY.addListener(({ value }) => {
-      const wasHidden = isHeaderHidden
-      const isNowHidden = value >= 100 // Header fully hidden when scroll >= 100
+  // // Listen to scroll changes and detect when header is hidden
+  // useEffect(() => {
+  //   const listener = scrollY.addListener(({ value }) => {
+  //     const wasHidden = isHeaderHidden
+  //     const isNowHidden = value >= 100 // Header fully hidden when scroll >= 100
 
-      if (!wasHidden && isNowHidden) {
-        setIsHeaderHidden(true)
-        onHeaderFullyHidden()
-      } else if (wasHidden && !isNowHidden) {
-        setIsHeaderHidden(false)
-        onHeaderVisible()
-      }
-    })
+  //     if (!wasHidden && isNowHidden) {
+  //       setIsHeaderHidden(true)
+  //       onHeaderFullyHidden()
+  //     } else if (wasHidden && !isNowHidden) {
+  //       setIsHeaderHidden(false)
+  //       onHeaderVisible()
+  //     }
+  //   })
 
-    return () => {
-      scrollY.removeListener(listener)
-    }
-  }, [scrollY, isHeaderHidden])
+  //   return () => {
+  //     scrollY.removeListener(listener)
+  //   }
+  // }, [scrollY, isHeaderHidden])
+
   const headerOpacity = scrollY.interpolate({
-    inputRange: [0, 100],
+    inputRange: [0, HEIGHT_HEADER_SCROLL],
     outputRange: [1, 0],
     extrapolate: 'clamp',
   })
+  // HEADER_SCROLL for animation bounds
+
   const headerTranslateY = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, -50],
+    inputRange: [0, HEIGHT_HEADER_SCROLL],
+    outputRange: [0, Platform.OS === 'android' ? -HEIGHT_HEADER_SCROLL * 2 : -HEIGHT_HEADER_SCROLL],
     extrapolate: 'clamp',
   })
 
-  // Animation for moving tabs and content up to replace header
-  const contentTranslateY = scrollY.interpolate({
-    inputRange: [0, 360],
-    outputRange: [0, -180], // Move up less for smoother effect
-    extrapolate: 'clamp',
-  })
+  // Content translateY removed as header is now absolute
 
   const renderCryptoItem = ({ item }: { item: Token }) => (
     <TouchableOpacity style={styles.cryptoItem}>
@@ -134,77 +117,169 @@ export default function HomeScreen() {
     </TouchableOpacity>
   )
 
+  const filterActive = useMemo(() => hideSpam || hideLowUSD, [hideSpam, hideLowUSD])
+  const displayTokens = useMemo(() => {
+    let arr = listTokens || []
+    if (hideSpam) arr = arr.filter((t) => !t.possible_spam)
+    if (hideLowUSD) arr = arr.filter((t) => t.usd_value > 0.01)
+    return arr
+  }, [listTokens, hideSpam, hideLowUSD])
+
   const renderChainSelected = () => {
     return (
-      chainCurrent && (
-        <TouchableOpacity onPress={() => router.push('/select-chain')} style={styles.networkFilter}>
+      <View style={[styles.networkFilter, { position: 'relative' }]}>
+        <TouchableOpacity onPress={() => router.push('/select-chain')}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
             {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent?.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />}
             <ThemedText style={styles.networkFilterText}>{chainCurrent?.name}</ThemedText>
+            <AntDesign name='down' size={16} color='#FFFFFF' />
           </View>
-          <AntDesign name='down' size={16} color='#FFFFFF' />
         </TouchableOpacity>
-      )
+        <View style={{ position: 'relative' }}>
+          <TouchableOpacity
+            onPress={() => setShowFilterDropdown((v) => !v)}
+            style={{ padding: 6 }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <AntDesign name='filter' size={18} color={filterActive ? '#007AFF' : '#FFFFFF'} />
+          </TouchableOpacity>
+          {showFilterDropdown && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 36,
+                right: 0,
+                backgroundColor: '#1A1A1A',
+                borderRadius: 8,
+                paddingVertical: 8,
+                paddingHorizontal: 10,
+                borderWidth: 1,
+                borderColor: '#333333',
+                minWidth: 180,
+                shadowColor: '#000',
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 6,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  setHideSpam((v) => !v)
+                }}
+                style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}
+              >
+                <View
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: 4,
+                    borderWidth: 1,
+                    borderColor: hideSpam ? '#007AFF' : '#555555',
+                    backgroundColor: hideSpam ? '#007AFF' : 'transparent',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {hideSpam && <AntDesign name='check' size={12} color='#FFFFFF' />}
+                </View>
+                <ThemedText style={{ marginLeft: 8, color: '#FFFFFF' }}>Hide spam tokens</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setHideLowUSD((v) => !v)
+                }}
+                style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}
+              >
+                <View
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: 4,
+                    borderWidth: 1,
+                    borderColor: hideLowUSD ? '#007AFF' : '#555555',
+                    backgroundColor: hideLowUSD ? '#007AFF' : 'transparent',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {hideLowUSD && <AntDesign name='check' size={12} color='#FFFFFF' />}
+                </View>
+                <ThemedText style={{ marginLeft: 8, color: '#FFFFFF' }}>USD value &gt; 0.01</ThemedText>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </View>
     )
   }
 
   return (
     <View style={[styles.container]}>
-      <Animated.View style={[{ opacity: headerOpacity, transform: [{ translateY: headerTranslateY }] }]}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={{ width: 150 }}>
-            <TouchableOpacity onPress={() => router.push('/wallet')} style={styles.addressContainer}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap4 }}>
-                <ThemedText style={styles.addressText}>{wallet?.name || ellipsisText(wallet?.address, 4, 5)}</ThemedText>
-                <AntDesign name='down' size={14} color='#FFFFFF' />
-              </View>
-            </TouchableOpacity>
+      <Animated.View
+        style={[
+          { transform: [{ translateY: headerTranslateY }] },
+          { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, padding: PADDING_DEFAULT.Padding16, paddingBottom: 0 },
+        ]}
+        onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
+      >
+        <Animated.View style={{ opacity: headerOpacity }}>
+          {/* Header */}
+          <View style={[styles.header]}>
+            <View style={{ width: 150 }}>
+              <TouchableOpacity onPress={() => router.push('/wallet')} style={styles.addressContainer}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap4 }}>
+                  <ThemedText style={styles.addressText}>{wallet?.name || ellipsisText(wallet?.address, 4, 5)}</ThemedText>
+                  <AntDesign name='down' size={14} color='#FFFFFF' />
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View style={[styles.headerIcons, { flex: 1, justifyContent: 'flex-end' }]}>
+              <TouchableOpacity onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>
+                <AntDesign name='scan' size={24} color='#FFFFFF' />
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={[styles.headerIcons, { flex: 1, justifyContent: 'flex-end' }]}>
-            <TouchableOpacity onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>
-              <AntDesign name='scan' size={24} color='#FFFFFF' />
-            </TouchableOpacity>
+          {/* Balance Section */}
+          <View style={styles.balanceSection}>
+            <ThemedText style={styles.balanceAmount}>${Big(totalUSD).decimalPlaces(6, Big.ROUND_DOWN).toFormat()}</ThemedText>
+            {/* <Options /> */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+              <TouchableOpacity onPress={() => router.push(`/send-token/${wallet?.address}`)} style={styles.buyButton}>
+                <Feather name='send' size={20} color='#FFFFFF' />
+                <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push('/qr-info-address')} style={styles.buyButton}>
+                <Ionicons name='add' size={20} color='#FFFFFF' />
+                <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Receive</ThemedText>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </Animated.View>
 
-        {/* Balance Section */}
-        <View style={styles.balanceSection}>
-          <ThemedText style={styles.balanceAmount}>${Big(totalUSD).decimalPlaces(6, Big.ROUND_DOWN).toFormat()}</ThemedText>
-          {/* <Options /> */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-            <TouchableOpacity onPress={() => router.push(`/send-token/${wallet?.address}`)} style={styles.buyButton}>
-              <Feather name='send' size={20} color='#FFFFFF' />
-              <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/qr-info-address')} style={styles.buyButton}>
-              <Ionicons name='add' size={20} color='#FFFFFF' />
-              <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Receive</ThemedText>
-            </TouchableOpacity>
+        {/* Network Filter + Tabs inside header */}
+        <View>
+          <View style={[styles.tabsContainer, { backgroundColor: background.background }]}>
+            {['Tokens', 'NFTs'].map((tab) => (
+              <TouchableOpacity
+                key={tab}
+                style={[styles.tabButton, activeTab === tab && styles.activeTab]}
+                onPress={() => {
+                  setActiveTab(tab)
+                }}
+              >
+                <ThemedText style={[styles.tabText, activeTab === tab && { color: '#007AFF' }]}>{tab}</ThemedText>
+              </TouchableOpacity>
+            ))}
           </View>
+          {renderChainSelected()}
+          <View style={[{ backgroundColor: background.background, height: 12, width: '100%' }]} />
         </View>
       </Animated.View>
 
-      <Animated.View id={`isShowHeader_${isShowHeader}`} style={[{ flex: 1, transform: [{ translateY: contentTranslateY }] }]}>
-        {/* Navigation Tabs */}
-        <View style={styles.tabsContainer}>
-          {['Tokens', 'NFTs'].map((tab) => (
-            <TouchableOpacity
-              key={tab}
-              style={[styles.tabButton, activeTab === tab && styles.activeTab]}
-              onPress={() => {
-                setActiveTab(tab)
-              }}
-            >
-              <ThemedText style={[styles.tabText, activeTab === tab && { color: '#007AFF' }]}>{tab}</ThemedText>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Network Filter */}
-        {renderChainSelected()}
-
+      <View style={[{ flex: 1 }]}>
         {/* Crypto List */}
         {loadingListTokens ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
@@ -213,20 +288,22 @@ export default function HomeScreen() {
           </View>
         ) : (
           <Animated.FlatList
-            onContentSizeChange={() => { }}
-            id={`FlatList_${isShowHeader}`}
-            data={listTokens || []}
+            data={
+              activeTab === 'Tokens'
+                ? [...displayTokens, ...displayTokens, ...displayTokens, ...displayTokens, ...displayTokens, ...displayTokens]
+                : []
+            }
             renderItem={renderCryptoItem}
-            keyExtractor={(item) => item.token_address}
+            keyExtractor={(item, index) => item.token_address + index.toFixed()}
             style={{ flex: 1 }}
             showsVerticalScrollIndicator={false}
             onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
             scrollEventThrottle={16}
-            contentContainerStyle={{ paddingBottom: 100 }}
+            contentContainerStyle={{ paddingTop: headerHeight - 10, paddingBottom: 100 }}
             refreshControl={<RefreshControl refreshing={!!isRefetching} onRefresh={refetch} tintColor='#FFFFFF' colors={['#007AFF']} />}
           />
         )}
-      </Animated.View>
+      </View>
     </View>
   )
 }

@@ -14,6 +14,9 @@ const CurrentSession = ({ session, params }: { session: Session; params: Request
 
   const wallet = useMemo(() => {
     let address = params?.params?.request.params[0]
+    if (Object.prototype.toString.call(address) === '[object Object]') {
+      address = address?.from
+    }
     if (!isAddress(address)) {
       address = params?.params?.request.params[1]
     }

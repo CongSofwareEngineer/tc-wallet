@@ -11,6 +11,7 @@ import { sleep } from '@/utils/functions'
 
 import CurrentSession from './Comonent/CurrentSession'
 import PersonalSign from './Comonent/Personalsign'
+import SendTransaction from './Comonent/SendTransaction'
 import SignTypedData from './Comonent/SignTypedData'
 
 const ApproveScreen = () => {
@@ -82,6 +83,8 @@ const ApproveScreen = () => {
 
   const renderRequest = () => {
     const method = requestLasted?.params?.request?.method
+    console.log({ method, requestLasted })
+
     if (method) {
       switch (method) {
         case 'personal_sign':
@@ -91,13 +94,14 @@ const ApproveScreen = () => {
         case 'eth_signTypedData_v4':
         case 'eth_signTypedData_v3':
           return <SignTypedData params={requestLasted} />
+        case 'eth_sendTransaction':
+          return <SendTransaction params={requestLasted} />
         default:
           return <ThemedText>Not support {method}</ThemedText>
       }
     }
     return <></>
   }
-  console.log({ currentSession, sessions, requestWC })
 
   return (
     <View style={styles.overlay}>

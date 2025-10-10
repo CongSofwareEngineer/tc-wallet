@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { useAppSelector } from '@/redux/hooks'
@@ -8,6 +9,10 @@ import { cloneDeep } from '@/utils/functions'
 const useWallets = () => {
   const dispatch = useDispatch()
   const { wallets, wallet } = useAppSelector((state) => state.wallet)
+
+  const indexWalletActive = useMemo(() => {
+    return wallets.findIndex((w) => w.isDefault)
+  }, [wallets])
 
   const setWallet = (wallet: Wallet, index: number) => {
     dispatch(setWalletSlice({ wallet, index }))
@@ -45,6 +50,7 @@ const useWallets = () => {
     setWalletActive,
     wallets,
     wallet,
+    indexWalletActive,
   }
 }
 

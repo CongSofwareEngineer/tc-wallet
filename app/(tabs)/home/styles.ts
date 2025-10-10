@@ -55,8 +55,9 @@ export const styles = StyleSheet.create({
   },
   balanceSection: {
     alignItems: 'center',
-    paddingVertical: 30,
-    paddingHorizontal: 20,
+    paddingBottom: 20,
+    // paddingVertical: 30,
+    // paddingHorizontal: 20,
   },
   balanceAmount: {
     fontSize: 28,
@@ -85,7 +86,7 @@ export const styles = StyleSheet.create({
   },
   tabsContainer: {
     flexDirection: 'row',
-    marginBottom: 20,
+    // marginBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#333333',
   },
