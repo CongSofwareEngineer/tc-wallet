@@ -8,7 +8,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "fix-platform": "git ls-files | xargs dos2unix"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
