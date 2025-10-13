@@ -43,7 +43,7 @@ const FilterDataScreen = () => {
     setFilterToken(dataClone)
   }
 
-    const renderFilterItem = (label: string, value: boolean, onToggle: () => void) => (
+  const renderFilterItem = (label: string, value: boolean, onToggle: () => void) => (
     <TouchableOpacity
       onPress={onToggle}
       style={{
