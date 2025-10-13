@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { StyleSheet, View } from 'react-native'
 import ActionSheet, { ActionSheetRef } from 'react-native-actions-sheet'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { COLORS } from '@/constants/style'
 import useSheet from '@/hooks/useSheet'
@@ -9,6 +10,7 @@ const MySheet = () => {
   const { sheet, closeSheet } = useSheet()
   const actionSheetRef = useRef<ActionSheetRef>(null)
   console.log({ sheet })
+  const insets = useSafeAreaInsets()
 
   useEffect(() => {
     if (sheet.isOpen) {
@@ -20,6 +22,7 @@ const MySheet = () => {
 
   return (
     <ActionSheet
+      safeAreaInsets={insets}
       closeOnTouchBackdrop={sheet?.closeOnTouchBackdrop ?? false}
       closeOnPressBack={sheet?.closeOnPressBack ?? false}
       defaultOverlayOpacity={0.3}
@@ -37,7 +40,9 @@ const MySheet = () => {
       }}
       ref={actionSheetRef}
     >
-      <View style={styles.container}>{sheet?.children || sheet?.content}</View>
+      <SafeAreaView>
+        <View style={styles.container}>{sheet?.children || sheet?.content}</View>
+      </SafeAreaView>
     </ActionSheet>
   )
 }

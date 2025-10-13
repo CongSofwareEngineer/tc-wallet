@@ -125,6 +125,31 @@ const SendTokenScreen = () => {
           <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
             Chọn địa chỉ từ ví của tôi
           </ThemedText>
+          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
+            Chọn địa chỉ từ ví của tôi
+          </ThemedText>
+          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
+            Chọn địa chỉ từ ví của tôi
+          </ThemedText>
+          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
+            Chọn địa chỉ từ ví của tôi
+          </ThemedText>
+          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
+            Chọn địa chỉ từ ví của tôi
+          </ThemedText>
+          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
+            Chọn địa chỉ từ ví của tôi
+          </ThemedText>
+          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
+            Chọn địa chỉ từ ví của tôi
+          </ThemedText>
+          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
+            Chọn địa chỉ từ ví của tôi
+          </ThemedText>
+
+          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
+            Chọn địa chỉ từ ví của tôi
+          </ThemedText>
           <ScrollView style={{ maxHeight: 420 }}>
             {(wallets || []).map((w) => (
               <TouchableOpacity

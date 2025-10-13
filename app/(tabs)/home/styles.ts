@@ -173,3 +173,5 @@ export const styles = StyleSheet.create({
     paddingTop: 8,
   },
 })
+
+export default () => { }

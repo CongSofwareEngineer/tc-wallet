@@ -8,6 +8,7 @@ export enum KEY_REDUX {
   ChainSelected = 'chainSelected',
   Chains = 'chains',
   Settings = 'settings',
+  Filter = 'filter',
 }
 
 export const WHITE_LIST_STORAGE = [
@@ -17,4 +18,5 @@ export const WHITE_LIST_STORAGE = [
   KEY_REDUX.ChainSelected,
   KEY_REDUX.Sessions,
   KEY_REDUX.Settings,
+  KEY_REDUX.Filter,
 ]

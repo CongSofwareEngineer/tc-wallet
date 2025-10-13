@@ -20,4 +20,5 @@ export type Token = {
   usd_value_24hr_usd_change: number
   native_token: boolean
   portfolio_percentage: number
+  is_imported: boolean
 }

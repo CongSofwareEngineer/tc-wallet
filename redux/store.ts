@@ -14,6 +14,7 @@ import sessionsReducer from '@/redux/slices/sessionsSlice'
 import settingsSlice from '@/redux/slices/settingsSlice'
 import sheetReducer from '@/redux/slices/sheetSlice'
 import walletReducer from '@/redux/slices/walletSlice'
+import filterSlice from '@/store/slices/filterSlice'
 import { getDataLocal, removeDataLocal, saveDataLocal } from '@/utils/storage'
 
 const rootPersistConfig = {
@@ -47,6 +48,7 @@ const rootReducer = combineReducers({
   chains: chainsReducer,
   settings: settingsSlice,
   alert: alertReducer,
+  filter: filterSlice,
 })
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer)

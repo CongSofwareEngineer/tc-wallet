@@ -6,13 +6,14 @@ import Big from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { useMemo, useRef, useState } from 'react'
-import { Animated, Platform, RefreshControl, TouchableOpacity, View } from 'react-native'
+import { Animated, RefreshControl, TouchableOpacity, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
 import { GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
+import useFilter from '@/hooks/useFilter'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
@@ -33,8 +34,7 @@ export default function HomeScreen() {
   const { background } = useTheme()
   const { data: listTokens, isLoading: loadingListTokens, totalUSD, refetch, isRefetching } = useBalanceToken()
   const [showFilterDropdown, setShowFilterDropdown] = useState(false)
-  const [hideSpam, setHideSpam] = useState(false)
-  const [hideLowUSD, setHideLowUSD] = useState(false)
+  const { filters } = useFilter()
 
   const scrollY = useRef(new Animated.Value(0)).current
   const [headerHeight, setHeaderHeight] = useState(HEIGHT_HEADER_SCROLL)
@@ -80,7 +80,8 @@ export default function HomeScreen() {
 
   const headerTranslateY = scrollY.interpolate({
     inputRange: [0, HEIGHT_HEADER_SCROLL],
-    outputRange: [0, Platform.OS === 'android' ? -HEIGHT_HEADER_SCROLL * 2 : -HEIGHT_HEADER_SCROLL],
+    // outputRange: [0, Platform.OS === 'android' ? -HEIGHT_HEADER_SCROLL * 2 : -HEIGHT_HEADER_SCROLL],
+    outputRange: [0, -HEIGHT_HEADER_SCROLL],
     extrapolate: 'clamp',
   })
 
@@ -117,13 +118,15 @@ export default function HomeScreen() {
     </TouchableOpacity>
   )
 
-  const filterActive = useMemo(() => hideSpam || hideLowUSD, [hideSpam, hideLowUSD])
+  const filterActive = useMemo(() => filters.tokens.hideSpam || filters.tokens.hideSmallBalances || filters.tokens.hideImported, [filters.tokens])
   const displayTokens = useMemo(() => {
     let arr = listTokens || []
-    if (hideSpam) arr = arr.filter((t) => !t.possible_spam)
-    if (hideLowUSD) arr = arr.filter((t) => t.usd_value > 0.01)
+    if (filters?.tokens.all) return arr
+    if (filters.tokens.hideSpam) arr = arr.filter((t) => !t.possible_spam)
+    if (filters.tokens.hideSmallBalances) arr = arr.filter((t) => t.usd_value > 0.001)
+    if (filters.tokens.hideImported) arr = arr.filter((t) => !t.is_imported)
     return arr
-  }, [listTokens, hideSpam, hideLowUSD])
+  }, [listTokens, filters.tokens])
 
   console.log({ displayTokens })
 
@@ -139,78 +142,12 @@ export default function HomeScreen() {
         </TouchableOpacity>
         <View style={{ position: 'relative' }}>
           <TouchableOpacity
-            onPress={() => setShowFilterDropdown((v) => !v)}
+            onPress={() => router.push(`/filter-data/${activeTab.toLowerCase()}`)}
             style={{ padding: 6 }}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <AntDesign name='filter' size={18} color={filterActive ? '#007AFF' : '#FFFFFF'} />
           </TouchableOpacity>
-          {showFilterDropdown && (
-            <View
-              style={{
-                position: 'absolute',
-                top: 36,
-                right: 0,
-                backgroundColor: '#1A1A1A',
-                borderRadius: 8,
-                paddingVertical: 8,
-                paddingHorizontal: 10,
-                borderWidth: 1,
-                borderColor: '#333333',
-                minWidth: 180,
-                shadowColor: '#000',
-                shadowOpacity: 0.3,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 6,
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  setHideSpam((v) => !v)
-                }}
-                style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}
-              >
-                <View
-                  style={{
-                    width: 18,
-                    height: 18,
-                    borderRadius: 4,
-                    borderWidth: 1,
-                    borderColor: hideSpam ? '#007AFF' : '#555555',
-                    backgroundColor: hideSpam ? '#007AFF' : 'transparent',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {hideSpam && <AntDesign name='check' size={12} color='#FFFFFF' />}
-                </View>
-                <ThemedText style={{ marginLeft: 8, color: '#FFFFFF' }}>Hide spam tokens</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setHideLowUSD((v) => !v)
-                }}
-                style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}
-              >
-                <View
-                  style={{
-                    width: 18,
-                    height: 18,
-                    borderRadius: 4,
-                    borderWidth: 1,
-                    borderColor: hideLowUSD ? '#007AFF' : '#555555',
-                    backgroundColor: hideLowUSD ? '#007AFF' : 'transparent',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {hideLowUSD && <AntDesign name='check' size={12} color='#FFFFFF' />}
-                </View>
-                <ThemedText style={{ marginLeft: 8, color: '#FFFFFF' }}>USD value &gt; 0.01</ThemedText>
-              </TouchableOpacity>
-            </View>
-          )}
         </View>
       </View>
     )
@@ -263,7 +200,7 @@ export default function HomeScreen() {
 
         {/* Network Filter + Tabs inside header */}
         <View>
-          <View style={[styles.tabsContainer, { backgroundColor: background.background }]}>
+          <View style={[styles.tabsContainer, { backgroundColor: '#0A0A0A' }]}>
             {['Tokens', 'NFTs'].map((tab) => (
               <TouchableOpacity
                 key={tab}
@@ -276,8 +213,9 @@ export default function HomeScreen() {
               </TouchableOpacity>
             ))}
           </View>
+          <View style={[{ backgroundColor: '#0A0A0A', height: 12, width: '100%' }]} />
+
           {renderChainSelected()}
-          <View style={[{ backgroundColor: background.background, height: 12, width: '100%' }]} />
         </View>
       </Animated.View>
 
@@ -292,7 +230,16 @@ export default function HomeScreen() {
           <Animated.FlatList
             data={
               activeTab === 'Tokens'
-                ? [...displayTokens, ...displayTokens, ...displayTokens, ...displayTokens, ...displayTokens, ...displayTokens]
+                ? [
+                  ...displayTokens,
+                  ...displayTokens,
+                  ...displayTokens,
+                  ...displayTokens,
+                  ...displayTokens,
+                  ...displayTokens,
+                  ...displayTokens,
+                  ...displayTokens,
+                ]
                 : []
             }
             renderItem={renderCryptoItem}

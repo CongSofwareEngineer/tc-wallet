@@ -34,6 +34,9 @@ const StackScreen = () => {
       <StackExpo
         screenOptions={{
           headerShown: false,
+          contentStyle: {
+            // backgroundColor: 'green',
+          },
         }}
       >
         <StackExpo.Screen name='(tabs)' options={{ headerShown: false }} />
@@ -44,6 +47,7 @@ const StackScreen = () => {
             animation: 'slide_from_right',
           }}
         />
+
         <StackExpo.Screen
           name='connect-account'
           options={{
@@ -79,6 +83,30 @@ const StackScreen = () => {
             animation: 'fade_from_bottom',
             presentation: 'modal',
             sheetElevation: 0,
+          }}
+        />
+
+        <StackExpo.Screen
+          name='filter-data'
+          options={{
+            animation: 'fade_from_bottom',
+            presentation: 'modal',
+            headerStyle: {
+              backgroundColor: 'transparent',
+            },
+            contentStyle: {
+              backgroundColor: 'transparent',
+            },
+            webModalStyle: {
+              overlayBackground: 'none',
+              height: '100%',
+              width: '100%',
+              shadow: 'none',
+              border: 'none',
+            },
+            sheetElevation: 0,
+            headerShown: false,
+            transparentModal: true,
           }}
         />
 

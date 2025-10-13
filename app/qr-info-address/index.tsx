@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import React, { useState } from 'react'
-import { ScrollView, TouchableOpacity, View } from 'react-native'
+import { Linking, ScrollView, TouchableOpacity, View } from 'react-native'
 import QRCode from 'react-native-qrcode-svg'
 
 import HeaderScreen from '@/components/Header'
@@ -37,6 +37,12 @@ const QRInfoAddressScreen = () => {
     }
   }
 
+  const handleOpenExplorer = () => {
+    if (!chainCurrent?.blockExplorers?.default?.url || !wallet?.address) return
+    const url = `${chainCurrent.blockExplorers.default.url}/address/${wallet.address}`
+    Linking.openURL(url)
+  }
+
   const handleRequestPayment = () => {
     // Navigate to request payment screen
     // TODO: Implement navigation
@@ -67,10 +73,19 @@ const QRInfoAddressScreen = () => {
 
       <ThemedText style={styles.fullAddress}>{wallet?.address || ''}</ThemedText>
 
-      <ThemeTouchableOpacity style={styles.copyButton} onPress={handleCopyAddress}>
-        <Ionicons name='copy-outline' size={16} color='#007AFF' />
-        <ThemedText style={styles.copyButtonText}>Copy address</ThemedText>
-      </ThemeTouchableOpacity>
+      <View style={{ flexDirection: 'row', gap: GAP_DEFAULT.Gap8, justifyContent: 'center' }}>
+        <ThemeTouchableOpacity style={styles.copyButton} onPress={handleCopyAddress}>
+          <Ionicons name='copy-outline' size={16} color='#007AFF' />
+          <ThemedText style={styles.copyButtonText}>Copy address</ThemedText>
+        </ThemeTouchableOpacity>
+
+        {chainCurrent?.blockExplorers?.default && (
+          <ThemeTouchableOpacity style={styles.copyButton} onPress={handleOpenExplorer}>
+            <Ionicons name='open-outline' size={16} color='#007AFF' />
+            <ThemedText style={styles.copyButtonText}>View on Explorer</ThemedText>
+          </ThemeTouchableOpacity>
+        )}
+      </View>
     </View>
   )
 
