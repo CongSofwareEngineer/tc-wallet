@@ -1,4 +1,4 @@
-export type TQueryKey = {
+export type IQueryKey = {
   queryKey: unknown[]
   pageParam?: unknown
 }

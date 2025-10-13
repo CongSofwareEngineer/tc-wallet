@@ -20,6 +20,7 @@ export const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     minHeight: 40,
+    position: 'relative',
   },
   label: {
     width: '100%',

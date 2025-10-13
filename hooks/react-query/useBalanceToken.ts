@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { KEY_REACT_QUERY } from '@/constants/reactQuery'
 import MoralisService from '@/services/moralis'
 import { Token } from '@/services/moralis/type'
-import { TQueryKey } from '@/types/reactQuery'
+import { IQueryKey } from '@/types/reactQuery'
 import { ChainId } from '@/types/web3'
 import { sleep } from '@/utils/functions'
 import { getDataLocal, saveDataLocal } from '@/utils/storage'
@@ -12,7 +12,7 @@ import { getDataLocal, saveDataLocal } from '@/utils/storage'
 import useChainSelected from '../useChainSelected'
 import useWallets from '../useWallets'
 
-const getData = async ({ queryKey }: TQueryKey): Promise<any> => {
+const getData = async ({ queryKey }: IQueryKey): Promise<any> => {
   let dataLocal = getDataLocal('balanceToken')
   const [, address, chainId] = queryKey as [string, string, ChainId]
 

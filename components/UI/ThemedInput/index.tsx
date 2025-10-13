@@ -18,6 +18,9 @@ export type ThemedInputProps = {
   onPressLeftIcon?: () => any
   showCount?: boolean
   countConfig?: TextInputProps
+  ref?: any
+  noBorder?: boolean
+  disabled?: boolean
 } & TextInputProps
 
 const ThemedInput = ({
@@ -30,6 +33,9 @@ const ThemedInput = ({
   leftIcon,
   lightColor,
   darkColor,
+  ref,
+  noBorder,
+  disabled,
   ...props
 }: ThemedInputProps) => {
   const { background, text } = useTheme()
@@ -38,13 +44,14 @@ const ThemedInput = ({
   return (
     <View style={[styles.container]}>
       {label && <ThemedText style={styles.label}>{label}</ThemedText>}
-      <View style={[styles.containerSub, { width: '100%', backgroundColor: background.backgroundInput }]}>
+      <View style={[styles.containerSub, { width: '100%', backgroundColor: background.backgroundInput }, noBorder && { borderWidth: 0 }]}>
         {leftIcon && (
           <TouchableOpacity style={styles.leftIcon} onPress={() => onPressLeftIcon?.()}>
             <ThemedText>{leftIcon}</ThemedText>
           </TouchableOpacity>
         )}
         <TextInput
+          ref={ref}
           className={stylesCss.input}
           placeholderTextColor={text.colorPlaceholder}
           style={[
@@ -52,7 +59,7 @@ const ThemedInput = ({
               $$css: true,
               _: 'input',
             },
-            { width: '100%', backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 },
+            { opacity: disabled ? 0.5 : 1, width: '100%', backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 },
             style,
           ]}
           {...props}
@@ -72,6 +79,7 @@ const ThemedInput = ({
             <ThemedText>{rightIcon}</ThemedText>
           </TouchableOpacity>
         )}
+        {disabled && <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 8 }} />}
       </View>
 
       {showCount && props?.maxLength && (

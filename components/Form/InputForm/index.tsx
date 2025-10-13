@@ -20,6 +20,7 @@ type Props = {
   errorsText?: any
   label?: string
   placeholder?: string
+  hiddenError?: boolean
 }
 const InputForm = ({
   placeholder,
@@ -33,14 +34,18 @@ const InputForm = ({
   showError = true,
   required = false,
   errorsText,
+  hiddenError = false,
 }: Props) => {
   const { translate } = useLanguage()
 
   return (
     <View style={styles.container}>
-      <ThemedText {...configLabel} style={[styles.label, configLabel?.style]}>
-        {label}
-      </ThemedText>
+      {label && (
+        <ThemedText {...configLabel} style={[styles.label, configLabel?.style]}>
+          {label}
+        </ThemedText>
+      )}
+
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
@@ -49,12 +54,14 @@ const InputForm = ({
         name={name}
         rules={{ required: required }}
       />
-      <ThemedText
-        {...configError}
-        style={[styles.error, { opacity: showError && errors ? 1 : 0, fontSize: 12, color: COLORS.red }, configError?.style]}
-      >
-        {errorsText || translate('warning.required')}
-      </ThemedText>
+      {!hiddenError && (
+        <ThemedText
+          {...configError}
+          style={[styles.error, { opacity: showError && errors ? 1 : 0, fontSize: 12, color: COLORS.red }, configError?.style]}
+        >
+          {errorsText || translate('warning.required')}
+        </ThemedText>
+      )}
     </View>
   )
 }

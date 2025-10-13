@@ -25,6 +25,9 @@ export const APP_CONFIG = {
 
   // EAS Info
   easProjectId: Constants.expoConfig?.extra?.eas?.projectId || '',
+
+  // API Keys
+  apiKeyAlchemy: Constants.expoConfig?.extra?.apiKey?.API_KEY_ALCHEMY || '',
 }
 
 // App Display Info

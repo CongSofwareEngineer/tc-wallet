@@ -41,7 +41,7 @@ export default async function fetcher<T = any>(options: IFetch): Promise<ReturnD
           throw new Error('Access token not found!')
         }
 
-        return { statusCode: 401, data: null, message: 'Access token not found!' }
+        return { result: null, statusCode: 401, data: null, message: 'Access token not found!' }
       }
     }
   }
@@ -59,26 +59,12 @@ export default async function fetcher<T = any>(options: IFetch): Promise<ReturnD
   const resFetch = await fetch(callUrl.href, fetchInit)
 
   const resJson = await resFetch.json()
-  console.log({ resJson })
-
-  // console.log('🚀 ~ resJson:', resJson)
-  // console.log('🚀 ~ resJson:', resJson)
-
-  // if (resJson.statusCode === 200 || resJson.status === 200) {
-  //   return resJson
-  // }
-
-  // console.log(resJson)
-  // if (showError) {
-  //   if (resJson?.message) {
-  //     showNotificationError(resJson?.message)
-  //   } else {
-  //     showNotificationError('API Error')
-  //   }
-  // }
 
   if (throwError) {
     throw Error(resJson?.message)
+  }
+  if (!resJson?.data && resFetch.status === 200) {
+    return { data: resJson }
   }
 
   return resJson

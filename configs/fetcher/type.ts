@@ -8,13 +8,13 @@ export type IFetch = {
   auth?: string | boolean
   throwError?: boolean
   showError?: boolean
-} & Partial<RequestInit>
+} & Omit<Partial<RequestInit>, 'body'>
 
 export type ReturnData<T> = {
-  statusCode: number
+  statusCode?: number
   data: T | null
-  message: string
-  result: T
+  message?: string
+  result?: T | null
 }
 
 export type GetListResult<T> = {

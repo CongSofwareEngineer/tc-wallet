@@ -197,6 +197,7 @@ const WalletScreen = () => {
             >
               {/* Avatar */}
               <TouchableOpacity onPress={() => handleActiveAccount(item.indexWallet)}>
+                {/* <AntDesign name='wallet' size={30} color={colors.white} /> */}
                 <View style={[styles.avatar, { backgroundColor: getRadomColor(item.address) }]} />
               </TouchableOpacity>
               {/* Name */}

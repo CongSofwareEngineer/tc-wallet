@@ -46,7 +46,37 @@ const useAuth = () => {
     // return true
   }
 
-  return { handleAuth }
+  const handleVerify = async (isNewModal = true) => {
+    return await new Promise<boolean>(async (resolve, reject) => {
+      const data = await getSecureData(KEY_STORAGE.PasscodeAuth)
+
+      if (data) {
+        openModal({
+          maskClosable: false,
+          onClose: () => reject(new Error(ERROR_TYPE.PassAuthClose)),
+          addModal: isNewModal,
+          content: (
+            <ModalAuth
+              callback={async (result) => {
+                closeModal()
+                await sleep(500)
+
+                if (result) {
+                  resolve(true)
+                } else {
+                  reject(new Error(ERROR_TYPE.PassAuthFailed))
+                }
+              }}
+            />
+          ),
+        })
+      } else {
+        resolve(true)
+      }
+    })
+  }
+
+  return { handleAuth, handleVerify }
 }
 
 export default useAuth

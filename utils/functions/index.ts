@@ -1,4 +1,5 @@
 import * as Clipboard from 'expo-clipboard'
+import { formatUnits } from 'viem'
 
 import { IsIos } from '@/constants/app'
 import { openAlert } from '@/redux/slices/alertSlice'
@@ -63,4 +64,13 @@ export const getRadomColor = (seed: string = 'default') => {
   } catch (error) {
     return '#000000'
   }
+}
+
+export const convertWeiToBalance = (wei: string | number | bigint | null | undefined, decimals = 18): string => {
+  if (wei === null || wei === undefined) return ''
+  return formatUnits(BigInt(wei), decimals)
+}
+export const convertBalanceToWei = (balance: string | number | bigint | null | undefined, decimals = 18): string => {
+  if (balance === null || balance === undefined) return ''
+  return formatUnits(BigInt(balance), decimals)
 }

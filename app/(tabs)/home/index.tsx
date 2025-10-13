@@ -125,6 +125,8 @@ export default function HomeScreen() {
     return arr
   }, [listTokens, hideSpam, hideLowUSD])
 
+  console.log({ displayTokens })
+
   const renderChainSelected = () => {
     return (
       <View style={[styles.networkFilter, { position: 'relative' }]}>

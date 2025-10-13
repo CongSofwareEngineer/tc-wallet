@@ -14,7 +14,11 @@ import WalletKit from '@/utils/walletKit'
 
 import styles from './styles'
 
-const ConnectDAppScreen = () => {
+type Props = {
+  type?: 'connect' | 'address' | 'form'
+}
+
+const ConnectDAppScreen = ({ type = 'connect' }: Props) => {
   const router = useRouter()
   const [uri, setUri] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,6 +26,17 @@ const ConnectDAppScreen = () => {
 
   const [permission, requestPermission] = useCameraPermissions()
   const { translate } = useLanguage()
+
+  const handleScan = (data: any) => {
+    if (type === 'connect') {
+      if (!uri && data.startsWith('wc:') && data.includes('@2')) {
+        setUri(data)
+        setLoading(true)
+        handleConnect(data)
+      }
+      return
+    }
+  }
 
   const handleConnect = async (uri = '') => {
     try {
@@ -73,11 +88,7 @@ const ConnectDAppScreen = () => {
         facing={facing}
         barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
         onBarcodeScanned={({ data }) => {
-          if (!uri && data.startsWith('wc:') && data.includes('@2')) {
-            setUri(data)
-            setLoading(true)
-            handleConnect(data)
-          }
+          handleScan(data)
         }}
       />
 
@@ -89,20 +100,24 @@ const ConnectDAppScreen = () => {
           <AntDesign name='retweet' size={24} color='white' />
         </TouchableOpacity>
       </View>
-      <View style={styles.buttonContainerPass}>
-        <ThemedText
-          style={{
-            flex: 1,
-            color: 'white',
-            fontSize: 16,
-          }}
-        >
-          Hoặc dán link kết nối
-        </ThemedText>
-        <TouchableOpacity onPress={handleCopyPass}>
-          <AntDesign name='link' size={24} color='white' />
-        </TouchableOpacity>
-      </View>
+      {type === 'connect' && (
+        <>
+          <View style={styles.buttonContainerPass}>
+            <ThemedText
+              style={{
+                flex: 1,
+                color: 'white',
+                fontSize: 16,
+              }}
+            >
+              Hoặc dán link kết nối
+            </ThemedText>
+            <TouchableOpacity onPress={handleCopyPass}>
+              <AntDesign name='link' size={24} color='white' />
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
 
       {loading ? (
         <View style={styles.containerLoading}>

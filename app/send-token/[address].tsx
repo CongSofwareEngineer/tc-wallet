@@ -1,17 +1,18 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import Big from 'bignumber.js'
+import { default as Big, default as BigNumber } from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import React, { useMemo, useRef, useState } from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from 'react-native'
 import { encodeFunctionData, erc20Abi } from 'viem'
 
+import InputForm from '@/components/Form/InputForm'
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
-import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
-import { PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
+import useTokenPrice from '@/hooks/react-query/useTokenPrice'
 import useChains from '@/hooks/useChains'
 import useMode from '@/hooks/useMode'
 import useSheet from '@/hooks/useSheet'
@@ -19,9 +20,16 @@ import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
 import { ellipsisText, getRadomColor } from '@/utils/functions'
+import { isTokenNative } from '@/utils/nvm'
 import WalletEvmUtil from '@/utils/walletEvm'
 
 import { createStyles } from './styles'
+
+type FormSendToken = {
+  toAddress: string
+  amountToken: string
+  amountUsd?: string
+}
 
 const SendTokenScreen = () => {
   const router = useRouter()
@@ -33,20 +41,34 @@ const SendTokenScreen = () => {
   const { wallet, wallets, indexWalletActive } = useWallets()
   const { data: tokens } = useBalanceToken(true)
   const { openSheet, closeSheet } = useSheet()
+  const {
+    getValues,
+    control,
+    formState: { errors },
+    setValue,
+    setError,
+    subscribe,
+    watch,
+  } = useForm<FormSendToken>({
+    defaultValues: {
+      toAddress: initialAddress,
+      amountToken: '',
+      amountUsd: '',
+    },
+  })
 
-  const [toAddress, setToAddress] = useState<string>((initialAddress as string) || '')
-  const [selectedToken, setSelectedToken] = useState<Token | null>(tokens?.[0] || null)
-  const [amountToken, setAmountToken] = useState<string>('')
-  const [amountUsd, setAmountUsd] = useState<string>('')
-  const [activeAmountField, setActiveAmountField] = useState<'token' | 'usd'>('token')
+  const [selectedToken] = useState<Token | null>(tokens?.[0] || null)
   const [isSending, setIsSending] = useState(false)
   const [txHash, setTxHash] = useState<string | null>(null)
   const [txError, setTxError] = useState<string | null>(null)
 
-  const tokenUsdPrice = useMemo(() => (selectedToken?.usd_price ? Number(selectedToken.usd_price) : 0), [selectedToken])
-  const balanceFormatted = useMemo(() => Number(selectedToken?.balance_formatted || 0), [selectedToken])
+  const { data: tokenPrice, isLoading: loadingTokenPrice } = useTokenPrice(
+    isTokenNative(selectedToken?.token_address) ? selectedToken?.symbol : selectedToken?.token_address || ''
+  )
 
-  const inputRef = useRef<TextInput>(null)
+  useEffect(() => {
+    const valueForm = watch()
+  }, [watch()])
 
   const handleSelectToken = () => {
     openSheet({
@@ -64,38 +86,27 @@ const SendTokenScreen = () => {
                 key={t.token_address}
                 style={styles.tokenItem}
                 onPress={() => {
-                  setSelectedToken(t)
+                  // setSelectedToken(t)
                   // auto convert amount between fields
-                  if (activeAmountField === 'usd' && amountUsd) {
-                    const val = Big(amountUsd || 0)
-                      .dividedBy(tokenUsdPrice || 1)
-                      .toFixed()
-                    setAmountToken(val)
-                  } else if (activeAmountField === 'token' && amountToken) {
-                    const val = Big(amountToken || 0)
-                      .multipliedBy(tokenUsdPrice || 0)
-                      .toFixed()
-                    setAmountUsd(val)
-                  }
                   closeSheet()
                 }}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                  {t.logo || t.thumbnail ? (
-                    <Image source={{ uri: t.logo || t.thumbnail }} style={{ width: 28, height: 28, borderRadius: 14 }} />
-                  ) : (
-                    <AntDesign name='database' size={24} color={text.color} />
-                  )}
-                  <View style={{ flex: 1 }}>
-                    <ThemedText>{t.symbol}</ThemedText>
-                    <ThemedText style={{ color: '#9AA0A6' }}>
-                      {Big(t.balance_formatted || 0)
-                        .decimalPlaces(6, Big.ROUND_DOWN)
-                        .toFormat()}
-                    </ThemedText>
+                {t.logo || t.thumbnail ? (
+                  <Image source={{ uri: t.logo || t.thumbnail }} style={styles.tokenIcon} />
+                ) : (
+                  <View style={[styles.tokenIcon, { alignItems: 'center', justifyContent: 'center' }]}>
+                    <AntDesign name='database' size={20} color={text.color} />
                   </View>
-                  <ThemedText>{t.name}</ThemedText>
+                )}
+                <View style={styles.tokenItemContent}>
+                  <ThemedText style={styles.tokenItemSymbol}>{t.symbol}</ThemedText>
+                  <ThemedText style={styles.tokenItemBalance}>
+                    {Big(t.balance_formatted || 0)
+                      .decimalPlaces(6, Big.ROUND_DOWN)
+                      .toFormat()}
+                  </ThemedText>
                 </View>
+                <ThemedText style={styles.tokenItemName}>{t.name}</ThemedText>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -120,18 +131,16 @@ const SendTokenScreen = () => {
                 key={w.address}
                 style={styles.tokenItem}
                 onPress={() => {
-                  setToAddress(w.address)
+                  // setToAddress(w.address)
                   closeSheet()
                 }}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                  <View style={[styles.avatar, { width: 28, height: 28, borderRadius: 14 }]} />
-                  <View style={{ flex: 1 }}>
-                    <ThemedText>{w.name || 'Account'}</ThemedText>
-                    <ThemedText style={{ color: '#9AA0A6' }}>{ellipsisText(w.address, 6, 6)}</ThemedText>
-                  </View>
-                  {w.isDefault && <ThemedText style={{ color: '#4CAF50' }}>Default</ThemedText>}
+                <View style={[styles.tokenIcon, { backgroundColor: getRadomColor(w?.address) }]} />
+                <View style={styles.tokenItemContent}>
+                  <ThemedText style={styles.tokenItemSymbol}>{w.name || 'Account'}</ThemedText>
+                  <ThemedText style={styles.tokenItemBalance}>{ellipsisText(w.address, 6, 6)}</ThemedText>
                 </View>
+                {w.isDefault && <ThemedText style={{ color: '#10B981', fontWeight: '600' }}>Default</ThemedText>}
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -146,10 +155,13 @@ const SendTokenScreen = () => {
     try {
       setTxHash(null)
       setTxError(null)
-      if (!wallet || !selectedToken || !toAddress || !amountToken) return
+      if (!wallet || !selectedToken || !getValues('toAddress') || !getValues('amountToken')) return
 
       const decimals = selectedToken.decimals || 18
-      const amountStr = Big(amountToken.replace(/,/g, '.')).multipliedBy(Big(10).pow(decimals)).decimalPlaces(0, Big.ROUND_DOWN).toFixed(0)
+      const amountStr = Big(getValues('amountToken').replace(/,/g, '.'))
+        .multipliedBy(Big(10).pow(decimals))
+        .decimalPlaces(0, Big.ROUND_DOWN)
+        .toFixed(0)
       const isNative = !!selectedToken.native_token
 
       const rawBase = {
@@ -172,13 +184,13 @@ const SendTokenScreen = () => {
         await WalletEvmUtil.sendTransaction(
           {
             ...rawBase,
-            to: toAddress as any,
+            to: getValues('toAddress'),
             value: BigInt(amountStr),
           } as any,
           wallet.privateKey as any
         )
       } else {
-        const data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [toAddress as any, BigInt(amountStr)] })
+        const data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [getValues('toAddress') as any, BigInt(amountStr)] })
         await WalletEvmUtil.sendTransaction(
           {
             ...rawBase,
@@ -208,152 +220,182 @@ const SendTokenScreen = () => {
     <View style={styles.container}>
       <HeaderScreen title='Send Token' />
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ padding: PADDING_DEFAULT.Padding16, gap: 16 }} keyboardShouldPersistTaps='handled'>
-          {/* From wallet */}
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps='handled'>
+          {/* From Wallet Section */}
           <View style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <ThemedText style={{ color: '#9AA0A6' }}>From</ThemedText>
-              <ThemeTouchableOpacity
-                style={{ paddingHorizontal: 12, paddingVertical: 6, opacity: isSending ? 0.7 : 1 }}
-                disabled={!toAddress || !selectedToken || !amountToken || isSending}
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <ThemedText style={styles.sectionLabel}>From</ThemedText>
+              <TouchableOpacity
+                style={[
+                  styles.sendButton,
+                  (loadingTokenPrice || !getValues('toAddress') || !selectedToken || !getValues('amountToken') || isSending) &&
+                  styles.sendButtonDisabled,
+                ]}
+                disabled={loadingTokenPrice || !getValues('toAddress') || !selectedToken || !getValues('amountToken') || isSending}
                 onPress={handleSend}
               >
-                <ThemedText>{isSending ? 'Sending…' : 'Send'}</ThemedText>
-              </ThemeTouchableOpacity>
+                <ThemedText
+                  style={[
+                    styles.sendButtonText,
+                    (loadingTokenPrice || !getValues('toAddress') || !selectedToken || !getValues('amountToken') || isSending) &&
+                    styles.sendButtonTextDisabled,
+                  ]}
+                >
+                  {isSending ? 'Sending…' : 'Send'}
+                </ThemedText>
+              </TouchableOpacity>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+
+            <View style={styles.walletRow}>
               {wallet?.avatar ? (
-                <Image source={{ uri: wallet?.avatar }} style={{ width: 32, height: 32, borderRadius: 16 }} />
+                <Image source={{ uri: wallet?.avatar }} style={styles.avatar} />
               ) : (
                 <View style={[styles.avatar, { backgroundColor: getRadomColor(wallet?.address) }]} />
               )}
 
-              <View style={{ flex: 1 }}>
-                <ThemedText>{wallet?.name || `Account ${indexWalletActive + 1}`}</ThemedText>
-                <ThemedText style={{ color: '#9AA0A6' }}>{ellipsisText(wallet?.address || '', 6, 6)}</ThemedText>
+              <View style={styles.walletInfo}>
+                <ThemedText style={styles.walletName}>{wallet?.name || `Account ${indexWalletActive + 1}`}</ThemedText>
+                <ThemedText style={styles.walletAddress}>{ellipsisText(wallet?.address || '', 6, 6)}</ThemedText>
               </View>
-              {chainCurrent?.iconChain ? (
-                <Image source={{ uri: chainCurrent.iconChain }} style={{ width: 32, height: 32, borderRadius: 16 }} />
-              ) : null}
+
+              {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent.iconChain }} style={styles.chainIcon} />}
             </View>
           </View>
 
-          {/* To Address */}
+          {/* To Address Section */}
           <View style={styles.card}>
-            <ThemedText style={{ marginBottom: 6, color: '#9AA0A6' }}>To</ThemedText>
-            <View style={styles.inputRow}>
-              <TextInput
-                ref={inputRef}
-                value={toAddress}
-                onChangeText={setToAddress}
-                placeholder='Recipient address'
-                placeholderTextColor={'#8E8E93'}
-                style={styles.input}
-                autoCapitalize='none'
-                autoCorrect={false}
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <ThemedText style={styles.sectionLabel}>To</ThemedText>
+              <View style={styles.inputActions}>
+                <TouchableOpacity onPress={() => router.push('/connect-dapp')} style={[styles.iconButton, styles.iconButtonActive]}>
+                  <AntDesign name='scan' size={18} color={'#FFFFFF'} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handlePickFromMyAccounts} style={[styles.iconButton, styles.iconButtonActive]}>
+                  <AntDesign name='user' size={18} color={'#FFFFFF'} />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.inputContainer}>
+              <InputForm
+                hiddenError
+                configInput={{
+                  noBorder: true,
+                  style: styles.input,
+                  disabled: isSending || loadingTokenPrice,
+                  placeholder: 'Recipient address',
+                  autoCapitalize: 'none',
+                  autoCorrect: false,
+                }}
+                name='toAddress'
+                control={control}
+                errors={errors.toAddress}
               />
-              <TouchableOpacity onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>
-                <AntDesign name='scan' size={18} color={'#FFFFFF'} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handlePickFromMyAccounts} style={styles.iconButton}>
-                <AntDesign name='user' size={18} color={'#FFFFFF'} />
-              </TouchableOpacity>
             </View>
           </View>
 
-          {/* Token selector */}
-          <TouchableOpacity style={styles.card} onPress={handleSelectToken}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          {/* Token Selection */}
+          <View style={styles.card}>
+            <ThemedText style={styles.sectionLabel}>Token</ThemedText>
+            <TouchableOpacity style={styles.tokenSelector} onPress={handleSelectToken}>
+              <View style={styles.tokenInfo}>
                 {selectedToken?.logo || selectedToken?.thumbnail ? (
-                  <Image source={{ uri: selectedToken?.logo || selectedToken?.thumbnail }} style={{ width: 28, height: 28, borderRadius: 14 }} />
+                  <Image source={{ uri: selectedToken?.logo || selectedToken?.thumbnail }} style={styles.tokenIcon} />
                 ) : (
-                  <Ionicons name='logo-usd' size={22} color={text.color} />
+                  <View style={[styles.tokenIcon, { alignItems: 'center', justifyContent: 'center' }]}>
+                    <Ionicons name='logo-usd' size={20} color={text.color} />
+                  </View>
                 )}
-                <View>
-                  <ThemedText>{selectedToken?.symbol || 'Select Token'}</ThemedText>
+                <View style={styles.tokenDetails}>
+                  <ThemedText style={styles.tokenSymbol}>{selectedToken?.symbol || 'Select Token'}</ThemedText>
                   {!!selectedToken && (
-                    <ThemedText style={{ color: '#9AA0A6' }}>Balance: {Big(balanceFormatted).decimalPlaces(6, Big.ROUND_DOWN).toFormat()}</ThemedText>
+                    <ThemedText style={styles.tokenBalance}>
+                      Balance:{' '}
+                      {BigNumber(selectedToken?.balance_formatted || 0)
+                        .decimalPlaces(6, Big.ROUND_DOWN)
+                        .toFormat()}
+                    </ThemedText>
                   )}
                 </View>
               </View>
-              <AntDesign name='down' size={16} color={'#9AA0A6'} />
-            </View>
-          </TouchableOpacity>
+              <AntDesign name='down' size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />
+            </TouchableOpacity>
+          </View>
 
-          {/* Amount inputs */}
+          {/* Amount Section */}
           <View style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <ThemedText>Amount</ThemedText>
-              <TouchableOpacity
-                onPress={() => {
-                  setAmountToken(Big(balanceFormatted).toFixed())
-                  setAmountUsd(tokenUsdPrice ? Big(balanceFormatted).multipliedBy(tokenUsdPrice).toFixed() : '0')
-                }}
-              >
-                <ThemedText style={{ color: '#007AFF' }}>MAX</ThemedText>
-              </TouchableOpacity>
-            </View>
+            <ThemedText style={styles.sectionLabel}>Amount</ThemedText>
+            <View style={styles.amountCard}>
+              <View style={[styles.amountHeader, { marginBottom: 8 }]}>
+                <ThemedText style={styles.amountLabel}>{selectedToken?.symbol || 'TOKEN'}</ThemedText>
+                <TouchableOpacity
+                  onPress={() => {
+                    // setAmountToken(Big(balanceFormatted).toFixed())
+                    // setAmountUsd(tokenPrice ? Big(balanceFormatted).multipliedBy(tokenPrice).toFixed() : '0')
+                  }}
+                >
+                  <ThemedText>MAX</ThemedText>
+                </TouchableOpacity>
+              </View>
 
-            <View style={{ gap: 10, marginTop: 12 }}>
-              <View style={styles.inputRow}>
-                <ThemedText style={styles.inputPrefix}>{selectedToken?.symbol || 'TOKEN'}</ThemedText>
-                <TextInput
-                  value={amountToken}
-                  onFocus={() => setActiveAmountField('token')}
-                  onChangeText={(t) => setAmountToken(t.replace(/[^0-9,]/g, ''))}
-                  placeholder='0'
-                  placeholderTextColor={'#8E8E93'}
-                  style={styles.input}
-                  keyboardType='numeric'
-                  inputMode='numeric'
-                />
-              </View>
-              <View style={styles.inputRow}>
-                <ThemedText style={styles.inputPrefix}>USD</ThemedText>
-                <TextInput
-                  value={amountUsd}
-                  onFocus={() => setActiveAmountField('usd')}
-                  onChangeText={(t) => setAmountUsd(t.replace(/[^0-9,]/g, ''))}
-                  placeholder='0'
-                  placeholderTextColor={'#8E8E93'}
-                  style={styles.input}
-                  keyboardType='numeric'
-                  inputMode='numeric'
-                />
-              </View>
+              <InputForm
+                configInput={{
+                  disabled: isSending || loadingTokenPrice,
+                  keyboardType: 'numeric',
+                  inputMode: 'numeric',
+                  style: [styles.input, { fontWeight: '700' }],
+                  placeholder: '0.00',
+                  placeholderTextColor: isDark ? '#6B7280' : '#9CA3AF',
+                }}
+                name='amountToken'
+                control={control}
+                errors={errors.amountToken}
+              />
+
+              {BigNumber(tokenPrice || 0).isGreaterThan(0) && (
+                <View>
+                  <InputForm
+                    configInput={{
+                      disabled: isSending || loadingTokenPrice,
+                      keyboardType: 'numeric',
+                      inputMode: 'numeric',
+                      style: [styles.input, { fontSize: 16 }],
+                      placeholder: '$0.00',
+                      placeholderTextColor: isDark ? '#6B7280' : '#9CA3AF',
+                    }}
+                    name='amountUsd'
+                    control={control}
+                    errors={errors.amountUsd}
+                  />
+                </View>
+              )}
             </View>
           </View>
-          {/* Fee */}
-          <View style={styles.card}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <ThemedText>Network fee</ThemedText>
-              <ThemedText>
+
+          {/* Network Fee */}
+          <View style={styles.feeCard}>
+            <View style={styles.feeRow}>
+              <ThemedText style={styles.feeLabel}>Network Fee</ThemedText>
+              <ThemedText style={styles.feeValue}>
                 {feeInfo.gasFeeNative} {feeInfo.nativeSymbol}
                 {feeInfo.gasFeeUsd !== '—' ? ` (~$${feeInfo.gasFeeUsd})` : ''}
               </ThemedText>
             </View>
           </View>
 
-          {/* Removed custom keypad as requested */}
-
-          {/* Send button moved to From row */}
-
-          {/* Tx result */}
+          {/* Transaction Result */}
           {!!txHash && (
-            <View style={[styles.card, { marginTop: 8 }]}>
-              <ThemedText type='subtitle'>Transaction Hash</ThemedText>
-              <ThemedText selectable style={{ marginTop: 6 }}>
+            <View style={styles.resultCard}>
+              <ThemedText style={[styles.resultTitle, { color: isDark ? '#10B981' : '#047857' }]}>Transaction Successful</ThemedText>
+              <ThemedText selectable style={[styles.resultText, { color: isDark ? '#047857' : '#065F46' }]}>
                 {txHash}
               </ThemedText>
             </View>
           )}
+
           {!!txError && (
-            <View style={[styles.card, { marginTop: 8 }]}>
-              <ThemedText type='subtitle' style={{ color: '#FF5252' }}>
-                Error
-              </ThemedText>
-              <ThemedText selectable style={{ marginTop: 6 }}>
+            <View style={styles.errorCard}>
+              <ThemedText style={[styles.resultTitle, { color: isDark ? '#EF4444' : '#DC2626' }]}>Transaction Failed</ThemedText>
+              <ThemedText selectable style={[styles.resultText, { color: isDark ? '#DC2626' : '#7F1D1D' }]}>
                 {txError}
               </ThemedText>
             </View>
