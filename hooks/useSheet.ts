@@ -10,9 +10,6 @@ const useSheet = () => {
   const openSheet = (props: SheetProps) => {
     const init: SheetProps = {
       maskClosable: true,
-      closeOnPressBack: true,
-      closeOnTouchBackdrop: true,
-      gestureEnabled: true,
       isOpen: true,
       ...props,
     }

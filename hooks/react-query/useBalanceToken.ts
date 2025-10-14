@@ -10,6 +10,7 @@ import { sleep } from '@/utils/functions'
 import { getDataLocal, saveDataLocal } from '@/utils/storage'
 
 import useChainSelected from '../useChainSelected'
+import useFilter from '../useFilter'
 import useWallets from '../useWallets'
 
 const getData = async ({ queryKey }: IQueryKey): Promise<any> => {
@@ -34,9 +35,10 @@ const getData = async ({ queryKey }: IQueryKey): Promise<any> => {
   return data
 }
 
-const useBalanceToken = (isFilterNonUSD = false) => {
+const useBalanceToken = (noFilter = false) => {
   const { chainId } = useChainSelected()
   const { wallet } = useWallets()
+  const { filters } = useFilter()
 
   const queries = useQuery({
     queryKey: [KEY_REACT_QUERY.getBalancesTokenByAddress, wallet?.address || '0x', chainId],
@@ -50,14 +52,23 @@ const useBalanceToken = (isFilterNonUSD = false) => {
   })
 
   const dataQuery = useMemo(() => {
-    let arrSort: Token[] = []
-    if (!isFilterNonUSD) {
-      arrSort = queries?.data || []
-    } else {
-      arrSort = queries?.data?.filter((token: Token) => token?.usd_value > 0.001) || []
+    let arrSort: Token[] = queries?.data || []
+    if (noFilter) return arrSort
+
+    if (filters?.tokens?.hideSpam) {
+      arrSort = arrSort.filter((token: Token) => !token?.possible_spam)
     }
+
+    if (filters?.tokens?.hideSmallBalances) {
+      arrSort = arrSort.filter((token: Token) => (token?.usd_value || 0) >= 0.001)
+    }
+
+    if (filters?.tokens?.hideImported) {
+      arrSort = arrSort.filter((token: Token) => !token?.is_imported)
+    }
+
     return arrSort.sort((a, b) => (b.usd_value || 0) - (a.usd_value || 0))
-  }, [queries?.data, isFilterNonUSD])
+  }, [queries?.data, filters?.tokens, noFilter])
 
   const totalUSD = useMemo(() => {
     if (!dataQuery || dataQuery.length === 0) return 0

@@ -3,14 +3,14 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { default as Big, default as BigNumber } from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import React, { useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import React, { useMemo, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from 'react-native'
 import { encodeFunctionData, erc20Abi } from 'viem'
 
-import InputForm from '@/components/Form/InputForm'
 import HeaderScreen from '@/components/Header'
+import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
+import { COLORS } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useTokenPrice from '@/hooks/react-query/useTokenPrice'
 import useChains from '@/hooks/useChains'
@@ -19,9 +19,11 @@ import useSheet from '@/hooks/useSheet'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
-import { ellipsisText, getRadomColor } from '@/utils/functions'
-import { isTokenNative } from '@/utils/nvm'
+import { cloneDeep, ellipsisText, getRadomColor } from '@/utils/functions'
+import { isAddress, isTokenNative } from '@/utils/nvm'
 import WalletEvmUtil from '@/utils/walletEvm'
+
+import ConnectDAppScreen from '../connect-dapp'
 
 import { createStyles } from './styles'
 
@@ -39,25 +41,21 @@ const SendTokenScreen = () => {
   const styles = createStyles(isDark)
   const { chainCurrent } = useChains()
   const { wallet, wallets, indexWalletActive } = useWallets()
-  const { data: tokens } = useBalanceToken(true)
+  const { data: tokens } = useBalanceToken()
   const { openSheet, closeSheet } = useSheet()
-  const {
-    getValues,
-    control,
-    formState: { errors },
-    setValue,
-    setError,
-    subscribe,
-    watch,
-  } = useForm<FormSendToken>({
-    defaultValues: {
-      toAddress: initialAddress,
-      amountToken: '',
-      amountUsd: '',
-    },
+  const [form, setForm] = useState<FormSendToken>({
+    toAddress: initialAddress!,
+    amountToken: '',
+    amountUsd: '',
   })
 
-  const [selectedToken] = useState<Token | null>(tokens?.[0] || null)
+  const [formError, setFormError] = useState<FormSendToken>({
+    toAddress: '',
+    amountToken: '',
+    amountUsd: '',
+  })
+
+  const [selectedToken, setSelectedToken] = useState<Token | null>(tokens?.[0] || null)
   const [isSending, setIsSending] = useState(false)
   const [txHash, setTxHash] = useState<string | null>(null)
   const [txError, setTxError] = useState<string | null>(null)
@@ -66,15 +64,9 @@ const SendTokenScreen = () => {
     isTokenNative(selectedToken?.token_address) ? selectedToken?.symbol : selectedToken?.token_address || ''
   )
 
-  useEffect(() => {
-    const valueForm = watch()
-  }, [watch()])
-
   const handleSelectToken = () => {
     openSheet({
       isOpen: true,
-      gestureEnabled: true,
-      closeOnTouchBackdrop: true,
       content: (
         <View>
           <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
@@ -86,7 +78,7 @@ const SendTokenScreen = () => {
                 key={t.token_address}
                 style={styles.tokenItem}
                 onPress={() => {
-                  // setSelectedToken(t)
+                  setSelectedToken(t)
                   // auto convert amount between fields
                   closeSheet()
                 }}
@@ -118,38 +110,12 @@ const SendTokenScreen = () => {
   const handlePickFromMyAccounts = () => {
     openSheet({
       isOpen: true,
-      gestureEnabled: true,
-      closeOnTouchBackdrop: true,
       content: (
         <View>
           <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
             Chọn địa chỉ từ ví của tôi
           </ThemedText>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
 
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
           <ScrollView style={{ maxHeight: 420 }}>
             {(wallets || []).map((w) => (
               <TouchableOpacity
@@ -174,19 +140,26 @@ const SendTokenScreen = () => {
     })
   }
 
+  const handleScanAddress = () => {
+    openSheet({
+      content: (
+        <View style={{ flex: 1 }}>
+          <ConnectDAppScreen />,
+        </View>
+      ),
+    })
+  }
+
   // Removed custom keypad handler
 
   const handleSend = async () => {
     try {
       setTxHash(null)
       setTxError(null)
-      if (!wallet || !selectedToken || !getValues('toAddress') || !getValues('amountToken')) return
+      if (!wallet || !selectedToken || !form?.toAddress || !form.amountToken) return
 
       const decimals = selectedToken.decimals || 18
-      const amountStr = Big(getValues('amountToken').replace(/,/g, '.'))
-        .multipliedBy(Big(10).pow(decimals))
-        .decimalPlaces(0, Big.ROUND_DOWN)
-        .toFixed(0)
+      const amountStr = Big(form.amountToken.replace(/,/g, '.')).multipliedBy(Big(10).pow(decimals)).decimalPlaces(0, Big.ROUND_DOWN).toFixed(0)
       const isNative = !!selectedToken.native_token
 
       const rawBase = {
@@ -209,13 +182,13 @@ const SendTokenScreen = () => {
         await WalletEvmUtil.sendTransaction(
           {
             ...rawBase,
-            to: getValues('toAddress'),
+            to: form?.toAddress,
             value: BigInt(amountStr),
           } as any,
           wallet.privateKey as any
         )
       } else {
-        const data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [getValues('toAddress') as any, BigInt(amountStr)] })
+        const data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [form?.toAddress as any, BigInt(amountStr)] })
         await WalletEvmUtil.sendTransaction(
           {
             ...rawBase,
@@ -230,6 +203,62 @@ const SendTokenScreen = () => {
       setIsSending(false)
       setTxError(err?.message || String(err))
     }
+  }
+
+  const handleMax = () => {
+    const amountToken = selectedToken?.balance_formatted || '0'
+    const amountToUSD = BigNumber(amountToken)
+      .multipliedBy(tokenPrice || 0)
+      .decimalPlaces(6)
+      .toFixed()
+    setForm({
+      ...form,
+      amountToken,
+      amountUsd: amountToUSD,
+    })
+  }
+
+  const onChangeForm = (param: Partial<FormSendToken>) => {
+    const formClone = cloneDeep(form) as FormSendToken
+    const formErrorClone = cloneDeep(formError) as FormSendToken
+
+    if (typeof param.amountToken !== 'undefined') {
+      formClone.amountToken = param.amountToken.replace(/,/g, '.')
+      if (tokenPrice && BigNumber(tokenPrice).isGreaterThan(0) && param.amountToken && BigNumber(param.amountToken).isGreaterThan(0)) {
+        const amountUsd = BigNumber(param.amountToken || '0')
+          .multipliedBy(tokenPrice)
+          .decimalPlaces(6)
+          .toFixed()
+        formClone.amountUsd = amountUsd
+      } else {
+        formClone.amountUsd = ''
+      }
+    }
+
+    if (typeof param.amountUsd !== 'undefined') {
+      formClone.amountUsd = param.amountUsd.replace(/,/g, '.')
+      if (tokenPrice && BigNumber(tokenPrice).isGreaterThan(0) && param.amountUsd && BigNumber(param.amountUsd).isGreaterThan(0)) {
+        const amountToken = BigNumber(param.amountUsd || '0')
+          .dividedBy(tokenPrice)
+          .decimalPlaces(6)
+          .toFixed()
+        formClone.amountToken = amountToken
+      } else {
+        formClone.amountToken = ''
+      }
+    }
+
+    if (typeof param.toAddress !== 'undefined') {
+      formClone.toAddress = param.toAddress
+      if (!isAddress(param.toAddress)) {
+        formErrorClone.toAddress = 'Địa chỉ không hợp lệ'
+      } else {
+        formErrorClone.toAddress = ''
+      }
+    }
+
+    setForm(formClone)
+    setFormError(formErrorClone)
   }
 
   const feeInfo = useMemo(() => {
@@ -253,17 +282,15 @@ const SendTokenScreen = () => {
               <TouchableOpacity
                 style={[
                   styles.sendButton,
-                  (loadingTokenPrice || !getValues('toAddress') || !selectedToken || !getValues('amountToken') || isSending) &&
-                  styles.sendButtonDisabled,
+                  (loadingTokenPrice || !form?.toAddress || !selectedToken || !form?.amountToken || isSending) && styles.sendButtonDisabled,
                 ]}
-                disabled={loadingTokenPrice || !getValues('toAddress') || !selectedToken || !getValues('amountToken') || isSending}
+                disabled={loadingTokenPrice || !form?.toAddress || !selectedToken || !form?.amountToken || isSending}
                 onPress={handleSend}
               >
                 <ThemedText
                   style={[
                     styles.sendButtonText,
-                    (loadingTokenPrice || !getValues('toAddress') || !selectedToken || !getValues('amountToken') || isSending) &&
-                    styles.sendButtonTextDisabled,
+                    (loadingTokenPrice || !form?.toAddress || !selectedToken || !form?.amountToken || isSending) && styles.sendButtonTextDisabled,
                   ]}
                 >
                   {isSending ? 'Sending…' : 'Send'}
@@ -292,7 +319,7 @@ const SendTokenScreen = () => {
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <ThemedText style={styles.sectionLabel}>To</ThemedText>
               <View style={styles.inputActions}>
-                <TouchableOpacity onPress={() => router.push('/connect-dapp')} style={[styles.iconButton, styles.iconButtonActive]}>
+                <TouchableOpacity onPress={handleScanAddress} style={[styles.iconButton, styles.iconButtonActive]}>
                   <AntDesign name='scan' size={18} color={'#FFFFFF'} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handlePickFromMyAccounts} style={[styles.iconButton, styles.iconButtonActive]}>
@@ -301,21 +328,21 @@ const SendTokenScreen = () => {
               </View>
             </View>
             <View style={styles.inputContainer}>
-              <InputForm
-                hiddenError
-                configInput={{
-                  noBorder: true,
-                  style: styles.input,
-                  disabled: isSending || loadingTokenPrice,
-                  placeholder: 'Recipient address',
-                  autoCapitalize: 'none',
-                  autoCorrect: false,
+              <ThemedInput
+                noBorder={true}
+                style={styles.input}
+                disabled={isSending || loadingTokenPrice}
+                placeholder='Recipient address'
+                autoCapitalize='none'
+                autoCorrect={false}
+                onChangeText={(text: string) => {
+                  onChangeForm({ toAddress: text })
                 }}
-                name='toAddress'
-                control={control}
-                errors={errors.toAddress}
               />
             </View>
+            <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5 }}>
+              {formError?.toAddress}
+            </ThemedText>
           </View>
 
           {/* Token Selection */}
@@ -352,45 +379,42 @@ const SendTokenScreen = () => {
             <View style={styles.amountCard}>
               <View style={[styles.amountHeader, { marginBottom: 8 }]}>
                 <ThemedText style={styles.amountLabel}>{selectedToken?.symbol || 'TOKEN'}</ThemedText>
-                <TouchableOpacity
-                  onPress={() => {
-                    // setAmountToken(Big(balanceFormatted).toFixed())
-                    // setAmountUsd(tokenPrice ? Big(balanceFormatted).multipliedBy(tokenPrice).toFixed() : '0')
-                  }}
-                >
+                <TouchableOpacity onPress={handleMax}>
                   <ThemedText>MAX</ThemedText>
                 </TouchableOpacity>
               </View>
 
-              <InputForm
-                configInput={{
-                  disabled: isSending || loadingTokenPrice,
-                  keyboardType: 'numeric',
-                  inputMode: 'numeric',
-                  style: [styles.input, { fontWeight: '700' }],
-                  placeholder: '0.00',
-                  placeholderTextColor: isDark ? '#6B7280' : '#9CA3AF',
+              <ThemedInput
+                disabled={isSending || loadingTokenPrice}
+                keyboardType='numeric'
+                inputMode='numeric'
+                style={[styles.input, { fontWeight: '700' }]}
+                placeholder='0.00'
+                value={form.amountToken}
+                onChangeText={(text: string) => {
+                  onChangeForm({ amountToken: text.toString() })
                 }}
-                name='amountToken'
-                control={control}
-                errors={errors.amountToken}
               />
+              <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5 }}>
+                {formError?.amountToken}
+              </ThemedText>
 
               {BigNumber(tokenPrice || 0).isGreaterThan(0) && (
                 <View>
-                  <InputForm
-                    configInput={{
-                      disabled: isSending || loadingTokenPrice,
-                      keyboardType: 'numeric',
-                      inputMode: 'numeric',
-                      style: [styles.input, { fontSize: 16 }],
-                      placeholder: '$0.00',
-                      placeholderTextColor: isDark ? '#6B7280' : '#9CA3AF',
+                  <ThemedInput
+                    disabled={isSending || loadingTokenPrice}
+                    keyboardType='numeric'
+                    inputMode='numeric'
+                    style={[styles.input, { fontSize: 16 }]}
+                    placeholder='$0.00'
+                    value={form.amountUsd}
+                    onChangeText={(text: string) => {
+                      onChangeForm({ amountUsd: text.toString() })
                     }}
-                    name='amountUsd'
-                    control={control}
-                    errors={errors.amountUsd}
                   />
+                  <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5 }}>
+                    {formError?.amountUsd}
+                  </ThemedText>
                 </View>
               )}
             </View>

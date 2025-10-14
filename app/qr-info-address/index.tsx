@@ -12,8 +12,7 @@ import { useAlert } from '@/hooks/useAlert'
 import useChains from '@/hooks/useChains'
 import useMode from '@/hooks/useMode'
 import useWallets from '@/hooks/useWallets'
-import { Clipboard } from '@/utils/clipboard'
-import { ellipsisText } from '@/utils/functions'
+import { copyToClipboard, ellipsisText } from '@/utils/functions'
 
 import { createStyles } from './styles'
 
@@ -30,7 +29,7 @@ const QRInfoAddressScreen = () => {
 
   const handleCopyAddress = async () => {
     try {
-      await Clipboard.setStringAsync(wallet?.address || '')
+      copyToClipboard(wallet?.address || '')
       showSuccess('Address copied to clipboard!')
     } catch {
       showSuccess('Failed to copy address')
@@ -110,7 +109,7 @@ const QRInfoAddressScreen = () => {
     <View style={styles.container}>
       <HeaderScreen title='Receive' />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} style={styles.content}>
         {/* Tab Buttons */}
         {/* <View style={styles.tabContainer}>
           {renderTabButton('scan', 'Scan QR code')}

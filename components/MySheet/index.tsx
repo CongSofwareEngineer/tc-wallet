@@ -1,56 +1,73 @@
-import React, { useEffect, useRef } from 'react'
-import { StyleSheet, View } from 'react-native'
-import ActionSheet, { ActionSheetRef } from 'react-native-actions-sheet'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import React from 'react'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import Modal from 'react-native-modal'
 
-import { COLORS } from '@/constants/style'
+import { BORDER_RADIUS_DEFAULT, COLORS } from '@/constants/style'
 import useSheet from '@/hooks/useSheet'
+import { height } from '@/utils/systems'
 
 const MySheet = () => {
   const { sheet, closeSheet } = useSheet()
-  const actionSheetRef = useRef<ActionSheetRef>(null)
-  console.log({ sheet })
-  const insets = useSafeAreaInsets()
-
-  useEffect(() => {
-    if (sheet.isOpen) {
-      actionSheetRef.current?.show()
-    } else {
-      actionSheetRef.current?.hide()
-    }
-  }, [sheet])
 
   return (
-    <ActionSheet
-      safeAreaInsets={insets}
-      closeOnTouchBackdrop={sheet?.closeOnTouchBackdrop ?? false}
-      closeOnPressBack={sheet?.closeOnPressBack ?? false}
-      defaultOverlayOpacity={0.3}
-      gestureEnabled={sheet?.gestureEnabled ?? false}
-      indicatorStyle={{
-        maxWidth: 500,
-      }}
-      onClose={() => {
-        // if (sheet?.isOpen) {
-        //   closeSheet()
-        // }
-      }}
-      containerStyle={{
-        backgroundColor: COLORS.black3,
-      }}
-      ref={actionSheetRef}
-    >
-      <SafeAreaView>
-        <View style={styles.container}>{sheet?.children || sheet?.content}</View>
-      </SafeAreaView>
-    </ActionSheet>
+    <>
+      {sheet?.isOpen && (
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}
+        />
+      )}
+      <Modal
+        avoidKeyboard
+        backdropColor='transparent'
+        animationIn={'slideInUp'}
+        animationOut={'slideOutDown'}
+        swipeDirection='down'
+        isVisible={sheet?.isOpen || false}
+        onSwipeComplete={(e) => {
+          if (e?.swipingDirection === 'down') {
+            closeSheet()
+          }
+        }}
+        style={{ margin: 0, justifyContent: 'flex-end' }}
+      >
+        <View style={{ flex: 1, height: height(100), justifyContent: 'flex-end' }}>
+          <View style={styles.container}>
+            <View style={{ alignItems: 'center' }}>
+              <TouchableOpacity onPress={closeSheet} activeOpacity={0.7}>
+                <View
+                  style={{
+                    height: 4,
+                    backgroundColor: '#e0e0e0',
+                    borderRadius: 2,
+                    width: 40,
+                    marginBottom: 16,
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
+            {sheet?.children || sheet?.content}
+          </View>
+        </View>
+      </Modal>
+    </>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
+    backgroundColor: COLORS.black3,
+    borderTopLeftRadius: BORDER_RADIUS_DEFAULT.Radius16,
+    borderTopRightRadius: BORDER_RADIUS_DEFAULT.Radius16,
   },
 })
 export default MySheet

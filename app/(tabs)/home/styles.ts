@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
     // paddingHorizontal: 20,
   },
   balanceAmount: {
-    fontSize: 28,
+    // fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 20,

@@ -12,9 +12,9 @@ type Props = {
   configLabel?: ThemedTextProps
   configInput?: ThemedInputProps
   configError?: ThemedTextProps
-  control: any
+  control?: any
   showError?: boolean
-  name: string
+  name?: string
   required?: boolean
   errors?: any
   errorsText?: any

@@ -3,8 +3,9 @@ import { StyleSheet } from 'react-native'
 export const createStyles = (isDark: boolean) =>
   StyleSheet.create({
     container: {
-      // flex: 1,
+      flex: 1,
       width: '100%',
+      height: 'auto',
       // backgroundColor: isDark ? '#000000' : '#FFFFFF',
     },
     chainInfo: {

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { ScrollView, View } from 'react-native'
 
+import { PADDING_DEFAULT } from '@/constants/style'
+
 import Step1 from './Components/Step1'
 import Step2 from './Components/Step2'
 import Step3 from './Components/Step3'
@@ -23,6 +25,7 @@ const CreateWalletScreen = () => {
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
+        padding: PADDING_DEFAULT.Padding16,
       }}
     >
       <View style={styles.container}>

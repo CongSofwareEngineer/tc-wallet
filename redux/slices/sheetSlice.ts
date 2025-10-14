@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ActionSheetProps } from 'react-native-actions-sheet'
+import { ModalProps } from 'react-native-modal'
 
 export type SheetProps = {
   maskClosable?: boolean
@@ -7,7 +7,7 @@ export type SheetProps = {
   content?: React.ReactNode | null
   afterClose?: () => any
   onClose?: () => any
-} & ActionSheetProps
+} & Partial<ModalProps>
 
 const sheetSlice = createSlice({
   name: 'sheet',

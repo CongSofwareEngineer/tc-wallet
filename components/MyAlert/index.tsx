@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { Animated, Dimensions, View } from 'react-native'
+import { Animated, Dimensions, Modal, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 
 import useMode from '@/hooks/useMode'
@@ -64,53 +64,55 @@ const MyAlert = () => {
   }
 
   return (
-    <View
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 9999,
-        pointerEvents: 'none', // Cho phép tương tác qua alert
-      }}
-    >
-      <Animated.View
+    <Modal transparent visible={!!alert?.text} animationType='none'>
+      <View
         style={{
-          opacity: fadeAnim,
-          transform: [{ translateY: translateYAnim }],
-          backgroundColor: isDark ? colors?.black3 : colors?.white,
-          paddingHorizontal: 20,
-          paddingVertical: 12,
-          borderRadius: 12,
-          marginHorizontal: 40,
-          maxWidth: screenWidth - 80,
-          shadowColor: '#000000',
-          shadowOffset: {
-            width: 0,
-            height: 4,
-          },
-          shadowOpacity: isDark ? 0.4 : 0.2,
-          shadowRadius: 8,
-          elevation: 8,
-          borderWidth: isDark ? 1 : 0,
-          borderColor: isDark ? colors?.gray2 : 'transparent',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999999999999,
+          pointerEvents: 'none', // Cho phép tương tác qua alert,
         }}
       >
-        <ThemedText
+        <Animated.View
           style={{
-            textAlign: 'center',
-            fontSize: 16,
-            fontWeight: '500',
-            lineHeight: 22,
+            opacity: fadeAnim,
+            transform: [{ translateY: translateYAnim }],
+            backgroundColor: isDark ? colors?.black3 : colors?.white,
+            paddingHorizontal: 20,
+            paddingVertical: 12,
+            borderRadius: 12,
+            marginHorizontal: 40,
+            maxWidth: screenWidth - 80,
+            shadowColor: '#000000',
+            shadowOffset: {
+              width: 0,
+              height: 4,
+            },
+            shadowOpacity: isDark ? 0.4 : 0.2,
+            shadowRadius: 8,
+            elevation: 8,
+            borderWidth: isDark ? 1 : 0,
+            borderColor: isDark ? colors?.gray2 : 'transparent',
           }}
         >
-          {alert.text}
-        </ThemedText>
-      </Animated.View>
-    </View>
+          <ThemedText
+            style={{
+              textAlign: 'center',
+              fontSize: 16,
+              fontWeight: '500',
+              lineHeight: 22,
+            }}
+          >
+            {alert.text}
+          </ThemedText>
+        </Animated.View>
+      </View>
+    </Modal>
   )
 }
 

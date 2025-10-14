@@ -90,23 +90,11 @@ const StackScreen = () => {
           name='filter-data'
           options={{
             animation: 'fade_from_bottom',
-            presentation: 'modal',
-            headerStyle: {
-              backgroundColor: 'transparent',
-            },
-            contentStyle: {
-              backgroundColor: 'transparent',
-            },
-            webModalStyle: {
-              overlayBackground: 'none',
-              height: '100%',
-              width: '100%',
-              shadow: 'none',
-              border: 'none',
-            },
+            presentation: 'formSheet',
+
+            sheetAllowedDetents: 'fitToContents',
             sheetElevation: 0,
             headerShown: false,
-            transparentModal: true,
           }}
         />
 
@@ -116,6 +104,18 @@ const StackScreen = () => {
             animation: 'fade_from_bottom',
             presentation: 'modal',
             gestureEnabled: false,
+          }}
+        />
+
+        <StackExpo.Screen
+          name='token-detail'
+          options={{
+            animation: 'fade_from_bottom',
+            presentation: 'formSheet',
+
+            sheetAllowedDetents: 'fitToContents',
+            sheetElevation: 0,
+            headerShown: false,
           }}
         />
 
