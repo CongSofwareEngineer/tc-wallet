@@ -1,7 +1,8 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import Modal from 'react-native-modal'
 
+import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { BORDER_RADIUS_DEFAULT, COLORS } from '@/constants/style'
 import useSheet from '@/hooks/useSheet'
 import { height } from '@/utils/systems'
@@ -42,7 +43,7 @@ const MySheet = () => {
         <View style={{ flex: 1, height: height(100), justifyContent: 'flex-end' }}>
           <View style={styles.container}>
             <View style={{ alignItems: 'center' }}>
-              <TouchableOpacity onPress={closeSheet} activeOpacity={0.7}>
+              <ThemeTouchableOpacity type='text' onPress={closeSheet} activeOpacity={0.7}>
                 <View
                   style={{
                     height: 4,
@@ -52,7 +53,7 @@ const MySheet = () => {
                     marginBottom: 16,
                   }}
                 />
-              </TouchableOpacity>
+              </ThemeTouchableOpacity>
             </View>
             {sheet?.children || sheet?.content}
           </View>

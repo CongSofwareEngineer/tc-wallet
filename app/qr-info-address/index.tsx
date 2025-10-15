@@ -7,7 +7,7 @@ import QRCode from 'react-native-qrcode-svg'
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
-import { GAP_DEFAULT } from '@/constants/style'
+import { COLORS, GAP_DEFAULT } from '@/constants/style'
 import { useAlert } from '@/hooks/useAlert'
 import useChains from '@/hooks/useChains'
 import useMode from '@/hooks/useMode'
@@ -73,14 +73,14 @@ const QRInfoAddressScreen = () => {
       <ThemedText style={styles.fullAddress}>{wallet?.address || ''}</ThemedText>
 
       <View style={{ flexDirection: 'row', gap: GAP_DEFAULT.Gap8, justifyContent: 'center' }}>
-        <ThemeTouchableOpacity style={styles.copyButton} onPress={handleCopyAddress}>
-          <Ionicons name='copy-outline' size={16} color='#007AFF' />
+        <ThemeTouchableOpacity type='outline' style={styles.copyButton} onPress={handleCopyAddress}>
+          <Ionicons name='copy-outline' size={16} color={COLORS.green600} />
           <ThemedText style={styles.copyButtonText}>Copy address</ThemedText>
         </ThemeTouchableOpacity>
 
         {chainCurrent?.blockExplorers?.default && (
-          <ThemeTouchableOpacity style={styles.copyButton} onPress={handleOpenExplorer}>
-            <Ionicons name='open-outline' size={16} color='#007AFF' />
+          <ThemeTouchableOpacity type='outline' style={styles.copyButton} onPress={handleOpenExplorer}>
+            <Ionicons name='open-outline' size={16} color={COLORS.green600} />
             <ThemedText style={styles.copyButtonText}>View on Explorer</ThemedText>
           </ThemeTouchableOpacity>
         )}

@@ -2,6 +2,7 @@ import * as Clipboard from 'expo-clipboard'
 import { Alert } from 'react-native'
 import { formatUnits } from 'viem'
 
+import { images } from '@/configs/images'
 import { IsIos } from '@/constants/app'
 import { openAlert } from '@/redux/slices/alertSlice'
 import { store } from '@/redux/store'
@@ -78,4 +79,31 @@ export const convertWeiToBalance = (wei: string | number | bigint | null | undef
 export const convertBalanceToWei = (balance: string | number | bigint | null | undefined, decimals = 18): string => {
   if (balance === null || balance === undefined) return ''
   return formatUnits(BigInt(balance), decimals)
+}
+
+export const detectUrlImage = (src: string | null | undefined) => {
+  if (!src) return images.icons.unknown
+  if (src.startsWith('ipfs://')) {
+    return src.replace('ipfs://', 'https://ipfs.io/ipfs/')
+  }
+  if (src.startsWith('http://') || src.startsWith('https://')) {
+    return src
+  }
+  return src
+}
+
+export const isLink = (str: string) => {
+  if (!str) return false
+  str = str?.toString()?.trim()
+
+  // Sử dụng biểu thức chính quy để kiểm tra
+  const pattern = /^(http|https|ftp):\/\/[^\s/$.?#].[^\s]*$/
+
+  return pattern.test(str)
+}
+
+export const isObject = (data: any, checkEmpty = false) => {
+  const isObj = data && typeof data === 'object'
+
+  return checkEmpty ? isObj && Object.keys(data).length > 0 : isObj
 }

@@ -1,20 +1,20 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Feather from '@expo/vector-icons/Feather'
-import Ionicons from '@expo/vector-icons/Ionicons'
 import Big from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
-import React, { useRef, useState } from 'react'
-import { Animated, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { Animated, View } from 'react-native'
 
 import ThemedText from '@/components/UI/ThemedText'
-import { GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
+import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import { COLORS, GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
-import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { ellipsisText } from '@/utils/functions'
 
+import Nfts from './Components/Nfts'
 import Tokens from './Components/Tokens'
 import { styles } from './styles'
 
@@ -27,47 +27,44 @@ export default function HomeScreen() {
   const router = useRouter()
   const { chainCurrent } = useChains()
   const { wallet } = useWallets()
-  const { text } = useTheme()
   const { totalUSD } = useBalanceToken()
   const scrollY = useRef(new Animated.Value(0)).current
+
   const [headerHeight, setHeaderHeight] = useState(HEIGHT_HEADER_SCROLL)
 
   const headerOpacity = scrollY.interpolate({
-    inputRange: [0, (headerHeight < HEIGHT_HEADER_SCROLL ? HEIGHT_HEADER_SCROLL : headerHeight) - 150],
+    inputRange: [0, (headerHeight < HEIGHT_HEADER_SCROLL ? HEIGHT_HEADER_SCROLL : headerHeight) - 60],
     outputRange: [1, 0],
     extrapolate: 'clamp',
   })
   // HEADER_SCROLL for animation bounds
 
   const headerTranslateY = scrollY.interpolate({
-    inputRange: [0, (headerHeight < HEIGHT_HEADER_SCROLL ? HEIGHT_HEADER_SCROLL : headerHeight) - 150],
+    inputRange: [0, (headerHeight < HEIGHT_HEADER_SCROLL ? HEIGHT_HEADER_SCROLL : headerHeight) - 60],
     // outputRange: [0, Platform.OS === 'android' ? -HEIGHT_HEADER_SCROLL * 2 : -HEIGHT_HEADER_SCROLL],
-    outputRange: [0, -((headerHeight < HEIGHT_HEADER_SCROLL ? HEIGHT_HEADER_SCROLL : headerHeight) - 150)],
+    outputRange: [0, -((headerHeight < HEIGHT_HEADER_SCROLL ? HEIGHT_HEADER_SCROLL : headerHeight) - 60)],
     extrapolate: 'clamp',
   })
+
+  useEffect(() => {
+    scrollY.interpolate({
+      inputRange: [0, 0],
+      outputRange: [0, 0],
+      extrapolate: 'clamp',
+    })
+  }, [activeTab])
 
   // Content translateY removed as header is now absolute
 
   const renderChainSelected = () => {
     return (
-      <View style={[styles.networkFilter, { position: 'relative' }]}>
-        <TouchableOpacity onPress={() => router.push('/select-chain')}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-            {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent?.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />}
-            <ThemedText style={styles.networkFilterText}>{chainCurrent?.name}</ThemedText>
-            <AntDesign name='down' size={16} color='#FFFFFF' />
-          </View>
-        </TouchableOpacity>
-        <View style={{ position: 'relative' }}>
-          <TouchableOpacity
-            onPress={() => router.push(`/filter-data/${activeTab.toLowerCase()}`)}
-            style={{ padding: 6 }}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <AntDesign name='filter' size={18} color={text.color} />
-          </TouchableOpacity>
+      <ThemeTouchableOpacity type='text' onPress={() => router.push('/select-chain')}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+          {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent?.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />}
+          <ThemedText style={styles.networkFilterText}>{chainCurrent?.name}</ThemedText>
+          <AntDesign name='down' size={16} color='#FFFFFF' />
         </View>
-      </View>
+      </ThemeTouchableOpacity>
     )
   }
 
@@ -84,20 +81,21 @@ export default function HomeScreen() {
           {/* Header */}
           <View style={[styles.header]}>
             <View style={{ width: 150 }}>
-              <TouchableOpacity onPress={() => router.push('/wallet')} style={styles.addressContainer}>
+              <ThemeTouchableOpacity type='text' onPress={() => router.push('/wallet')} style={styles.addressContainer}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap4 }}>
                   <ThemedText style={styles.addressText}>{wallet?.name || ellipsisText(wallet?.address, 4, 5)}</ThemedText>
                   <AntDesign name='down' size={14} color='#FFFFFF' />
                 </View>
-              </TouchableOpacity>
+              </ThemeTouchableOpacity>
             </View>
 
             <View style={[styles.headerIcons, { flex: 1, justifyContent: 'flex-end' }]}>
-              <TouchableOpacity onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>
+              <ThemeTouchableOpacity type='text' onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>
                 <AntDesign name='scan' size={24} color='#FFFFFF' />
-              </TouchableOpacity>
+              </ThemeTouchableOpacity>
             </View>
           </View>
+          {renderChainSelected()}
 
           {/* Balance Section */}
           <View style={[styles.balanceSection, { paddingTop: 16 }]}>
@@ -109,14 +107,14 @@ export default function HomeScreen() {
             </ThemedText>
             {/* <Options /> */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20, marginTop: 12 }}>
-              <TouchableOpacity onPress={() => router.push(`/send-token/${wallet?.address}`)} style={styles.buyButton}>
+              <ThemeTouchableOpacity onPress={() => router.push(`/send-token/${wallet?.address}`)} style={styles.buyButton}>
                 <Feather name='send' size={20} color='#FFFFFF' />
                 <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push('/qr-info-address')} style={styles.buyButton}>
-                <Ionicons name='add' size={20} color='#FFFFFF' />
+              </ThemeTouchableOpacity>
+              <ThemeTouchableOpacity onPress={() => router.push('/qr-info-address')} style={styles.buyButton}>
+                <Feather name='download' size={20} color='#FFFFFF' />
                 <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Receive</ThemedText>
-              </TouchableOpacity>
+              </ThemeTouchableOpacity>
             </View>
           </View>
         </Animated.View>
@@ -125,25 +123,26 @@ export default function HomeScreen() {
         <View>
           <View style={[styles.tabsContainer, { backgroundColor: '#0A0A0A' }]}>
             {['Tokens', 'NFTs'].map((tab) => (
-              <TouchableOpacity
+              <ThemeTouchableOpacity
+                type='text'
                 key={tab}
                 style={[styles.tabButton, activeTab === tab && styles.activeTab]}
                 onPress={() => {
                   setActiveTab(tab)
                 }}
               >
-                <ThemedText style={[styles.tabText, activeTab === tab && { color: '#007AFF' }]}>{tab}</ThemedText>
-              </TouchableOpacity>
+                <ThemedText style={[styles.tabText, activeTab === tab && { color: COLORS.green600 }]}>{tab}</ThemedText>
+              </ThemeTouchableOpacity>
             ))}
           </View>
           <View style={[{ backgroundColor: '#0A0A0A', height: 12, width: '100%' }]} />
 
-          {renderChainSelected()}
+          {/* {renderChainSelected()} */}
         </View>
       </Animated.View>
 
       <View style={[{ flex: 1 }]}>
-        <Tokens headerHeight={headerHeight} scrollY={scrollY} />
+        {activeTab === 'Tokens' ? <Tokens headerHeight={headerHeight} scrollY={scrollY} /> : <Nfts headerHeight={headerHeight} scrollY={scrollY} />}
       </View>
     </View>
   )

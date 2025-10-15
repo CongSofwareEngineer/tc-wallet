@@ -4,8 +4,6 @@ import { useMemo } from 'react'
 import { KEY_REACT_QUERY } from '@/constants/reactQuery'
 import MoralisService from '@/services/moralis'
 import { NFTResponse } from '@/services/moralis/type'
-import { sleep } from '@/utils/functions'
-import { getDataLocal, saveDataLocal } from '@/utils/storage'
 
 import useChainSelected from '../useChainSelected'
 import useFilter from '../useFilter'
@@ -19,30 +17,25 @@ const useListNFTs = () => {
   const { filters } = useFilter()
 
   const data = useInfiniteQuery({
-    queryKey: [KEY_REACT_QUERY.getNFTsByWallet, wallet?.address, chainId],
+    queryKey: [KEY_REACT_QUERY.getNFTsByWallet, '0x9f276af79b2b5de2946a88b0fe2717318f924d7c', chainId],
     initialPageParam: '',
     queryFn: async ({ pageParam }) => {
-      console.log({ pageParam })
-
-      let dataLocal = getDataLocal('listNFts')
-      if (dataLocal && dataLocal[`${chainId}_${wallet?.address}_${pageParam}`]) {
-        return dataLocal[`${chainId}_${wallet?.address}_${pageParam}`]
-      }
       const response = await MoralisService.getNFTsByWallet({
-        address: wallet?.address || '',
+        address: '0x9f276af79b2b5de2946a88b0fe2717318f924d7c' || '',
         chainId,
         cursor: pageParam,
         limit: PAGE_SIZE,
-      })
-      saveDataLocal('listNFts', {
-        ...dataLocal,
-        [`${chainId}_${wallet?.address}_${pageParam}`]: response,
       })
 
       return response as NFTResponse
     },
     getNextPageParam: (lastPage: NFTResponse) => lastPage.cursor || undefined,
-    enabled: !!wallet?.address && !!chainId,
+    enabled: !!'0x9f276af79b2b5de2946a88b0fe2717318f924d7c' && !!chainId,
+    refetchInterval: false,
+    refetchIntervalInBackground: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   })
 
   const dataQuery = useMemo(() => {
@@ -57,17 +50,7 @@ const useListNFTs = () => {
     }
     return allNFTs
   }, [data.data, filters])
-  console.log({ dataQuery })
-
-  const refetch = async () => {
-    let dataLocal = getDataLocal('listNFts')
-    if (dataLocal && dataLocal[`${chainId}_${wallet?.address}`]) {
-      delete dataLocal[`${chainId}_${wallet?.address}`]
-      saveDataLocal('listNFts', dataLocal)
-    }
-    await sleep(100)
-    data.refetch()
-  }
+  console.log({ dataQuery, filters })
 
   return { ...data, data: dataQuery }
 }

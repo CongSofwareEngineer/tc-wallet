@@ -1,48 +1,60 @@
 export interface NFTResponse {
-  status: string
-  page: string
-  page_size: string
-  cursor: string
+  status?: string
+  page?: string
+  page_size?: string
+  cursor: string | null
   result: NFT[]
 }
 
 export interface NFT {
-  token_address: string
+  amount: string
   token_id: string
+  token_address: string
   contract_type: string
   owner_of: string
+  last_metadata_sync: string
+  last_token_uri_sync: string
+  metadata: string
   block_number: string
   block_number_minted: string
-  token_uri: string
-  metadata: string
-  normalized_metadata: string
-  media: string
-  amount: string
   name: string
-  symbol: string
+  symbol: string | null
   token_hash: string
+  token_uri: string
+  minter_address: string
   rarity_rank: number
   rarity_percentage: number
   rarity_label: string
-  last_token_uri_sync: string
-  last_metadata_sync: string
-  possible_spam: string
-  verified_collection: string
-  floor_price: string
-  floor_price_usd: string
-  floor_price_currency: string
-  last_sale?: {
-    transaction_hash: string
-    block_timestamp: string
-    buyer_address: string
-    seller_address: string
-    price: string
-    price_formatted: string
-    usd_price_at_sale: string
-    current_usd_value: string
-    token_address: string
-    token_id: string
+  verified_collection: boolean
+  possible_spam: boolean
+  normalized_metadata: {
+    name: string
+    description: string
+    animation_url: string | null
+    external_link: string | null
+    external_url: string | null
+    image: string
+    attributes: any[]
   }
+  collection_logo: string | null
+  collection_banner_image: string | null
+  collection_category: string | null
+  project_url: string | null
+  wiki_url: string | null
+  discord_url: string | null
+  telegram_url: string | null
+  twitter_username: string | null
+  instagram_username: string | null
+  list_price: {
+    listed: false
+    price: string | null
+    price_currency: string | null
+    price_usd: string | null
+    marketplace: string | null
+  }
+  floor_price: string | null
+  floor_price_usd: string | null
+  floor_price_currency: string | null
 }
 
 export interface Token {

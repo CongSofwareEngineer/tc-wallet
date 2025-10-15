@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 
-import { PADDING_DEFAULT } from '@/constants/style'
+import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 
 export const styles = StyleSheet.create({
   container: {
@@ -68,11 +68,11 @@ export const styles = StyleSheet.create({
   buyButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 25,
     marginTop: 10,
+    minWidth: 120,
   },
   swapButton: {
     flexDirection: 'row',
@@ -98,7 +98,7 @@ export const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   activeTab: {
-    borderBottomColor: '#007AFF',
+    borderBottomColor: COLORS.green600,
   },
   tabText: {
     fontSize: 16,

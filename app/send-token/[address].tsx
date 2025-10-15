@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { default as Big, default as BigNumber } from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from 'react-native'
 import { encodeFunctionData, erc20Abi } from 'viem'
 
@@ -35,16 +35,16 @@ type FormSendToken = {
 
 const SendTokenScreen = () => {
   const router = useRouter()
-  const { address: initialAddress } = useLocalSearchParams<{ address?: string }>()
+  const { address: addressToken } = useLocalSearchParams<{ address?: string }>()
   const { isDark } = useMode()
   const { text } = useTheme()
   const styles = createStyles(isDark)
   const { chainCurrent } = useChains()
   const { wallet, wallets, indexWalletActive } = useWallets()
-  const { data: tokens } = useBalanceToken()
+  const { data: tokens } = useBalanceToken(true)
   const { openSheet, closeSheet } = useSheet()
   const [form, setForm] = useState<FormSendToken>({
-    toAddress: initialAddress!,
+    toAddress: '',
     amountToken: '',
     amountUsd: '',
   })
@@ -63,6 +63,15 @@ const SendTokenScreen = () => {
   const { data: tokenPrice, isLoading: loadingTokenPrice } = useTokenPrice(
     isTokenNative(selectedToken?.token_address) ? selectedToken?.symbol : selectedToken?.token_address || ''
   )
+
+  useEffect(() => {
+    if (addressToken && tokens) {
+      const tokenFind = tokens.find((t) => t.token_address.toLowerCase() === addressToken.toLowerCase())
+      if (tokenFind) {
+        setSelectedToken(tokenFind)
+      }
+    }
+  }, [tokens, addressToken])
 
   const handleSelectToken = () => {
     openSheet({

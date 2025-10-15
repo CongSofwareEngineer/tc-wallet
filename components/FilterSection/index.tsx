@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import { toggleNFTSpamFilter, toggleTokenBalanceFilter, toggleTokenImportedFilter, toggleTokenSpamFilter } from '@/redux/slices/filterSlice'
 import { RootState } from '@/store'
-import { toggleNFTSpamFilter, toggleTokenBalanceFilter, toggleTokenImportedFilter, toggleTokenSpamFilter } from '@/store/slices/filterSlice'
 
 import { styles } from './styles'
 

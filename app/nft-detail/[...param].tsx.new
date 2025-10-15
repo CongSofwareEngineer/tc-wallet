@@ -1,0 +1,138 @@
+import { MaterialIcons } from '@expo/vector-icons'
+import { Image } from 'expo-image'
+import { useLocalSearchParams } from 'expo-router'
+import React from 'react'
+import { ScrollView, TouchableOpacity, View, Linking } from 'react-native'
+
+import HeaderScreen from '@/components/Header'
+import ThemedText from '@/components/UI/ThemedText'
+import { Colors } from '@/constants/theme'
+import useNFTDetail from '@/hooks/react-query/useNFTDetail'
+import useChainSelected from '@/hooks/useChainSelected'
+import useTheme from '@/hooks/useTheme'
+import { getExplorerByChainId } from '@/utils/functions'
+
+import { styles } from './styles'
+
+const NFTDetailScreen = () => {
+  const { param } = useLocalSearchParams<{ param: string[] }>()
+  const [addressNFT, tokenId] = param
+  const { text } = useTheme()
+  const chainSelected = useChainSelected()
+
+  const { data: nft, isLoading } = useNFTDetail(addressNFT, tokenId)
+
+  const handleOpenExplorer = () => {
+    const explorer = getExplorerByChainId(chainSelected.chainId)
+    const explorerUrl = `${explorer}/token/${addressNFT}`
+    Linking.openURL(explorerUrl)
+  }
+
+  if (isLoading || !nft) {
+    return (
+      <View style={styles.container}>
+        <HeaderScreen title='NFT Detail' />
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <ThemedText>Loading...</ThemedText>
+        </View>
+      </View>
+    )
+  }
+
+  const metadata = nft.normalized_metadata
+
+  return (
+    <View style={styles.container}>
+      <HeaderScreen title='NFT Detail' />
+
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={styles.imageContainer}>
+          {metadata.image ? (
+            <Image source={{ uri: metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/') }} style={styles.image} contentFit='cover' />
+          ) : (
+            <View style={[styles.image, { backgroundColor: '#1A1A1A', alignItems: 'center', justifyContent: 'center' }]}>
+              <MaterialIcons name='image' size={48} color={text.color} />
+            </View>
+          )}
+        </View>
+
+        <View style={styles.contentContainer}>
+          {/* Basic Info */}
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>{metadata.name || nft.name}</ThemedText>
+            <TouchableOpacity onPress={handleOpenExplorer} style={styles.row}>
+              <ThemedText style={styles.label}>Contract Address</ThemedText>
+              <ThemedText style={[styles.value, { color: Colors.light.tint }]}>{addressNFT}</ThemedText>
+            </TouchableOpacity>
+            <View style={styles.row}>
+              <ThemedText style={styles.label}>Token ID</ThemedText>
+              <ThemedText style={styles.value}>#{nft.token_id}</ThemedText>
+            </View>
+            <View style={styles.row}>
+              <ThemedText style={styles.label}>Contract Type</ThemedText>
+              <ThemedText style={styles.value}>{nft.contract_type}</ThemedText>
+            </View>
+            <View style={styles.row}>
+              <ThemedText style={styles.label}>Amount</ThemedText>
+              <ThemedText style={styles.value}>{nft.amount}</ThemedText>
+            </View>
+            {nft.rarity_rank && (
+              <View style={styles.row}>
+                <ThemedText style={styles.label}>Rarity Rank</ThemedText>
+                <ThemedText style={styles.value}>
+                  #{nft.rarity_rank} ({nft.rarity_label})
+                </ThemedText>
+              </View>
+            )}
+          </View>
+
+          {/* Description */}
+          {metadata.description && (
+            <View style={styles.section}>
+              <ThemedText style={styles.sectionTitle}>Description</ThemedText>
+              <ThemedText style={styles.description}>{metadata.description}</ThemedText>
+            </View>
+          )}
+
+          {/* Attributes */}
+          {metadata.attributes && metadata.attributes.length > 0 && (
+            <View style={styles.section}>
+              <ThemedText style={styles.sectionTitle}>Attributes</ThemedText>
+              <View style={styles.attributeGrid}>
+                {metadata.attributes.map((attr, index) => (
+                  <View key={index} style={styles.attributeItem}>
+                    <View style={styles.attributeBox}>
+                      <ThemedText style={styles.attributeType}>{attr.trait_type}</ThemedText>
+                      <ThemedText style={styles.attributeValue}>{attr.value}</ThemedText>
+                      {attr.rarity_label && <ThemedText style={styles.attributeRarity}>{attr.rarity_label}</ThemedText>}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Collection Info */}
+          {(nft.collection_logo || nft.collection_category) && (
+            <View style={styles.section}>
+              <ThemedText style={styles.sectionTitle}>Collection</ThemedText>
+              {nft.collection_category && (
+                <View style={styles.row}>
+                  <ThemedText style={styles.label}>Category</ThemedText>
+                  <ThemedText style={styles.value}>{nft.collection_category}</ThemedText>
+                </View>
+              )}
+              {nft.collection_logo && (
+                <View style={styles.row}>
+                  <Image source={{ uri: nft.collection_logo }} style={{ width: 40, height: 40, borderRadius: 20 }} />
+                </View>
+              )}
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </View>
+  )
+}
+
+export default NFTDetailScreen

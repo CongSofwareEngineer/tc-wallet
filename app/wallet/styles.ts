@@ -63,7 +63,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#3B82F6',
     borderRadius: 8,
     gap: 6,
   },

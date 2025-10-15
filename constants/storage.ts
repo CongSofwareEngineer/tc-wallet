@@ -12,4 +12,6 @@ export enum KEY_STORAGE {
   AllWallet = 'AllWallet',
   Sessions = 'Sessions',
   PasscodeAuth = 'PasscodeAuth',
+  ListTokenImport = 'ListTokenImport',
+  BalanceTokenLocal = 'balanceTokenLocal',
 }

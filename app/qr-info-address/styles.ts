@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native'
 
+import { COLORS } from '@/constants/style'
+
 export const createStyles = (isDark: boolean) =>
   StyleSheet.create({
     container: {
@@ -93,14 +95,13 @@ export const createStyles = (isDark: boolean) =>
     copyButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: 8,
+      paddingVertical: 10,
       paddingHorizontal: 16,
-      backgroundColor: isDark ? 'rgba(0, 122, 255, 0.15)' : 'rgba(0, 122, 255, 0.1)',
       borderRadius: 20,
     },
     copyButtonText: {
       fontSize: 14,
-      color: '#007AFF',
+      color: COLORS.green600,
       marginLeft: 6,
       fontWeight: '500',
     },

@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router'
 import React, { ReactNode } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
+import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { COLORS, MODE } from '@/constants/style'
 import useMode from '@/hooks/useMode'
 import useTheme from '@/hooks/useTheme'
@@ -23,7 +24,8 @@ const HeaderScreen = ({ title, urlDefault = '/(tabs)/home', onBackPress, leftSid
   const { mode } = useMode()
   return (
     <View style={[styles.container, styles[`container${mode}`]]}>
-      <TouchableOpacity
+      <ThemeTouchableOpacity
+        type='text'
         onPress={() => {
           if (onBackPress) {
             onBackPress()
@@ -37,7 +39,7 @@ const HeaderScreen = ({ title, urlDefault = '/(tabs)/home', onBackPress, leftSid
         }}
       >
         {leftSide || <IconAntd color={text.color} name='arrow-left' size={20} />}
-      </TouchableOpacity>
+      </ThemeTouchableOpacity>
       <View style={styles.titleContainer}>
         <ThemedText style={styles.titleText}>{title}</ThemedText>
       </View>
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   [`container${MODE.Dark}`]: {
-    borderBottomColor: COLORS.black2,
+    borderBottomColor: COLORS.green2,
   },
   [`container${MODE.Light}`]: {
     // borderBottomColor: COLORS.gray1,

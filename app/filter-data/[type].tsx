@@ -1,25 +1,23 @@
-import { Checkbox } from 'expo-checkbox'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useMemo } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
+import ThemeCheckBox from '@/components/UI/ThemeCheckBox'
 import ThemedText from '@/components/UI/ThemedText'
 import { BORDER_RADIUS_DEFAULT, COLORS } from '@/constants/style'
 import { useFilter } from '@/hooks/useFilter'
-import useTheme from '@/hooks/useTheme'
-import { FilterState } from '@/store/slices/filterSlice'
+import { FilterState } from '@/redux/slices/filterSlice'
 import { cloneDeep } from '@/utils/functions'
 
 const FilterDataScreen = () => {
   const { type = 'tokens' } = useLocalSearchParams<{ type?: string }>()
-  const { filters, setFilterToken } = useFilter()
-  const { background } = useTheme()
+  const { filters, setFilterToken, setFilterNFTs } = useFilter()
 
-  const dataFilter = useMemo(() => {
+  const dataFilter: any = useMemo(() => {
     if (type === 'tokens') {
       return filters.tokens
     }
-    return filters.tokens
+    return filters.nfts
   }, [type, filters])
 
   const handleUpdateToken = (params: Partial<FilterState['tokens']>) => {
@@ -41,7 +39,7 @@ const FilterDataScreen = () => {
       dataClone = { ...dataClone, ...params, all: false }
     }
 
-    setFilterToken(dataClone)
+    setFilterNFTs(dataClone)
   }
 
   const renderFilterItem = (label: string, value: boolean, onToggle: () => void) => (
@@ -55,17 +53,7 @@ const FilterDataScreen = () => {
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <ThemedText style={{ fontSize: 16, flex: 1 }}>{label}</ThemedText>
-        <Checkbox
-          value={value}
-          onValueChange={onToggle}
-          color={value ? '#2196F3' : undefined}
-          style={{
-            width: 22,
-            height: 22,
-            borderRadius: 6,
-            borderWidth: 2,
-          }}
-        />
+        <ThemeCheckBox value={value} onValueChange={onToggle} />
       </View>
     </TouchableOpacity>
   )

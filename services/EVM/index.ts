@@ -1,12 +1,13 @@
 import { Address, createPublicClient, Hex, http, TransactionRequest } from 'viem'
-import { optimism } from 'viem/chains'
 
+import { store } from '@/redux/store'
 import { ChainId, RawTransactionEVM } from '@/types/web3'
 
 class EVMServices {
   static getClient(chainId: ChainId) {
-    const listChain = [optimism]
-    const chain = listChain.find((item) => item.id.toFixed() === chainId)
+    const listChain = store.getState().chains
+
+    const chain = listChain.find((item) => item.id.toFixed() === chainId.toString())
 
     const publicClient = createPublicClient({
       chain: chain,

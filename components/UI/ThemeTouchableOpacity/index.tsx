@@ -5,7 +5,7 @@ import MyLoading from '@/components/MyLoading'
 import { COLORS } from '@/constants/style'
 
 type Props = {
-  type?: 'default' | 'primary' | 'danger' | 'text'
+  type?: 'default' | 'primary' | 'danger' | 'text' | 'outline'
   loading?: boolean
 } & TouchableOpacityProps
 
@@ -37,14 +37,13 @@ const ThemeTouchableOpacity = ({ type = 'default', ...props }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingVertical: 10,
     paddingTop: 8,
     paddingBottom: 8,
 
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 40,
+    minHeight: 35,
   },
   loadingWrapper: {
     height: 20,
@@ -52,10 +51,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   default: {
-    backgroundColor: COLORS.black2,
+    backgroundColor: '#00875A',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.gray2,
+    borderColor: '#006C48',
   },
 
   primary: {
@@ -75,10 +74,15 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     borderWidth: 0,
     borderColor: 'transparent',
-    paddingLeft: 0,
-    paddingRight: 0,
+    paddingVertical: 0,
     minHeight: 0,
     height: 'auto',
+  },
+  outline: {
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.green600,
   },
 })
 

@@ -38,8 +38,21 @@ export const filterSlice = createSlice({
       state.tokens = initialState.tokens
       state.nfts = initialState.nfts
     },
+    toggleTokenSpamFilter: (state) => {
+      state.tokens.hideSpam = !state.tokens.hideSpam
+    },
+    toggleTokenBalanceFilter: (state) => {
+      state.tokens.hideSmallBalances = !state.tokens.hideSmallBalances
+    },
+    toggleTokenImportedFilter: (state) => {
+      state.tokens.hideImported = !state.tokens.hideImported
+    },
+    toggleNFTSpamFilter: (state) => {
+      state.nfts.hideSpam = !state.nfts.hideSpam
+    },
   },
 })
 
-export const { setFilter, resetFilter } = filterSlice.actions
+export const { setFilter, resetFilter, toggleTokenSpamFilter, toggleTokenBalanceFilter, toggleTokenImportedFilter, toggleNFTSpamFilter } =
+  filterSlice.actions
 export default filterSlice.reducer

@@ -1,13 +1,13 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import React, { useMemo, useState } from 'react'
-import { SectionList, TouchableOpacity, View } from 'react-native'
+import { SectionList, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ModalLoading from '@/components/ModalLoading'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
-import { GAP_DEFAULT } from '@/constants/style'
+import { GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import useAuth from '@/hooks/useAuth'
 import useModal from '@/hooks/useModal'
 import usePassPhrase from '@/hooks/usePassPhrase'
@@ -172,10 +172,10 @@ const WalletScreen = () => {
 
       <View style={styles.tableHeader}>
         <ThemedText style={styles.headerCellLeft}>Wallet Name</ThemedText>
-        <TouchableOpacity style={styles.addButton} onPress={handleCreateWalletAndPassPhrase}>
+        <ThemeTouchableOpacity type='default' style={styles.addButton} onPress={handleCreateWalletAndPassPhrase}>
           <AntDesign name='plus' size={20} color={colors.white} />
           <ThemedText style={styles.addButtonText}>Account</ThemedText>
-        </TouchableOpacity>
+        </ThemeTouchableOpacity>
       </View>
       <View style={styles.separator} />
       {/* List */}
@@ -186,36 +186,40 @@ const WalletScreen = () => {
           const isActive = item.isDefault
 
           return (
-            <TouchableOpacity
+            <ThemeTouchableOpacity
+              type='text'
               style={[
                 styles.row,
                 isActive && {
                   backgroundColor: colors.gray2,
                 },
+                {
+                  paddingVertical: PADDING_DEFAULT.Padding16,
+                },
               ]}
               activeOpacity={0.7}
             >
               {/* Avatar */}
-              <TouchableOpacity onPress={() => handleActiveAccount(item.indexWallet)}>
+              <ThemeTouchableOpacity type='text' onPress={() => handleActiveAccount(item.indexWallet)}>
                 {/* <AntDesign name='wallet' size={30} color={colors.white} /> */}
                 <View style={[styles.avatar, { backgroundColor: getRadomColor(item.address) }]} />
-              </TouchableOpacity>
+              </ThemeTouchableOpacity>
               {/* Name */}
               <View style={{ flex: 1, flexDirection: 'row' }}>
-                <TouchableOpacity onPress={() => handleActiveAccount(item.indexWallet)}>
+                <ThemeTouchableOpacity type='text' onPress={() => handleActiveAccount(item.indexWallet)}>
                   <View>
                     <ThemedText numberOfLines={1}>{item.name || `Account ${index + 1}`}</ThemedText>
                     <ThemedText style={{ fontSize: 12 }}>{ellipsisText(item.address, 6, 8)}</ThemedText>
                   </View>
-                </TouchableOpacity>
+                </ThemeTouchableOpacity>
                 <View style={{ flex: 1 }} />
               </View>
 
               {/* Arrow */}
-              <TouchableOpacity onPress={() => handleDetailAccount(item.indexWallet)}>
+              <ThemeTouchableOpacity type='text' onPress={() => handleDetailAccount(item.indexWallet)}>
                 <AntDesign name='right' size={18} color={text.color} style={{ marginLeft: 8 }} />
-              </TouchableOpacity>
-            </TouchableOpacity>
+              </ThemeTouchableOpacity>
+            </ThemeTouchableOpacity>
           )
         }}
         renderSectionHeader={({ section }) => (
@@ -227,16 +231,16 @@ const WalletScreen = () => {
                   {showData ? (
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
                       <ThemedText style={styles.sectionSubtitle}>{ellipsisText(section.subtitle as string, 6, 8)}</ThemedText>
-                      <TouchableOpacity onPress={handleShowData}>
+                      <ThemeTouchableOpacity type='text' onPress={handleShowData}>
                         <AntDesign name='eye-invisible' size={16} color={text.color} />
-                      </TouchableOpacity>
+                      </ThemeTouchableOpacity>
                     </View>
                   ) : (
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
                       <ThemedText style={styles.sectionSubtitle}>******************</ThemedText>
-                      <TouchableOpacity onPress={handleShowData}>
+                      <ThemeTouchableOpacity type='text' onPress={handleShowData}>
                         <AntDesign name='eye' size={16} color={text.color} />
-                      </TouchableOpacity>
+                      </ThemeTouchableOpacity>
                     </View>
                   )}
                 </>

@@ -3,7 +3,7 @@ import { IFetch } from '@/configs/fetcher/type'
 import { CHAIN_MORALIS_SUPPORT } from '@/constants/moralis'
 import { ChainId } from '@/types/web3'
 
-import { Token } from './type'
+import { NFT, NFTResponse, Token } from './type'
 
 const fetcher = (params: IFetch) => {
   const url = `/api/v2.2${params?.url}`
@@ -19,11 +19,12 @@ const fetcher = (params: IFetch) => {
 }
 
 class MoralisService {
-  static async getNFTsByWallet(params: { address: string; chainId: ChainId; cursor?: string; limit?: number }) {
+  static async getNFTsByWallet(params: { address: string; chainId: ChainId; cursor?: string; limit?: number }): Promise<NFTResponse> {
     try {
       const res = await fetcher({
         url: `/${params.address}/nft?chain=${this.getChainType(params.chainId)}&format=decimal${params.cursor ? `&cursor=${params.cursor}` : ''}&limit=${params.limit || 20}`,
       })
+
       return res?.data || res
     } catch (error) {
       return {
@@ -59,12 +60,27 @@ class MoralisService {
         url: `/erc20/${address}/price?chain=${this.getChainType(chainId)}`,
       })
 
-      console.log({ getPriceByAddress: res })
-
       return res?.data?.usdPrice || '0'
     } catch (error) {
       return '0'
     }
+  }
+
+  static async getNFTsByContractTokenId(chainId: ChainId, contract: string, tokenId: string | null): Promise<NFT> {
+    const params = new URLSearchParams({
+      chain: this.getChainType(chainId),
+      format: 'decimal',
+      normalizeMetadata: 'true',
+      media_items: 'true',
+    })
+
+    const apiPath = `/nft/${contract}/${tokenId}?${params.toString()}`
+    const res = await fetcher({
+      url: apiPath,
+    })
+    console.log({ getNFTsByContractTokenId: res })
+
+    return res?.data as NFT
   }
 }
 

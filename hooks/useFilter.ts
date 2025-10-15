@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 
-import { RootState } from '@/store'
-import { resetFilter as resetFilterSlice, setFilter } from '@/store/slices/filterSlice'
+import { resetFilter as resetFilterSlice, setFilter } from '@/redux/slices/filterSlice'
+import { RootState } from '@/redux/store'
 
 export const useFilter = () => {
   const dispatch = useDispatch()
