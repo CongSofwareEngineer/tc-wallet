@@ -5,9 +5,11 @@ import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
 import { Animated, View } from 'react-native'
+import { WebView } from 'react-native-webview'
 
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import fetcher from '@/configs/fetcher'
 import { COLORS, GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
@@ -54,17 +56,33 @@ export default function HomeScreen() {
     })
   }, [activeTab])
 
+  const handleTestApi = async () => {
+    try {
+      const res = await fetcher({
+        url: 'https://api.cryptorank.io/v2/drophunting/activities',
+        headers: {
+          'X-Api-Key': '6c57832b030cdbc054195c0627e61d3581f4f63213d053c841365ea68641',
+        },
+      })
+      console.log({ res })
+    } catch (error) {
+      console.log({ error })
+    }
+  }
+
   // Content translateY removed as header is now absolute
 
   const renderChainSelected = () => {
     return (
-      <ThemeTouchableOpacity type='text' onPress={() => router.push('/select-chain')}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-          {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent?.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />}
-          <ThemedText style={styles.networkFilterText}>{chainCurrent?.name}</ThemedText>
-          <AntDesign name='down' size={16} color='#FFFFFF' />
-        </View>
-      </ThemeTouchableOpacity>
+      <View>
+        <ThemeTouchableOpacity type='text' onPress={() => router.push('/select-chain')}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+            {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent?.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />}
+            <ThemedText style={styles.networkFilterText}>{chainCurrent?.name}</ThemedText>
+            <AntDesign name='down' size={16} color='#FFFFFF' />
+          </View>
+        </ThemeTouchableOpacity>
+      </View>
     )
   }
 
@@ -107,6 +125,10 @@ export default function HomeScreen() {
             </ThemedText>
             {/* <Options /> */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20, marginTop: 12 }}>
+              {/* <ThemeTouchableOpacity onPress={handleTestApi} style={styles.buyButton}>
+                <Feather name='tablet' size={20} color='#FFFFFF' />
+                <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>handleTestApi</ThemedText>
+              </ThemeTouchableOpacity> */}
               <ThemeTouchableOpacity onPress={() => router.push(`/send-token/${wallet?.address}`)} style={styles.buyButton}>
                 <Feather name='send' size={20} color='#FFFFFF' />
                 <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
@@ -141,8 +163,11 @@ export default function HomeScreen() {
         </View>
       </Animated.View>
 
+      <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} />
+
       <View style={[{ flex: 1 }]}>
         {activeTab === 'Tokens' ? <Tokens headerHeight={headerHeight} scrollY={scrollY} /> : <Nfts headerHeight={headerHeight} scrollY={scrollY} />}
+        <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} />
       </View>
     </View>
   )
