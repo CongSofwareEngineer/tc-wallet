@@ -38,9 +38,9 @@
           "image": "./assets/images/icons/flashIcon.gif",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#272728ff",
+          "backgroundColor": "#272728",
           "dark": {
-            "backgroundColor": "#272728ff"
+            "backgroundColor": "#272728"
           }
         }
       ],
