@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     borderRadius: 8,
-    borderColor: '#ccc',
+    borderColor: '#374151',
     borderWidth: 1,
     minHeight: 40,
     position: 'relative',

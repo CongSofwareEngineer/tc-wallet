@@ -20,8 +20,6 @@ const Traits = ({ nft }: Props) => {
     return arrFilter
   }, [nft])
 
-  console.log({ Traits: nft })
-
   const checkIsNumber = (value: string) => {
     try {
       const hasNumbers = /^\d+$/.test(value + '')

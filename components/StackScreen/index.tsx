@@ -71,9 +71,12 @@ const StackScreen = () => {
         />
 
         <StackExpo.Screen
-          name='send-token/[address]'
+          name='send-token'
           options={{
             animation: 'slide_from_right',
+            // animation: 'fade_from_bottom',
+            // presentation: 'modal',
+            // sheetElevation: 0,
           }}
         />
 
@@ -130,7 +133,7 @@ const StackScreen = () => {
 
       {/* <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} /> */}
       <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} />
-      {/* <Redirect href={'/qr-info-address'} /> */}
+      {/* <Redirect href={'/moralis'} /> */}
     </>
   )
 

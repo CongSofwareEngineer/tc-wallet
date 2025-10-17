@@ -83,3 +83,12 @@ export const TEXT = {
     colorPlaceholder: COLORS.gray,
   },
 } as const
+
+export const COLOR_ICON = {
+  [MODE.Light]: {
+    colorDefault: COLORS.green3,
+  },
+  [MODE.Dark]: {
+    colorDefault: COLORS.green3,
+  },
+} as const

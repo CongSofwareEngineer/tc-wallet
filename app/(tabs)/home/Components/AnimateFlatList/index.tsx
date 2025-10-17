@@ -15,7 +15,6 @@ export type Props<T> = {
   listHeaderComponent?: React.JSX.Element
   numColumns?: number
   contentContainerStyle?: any
-  key?: string
 }
 
 function AnimateFlatList<T>({
@@ -30,7 +29,6 @@ function AnimateFlatList<T>({
   numColumns,
   contentContainerStyle: customContainerStyle,
   listHeaderComponent,
-  key,
 }: Props<T>) {
   const flatListRef = React.useRef<Animated.FlatList<T>>(null)
   useEffect(() => {
@@ -39,12 +37,11 @@ function AnimateFlatList<T>({
       scrollY.setValue(0)
       flatListRef.current.scrollToOffset({ offset: 0, animated: false })
     }
-  }, [key, scrollY])
+  }, [scrollY])
 
   return (
     <Animated.FlatList
       ref={flatListRef}
-      key={key}
       data={data as any}
       renderItem={renderItem}
       // keyExtractor={(item, index) => item.token_address + index.toFixed()}

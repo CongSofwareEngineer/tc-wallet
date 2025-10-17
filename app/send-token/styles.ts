@@ -122,8 +122,8 @@ export const createStyles = (isDark: boolean) =>
       elevation: 1,
     },
     iconButtonActive: {
-      backgroundColor: '#3B82F6',
-      shadowColor: '#3B82F6',
+      // backgroundColor: '#3B82F6',
+      // shadowColor: '#3B82F6',
       shadowOpacity: 0.3,
       shadowRadius: 4,
       elevation: 3,

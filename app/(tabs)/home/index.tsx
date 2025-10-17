@@ -3,13 +3,11 @@ import Feather from '@expo/vector-icons/Feather'
 import Big from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Animated, View } from 'react-native'
-import { WebView } from 'react-native-webview'
 
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
-import fetcher from '@/configs/fetcher'
 import { COLORS, GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
@@ -48,26 +46,19 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   })
 
-  useEffect(() => {
-    scrollY.interpolate({
-      inputRange: [0, 0],
-      outputRange: [0, 0],
-      extrapolate: 'clamp',
-    })
-  }, [activeTab])
-
   const handleTestApi = async () => {
-    try {
-      const res = await fetcher({
-        url: 'https://api.cryptorank.io/v2/drophunting/activities',
-        headers: {
-          'X-Api-Key': '6c57832b030cdbc054195c0627e61d3581f4f63213d053c841365ea68641',
-        },
-      })
-      console.log({ res })
-    } catch (error) {
-      console.log({ error })
-    }
+    // try {
+    //   const res = await fetcher({
+    //     url: 'https://api.cryptorank.io/v2/drophunting/activities',
+    //     headers: {
+    //       'X-Api-Key': '6c57832b030cdbc054195c0627e61d3581f4f63213d053c841365ea68641',
+    //     },
+    //   })
+    //   console.log({ res })
+    // } catch (error) {
+    //   console.log({ error })
+    // }
+    router.push('/moralis')
   }
 
   // Content translateY removed as header is now absolute
@@ -99,7 +90,11 @@ export default function HomeScreen() {
           {/* Header */}
           <View style={[styles.header]}>
             <View style={{ width: 150 }}>
-              <ThemeTouchableOpacity type='text' onPress={() => router.push('/wallet')} style={styles.addressContainer}>
+              <ThemeTouchableOpacity
+                type='text'
+                onPress={() => router.push('/wallet')}
+                style={[styles.addressContainer, { backgroundColor: COLORS.black3 }]}
+              >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap4 }}>
                   <ThemedText style={styles.addressText}>{wallet?.name || ellipsisText(wallet?.address, 4, 5)}</ThemedText>
                   <AntDesign name='down' size={14} color='#FFFFFF' />
@@ -163,11 +158,12 @@ export default function HomeScreen() {
         </View>
       </Animated.View>
 
-      <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} />
+      {/* <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} /> */}
 
       <View style={[{ flex: 1 }]}>
         {activeTab === 'Tokens' ? <Tokens headerHeight={headerHeight} scrollY={scrollY} /> : <Nfts headerHeight={headerHeight} scrollY={scrollY} />}
-        <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} />
+
+        {/* <MoralisScreen /> */}
       </View>
     </View>
   )

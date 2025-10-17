@@ -3,7 +3,9 @@ import '@/utils/debug/reactotron'
 // import '@/utils/polyfills/buffer'
 // import '@/utils/polyfills/crypto'
 
+import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
+import { useEffect } from 'react'
 import 'react-native-reanimated'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -13,9 +15,24 @@ import ReactQueryProvider from '@/components/ReactQueryProvider'
 import StackScreen from '@/components/StackScreen'
 import { persistor, store } from '@/redux/store'
 
-// NOTE: Removed direct require to internal 'react-native/Libraries/...' module.
-// That import breaks Expo Web (fb-batched-bridge-config-web warning). Not needed for normal app runtime.
+SplashScreen.preventAutoHideAsync().catch(() => {
+  /* reloading the app might trigger some race conditions, ignore them */
+})
+
 export default function RootLayout() {
+  useEffect(() => {
+    // Delay hiding splash screen to show it longer
+    const hideSplash = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 2000)) // Show splash for 2 seconds
+        await SplashScreen.hideAsync()
+      } catch (e) {
+        console.warn(e)
+      }
+    }
+    hideSplash()
+  }, [])
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>

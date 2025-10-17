@@ -83,11 +83,20 @@ export const convertBalanceToWei = (balance: string | number | bigint | null | u
 
 export const detectUrlImage = (src: string | null | undefined) => {
   if (!src) return images.icons.unknown
-  if (src.startsWith('ipfs://')) {
-    return src.replace('ipfs://', 'https://ipfs.io/ipfs/')
+  if (src?.startsWith('https://')) {
+    const imageUrl = new URL(src)
+    const imgQuery = imageUrl.searchParams.get('image')
+
+    if (imgQuery && imgQuery.startsWith('https://')) {
+      src = imgQuery
+    }
   }
-  if (src.startsWith('http://') || src.startsWith('https://')) {
+
+  if (src?.startsWith('https://')) {
     return src
+  }
+  if (src?.startsWith('ipfs://')) {
+    return src.replace('ipfs://', 'https://ipfs.io/ipfs/')
   }
   return src
 }

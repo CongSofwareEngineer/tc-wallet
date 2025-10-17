@@ -4,4 +4,6 @@ export enum KEY_REACT_QUERY {
   getTokenPrice = 'getTokenPrice',
   getNFTsByWallet = 'getNFTsByWallet',
   getNFtDetail = 'getNFtDetail',
+  getTypeUrlImage = 'getTypeUrlImage',
+  getNftMetadataEVM = 'getNftMetadataEVM',
 }

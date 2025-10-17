@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: 20,
+    paddingBottom: 5,
     backgroundColor: '#0A0A0A',
   },
   addressContainer: {
@@ -20,7 +20,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#1A1A1A',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { generateBorderRadius, generateBorderWidth, generateFontSizes } from '@/configs/app'
-import { BACKGROUND, COLORS, TEXT } from '@/constants/style'
+import { BACKGROUND, COLOR_ICON, COLORS, TEXT } from '@/constants/style'
 
 import useMode from './useMode'
 
@@ -22,7 +22,12 @@ const useTheme = () => {
     }
   }, [])
 
+  const colorIcon = useMemo(() => {
+    return COLOR_ICON[mode]
+  }, [mode])
+
   return {
+    colorIcon,
     text,
     colors: COLORS,
     border,

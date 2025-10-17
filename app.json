@@ -6,6 +6,11 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "tcwallet",
+    "splash": {
+      "image": "./assets/images/icons/flashIcon.gif",
+      "resizeMode": "contain",
+      "backgroundColor": "#272728"
+    },
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

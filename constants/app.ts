@@ -8,3 +8,10 @@ export const HEIGHT_SCREEN = Dimensions.get('window').height
 export const WIDTH_SCREEN = Dimensions.get('window').width
 
 export const IsIos = Platform.OS === 'ios'
+
+export enum TYPE_URL_IMAGE {
+  Image = 'Image',
+  Video = 'Video',
+  Audio = 'Audio',
+  IFrame = 'IFrame',
+}

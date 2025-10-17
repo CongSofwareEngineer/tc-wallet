@@ -1,4 +1,4 @@
-import AntDesign from '@expo/vector-icons/AntDesign'
+import { AntDesign, Ionicons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
@@ -6,6 +6,7 @@ import { FlatList, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
+import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import useChains from '@/hooks/useChains'
 import useChainSelected from '@/hooks/useChainSelected'
 import { ChainId, Network } from '@/types/web3'
@@ -56,7 +57,14 @@ const SelectChainScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <HeaderScreen title='Networks' />
+      <HeaderScreen
+        title='Networks'
+        rightSide={
+          <ThemeTouchableOpacity type='text' onPress={() => router.push('/chain-detail/new')} style={styles.headerAddButton}>
+            <Ionicons name='add' size={24} color='#FFFFFF' />
+          </ThemeTouchableOpacity>
+        }
+      />
 
       {/* Tabs */}
       <View style={styles.tabsContainer}>

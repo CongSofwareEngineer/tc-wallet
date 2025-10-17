@@ -6,14 +6,14 @@ import { Linking, ScrollView, View } from 'react-native'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeaderScreen from '@/components/Header'
-import MyImage from '@/components/MyImage'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import useNFTDetail from '@/hooks/react-query/useNFTDetail'
 import useChains from '@/hooks/useChains'
 import useTheme from '@/hooks/useTheme'
-import { copyToClipboard, detectUrlImage, ellipsisText } from '@/utils/functions'
+import { copyToClipboard, ellipsisText } from '@/utils/functions'
 
+import ImageMain from './ImageMain'
 import { styles } from './styles'
 import Traits from './Traits'
 
@@ -50,24 +50,25 @@ const NFTDetailScreen = () => {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.imageContainer}>
-          {metadata?.image ? (
+          {/* {metadata?.image ? (
             <MyImage src={detectUrlImage(metadata.image)} style={styles.image} contentFit='cover' />
           ) : (
             <View style={[styles.image, { backgroundColor: '#1A1A1A', alignItems: 'center', justifyContent: 'center' }]}>
               <MaterialIcons name='image' size={48} color={text.color} />
             </View>
-          )}
+          )} */}
+          <ImageMain nft={nft} />
         </View>
 
         <View style={styles.actions}>
           <ThemeTouchableOpacity style={styles.actionButton} type='default' onPress={() => { }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'center' }}>
               <Feather name='send' size={20} color='white' />
               <ThemedText style={[styles.actionText, { color: 'white' }]}>Send NFT</ThemedText>
             </View>
           </ThemeTouchableOpacity>
           <ThemeTouchableOpacity style={styles.actionButton} type='outline' onPress={handleOpenExplorer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'center' }}>
               <MaterialIcons name='open-in-new' size={20} color={text.color} />
               <ThemedText style={styles.actionText}>View on Explorer</ThemedText>
             </View>

@@ -8,6 +8,7 @@ import { erc20Abi } from 'viem'
 import HeaderScreen from '@/components/Header'
 import MyImage from '@/components/MyImage'
 import ThemedInput from '@/components/UI/ThemedInput'
+import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { images } from '@/configs/images'
 import useChainSelected from '@/hooks/useChainSelected'
 import useMode from '@/hooks/useMode'
@@ -26,7 +27,7 @@ const TokenImportScreen = () => {
   const [tokenIcon, setTokenIcon] = useState('')
 
   const { isDark } = useMode()
-  const { text } = useTheme()
+  const { text, colorIcon } = useTheme()
   const { chainId } = useChainSelected()
   const { wallet } = useWallets()
   const styles = getStyles(isDark)
@@ -122,7 +123,7 @@ const TokenImportScreen = () => {
               onChangeText={setTokenAddress}
             />
             <TouchableOpacity style={styles.pasteButton} onPress={handlePaste}>
-              <Feather name='clipboard' size={20} color='#007AFF' />
+              <Feather name='clipboard' size={20} color={colorIcon.colorDefault} />
             </TouchableOpacity>
           </View>
         </View>
@@ -176,9 +177,9 @@ const TokenImportScreen = () => {
 
       {/* Import Button */}
       <View style={styles.bottomContainer}>
-        <TouchableOpacity style={styles.importButton} onPress={handleImport}>
+        <ThemeTouchableOpacity style={styles.importButton} onPress={handleImport}>
           <Text style={styles.importButtonText}>Import Token</Text>
-        </TouchableOpacity>
+        </ThemeTouchableOpacity>
       </View>
     </View>
   )

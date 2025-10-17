@@ -125,7 +125,7 @@ const SettingScreen = () => {
               <ThemedText type='defaultSemiBold'>{translate('setting.backup.title')}</ThemedText>
             </View>
             <ThemeTouchableOpacity onPress={() => router.push('/backup')} style={{ marginBottom: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <AntDesign name='download' size={20} color={COLORS.white} style={{ marginRight: 10 }} />
                 <ThemedText style={{ color: COLORS.white }}>{translate('setting.backup.backupNow')}</ThemedText>
               </View>
@@ -141,7 +141,7 @@ const SettingScreen = () => {
               </ThemedText>
             </View>
             <ThemeTouchableOpacity type='danger' onPress={resetApp} style={{ marginBottom: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <AntDesign name='rest' size={20} color={COLORS.white} style={{ marginRight: 10 }} />
                 <ThemedText>Reset App</ThemedText>
               </View>

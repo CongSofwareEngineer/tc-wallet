@@ -6,8 +6,8 @@ import React, { useRef } from 'react'
 import { Animated, TouchableOpacity, View } from 'react-native'
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
 
+import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
-import { COLORS } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useTheme from '@/hooks/useTheme'
 import { Token } from '@/services/moralis/type'
@@ -21,11 +21,52 @@ type Props = {
 }
 
 const Tokens = ({ scrollY, headerHeight }: Props) => {
-  const { text } = useTheme()
+  const { text, colorIcon } = useTheme()
   const router = useRouter()
   const currentSwipeable = useRef(false)
 
   const { data, isLoading, refetch, isRefetching } = useBalanceToken()
+
+  const renderHeaderList = () => {
+    if (isLoading) {
+      return (
+        <View style={{ padding: 20, alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <MyLoading />
+          <ThemedText>Loading...</ThemedText>
+        </View>
+      )
+    } else {
+      return (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 16,
+              paddingBottom: 8,
+              alignContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <ThemedText>Tokens ({data?.length})</ThemedText>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              paddingHorizontal: 16,
+              paddingBottom: 8,
+              alignContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <TouchableOpacity onPress={() => router.push(`/filter-data/tokens`)} style={{ padding: 6 }}>
+              <AntDesign name='filter' size={20} color={text.color} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    }
+  }
 
   const renderCryptoItem = ({ item }: { item: Token }) => (
     <Swipeable
@@ -110,39 +151,11 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
           }}
           onPress={() => router.push('/token-import')}
         >
-          <AntDesign name='plus-circle' size={24} color={COLORS.green3} />
-          <ThemedText style={{ fontSize: 16, color: COLORS.green3, fontWeight: '600' }}>Import Custom Token</ThemedText>
+          <AntDesign name='plus-circle' size={24} color={colorIcon.colorDefault} />
+          <ThemedText style={{ fontSize: 16, color: colorIcon.colorDefault, fontWeight: '600' }}>Import Custom Token</ThemedText>
         </TouchableOpacity>
       }
-      listHeaderComponent={
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 16,
-              paddingBottom: 8,
-              alignContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <ThemedText>Tokens ({data?.length})</ThemedText>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              paddingHorizontal: 16,
-              paddingBottom: 8,
-              alignContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <TouchableOpacity onPress={() => router.push(`/filter-data/tokens`)} style={{ padding: 6 }}>
-              <AntDesign name='filter' size={20} color={text.color} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      }
+      listHeaderComponent={renderHeaderList()}
     />
   )
 }

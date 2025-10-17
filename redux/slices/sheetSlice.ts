@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { StyleProp, ViewStyle } from 'react-native'
 import { ModalProps } from 'react-native-modal'
 
 export type SheetProps = {
@@ -7,6 +8,7 @@ export type SheetProps = {
   content?: React.ReactNode | null
   afterClose?: () => any
   onClose?: () => any
+  containerContentStyle?: StyleProp<ViewStyle>
 } & Partial<ModalProps>
 
 const sheetSlice = createSlice({

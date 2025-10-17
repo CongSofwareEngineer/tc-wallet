@@ -8,6 +8,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } fr
 import { encodeFunctionData, erc20Abi } from 'viem'
 
 import HeaderScreen from '@/components/Header'
+import QrScan from '@/components/QrScan'
 import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
 import { COLORS } from '@/constants/style'
@@ -21,9 +22,8 @@ import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
 import { cloneDeep, ellipsisText, getRadomColor } from '@/utils/functions'
 import { isAddress, isTokenNative } from '@/utils/nvm'
+import { height } from '@/utils/systems'
 import WalletEvmUtil from '@/utils/walletEvm'
-
-import ConnectDAppScreen from '../connect-dapp'
 
 import { createStyles } from './styles'
 
@@ -37,7 +37,7 @@ const SendTokenScreen = () => {
   const router = useRouter()
   const { address: addressToken } = useLocalSearchParams<{ address?: string }>()
   const { isDark } = useMode()
-  const { text } = useTheme()
+  const { text, colorIcon } = useTheme()
   const styles = createStyles(isDark)
   const { chainCurrent } = useChains()
   const { wallet, wallets, indexWalletActive } = useWallets()
@@ -151,10 +151,16 @@ const SendTokenScreen = () => {
 
   const handleScanAddress = () => {
     openSheet({
+      containerContentStyle: {
+        height: height(70),
+      },
       content: (
-        <View style={{ flex: 1 }}>
-          <ConnectDAppScreen />,
-        </View>
+        <QrScan
+          type='address'
+          onScanned={(e) => {
+            onChangeForm({ toAddress: e })
+          }}
+        />
       ),
     })
   }
@@ -328,10 +334,16 @@ const SendTokenScreen = () => {
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <ThemedText style={styles.sectionLabel}>To</ThemedText>
               <View style={styles.inputActions}>
-                <TouchableOpacity onPress={handleScanAddress} style={[styles.iconButton, styles.iconButtonActive]}>
+                <TouchableOpacity
+                  onPress={handleScanAddress}
+                  style={[styles.iconButton, styles.iconButtonActive, { backgroundColor: colorIcon.colorDefault }]}
+                >
                   <AntDesign name='scan' size={18} color={'#FFFFFF'} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handlePickFromMyAccounts} style={[styles.iconButton, styles.iconButtonActive]}>
+                <TouchableOpacity
+                  onPress={handlePickFromMyAccounts}
+                  style={[styles.iconButton, styles.iconButtonActive, { backgroundColor: colorIcon.colorDefault }]}
+                >
                   <AntDesign name='user' size={18} color={'#FFFFFF'} />
                 </TouchableOpacity>
               </View>
@@ -404,8 +416,8 @@ const SendTokenScreen = () => {
                   onChangeForm({ amountToken: text.toString() })
                 }}
               />
-              <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5 }}>
-                {formError?.amountToken}
+              <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5, opacity: formError?.amountToken ? 1 : 0 }}>
+                {formError?.amountToken || 'non'}
               </ThemedText>
 
               {BigNumber(tokenPrice || 0).isGreaterThan(0) && (
@@ -421,8 +433,8 @@ const SendTokenScreen = () => {
                       onChangeForm({ amountUsd: text.toString() })
                     }}
                   />
-                  <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5 }}>
-                    {formError?.amountUsd}
+                  <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5, opacity: formError?.amountUsd ? 1 : 0 }}>
+                    {formError?.amountUsd || 'non'}
                   </ThemedText>
                 </View>
               )}

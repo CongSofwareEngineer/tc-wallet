@@ -1,10 +1,11 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useMemo, useState } from 'react'
-import { KeyboardAvoidingView, ScrollView, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
+import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { IsIos } from '@/constants/app'
 import { PADDING_DEFAULT } from '@/constants/style'
 import useChains from '@/hooks/useChains'
@@ -117,9 +118,9 @@ const ChainDetailScreen = () => {
           {/* Save Button */}
         </ScrollView>
         <View style={{ padding: PADDING_DEFAULT.Padding16 }}>
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <ThemeTouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <ThemedText style={styles.saveButtonText}>Save</ThemedText>
-          </TouchableOpacity>
+          </ThemeTouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>

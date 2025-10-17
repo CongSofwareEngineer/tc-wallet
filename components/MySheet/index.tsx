@@ -41,7 +41,7 @@ const MySheet = () => {
         style={{ margin: 0, justifyContent: 'flex-end' }}
       >
         <View style={{ flex: 1, height: height(100), justifyContent: 'flex-end' }}>
-          <View style={styles.container}>
+          <View style={[styles.container, sheet?.containerContentStyle]}>
             <View style={{ alignItems: 'center' }}>
               <ThemeTouchableOpacity type='text' onPress={closeSheet} activeOpacity={0.7}>
                 <View

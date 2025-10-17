@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 8,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
     minHeight: 35,
   },
   loadingWrapper: {

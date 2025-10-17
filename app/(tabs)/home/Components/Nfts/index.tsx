@@ -5,6 +5,7 @@ import { Animated, Dimensions, TouchableOpacity, View } from 'react-native'
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
 
 import MyImage from '@/components/MyImage'
+import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
 import { GAP_DEFAULT } from '@/constants/style'
 import useListNFTs from '@/hooks/react-query/useListNFTs'
@@ -55,6 +56,66 @@ const Nfts = ({ scrollY, headerHeight }: Props) => {
   const [isGridView, setIsGridView] = useState(false) // true = grid view (2 items), false = list view (1 item)
 
   const { data: nfts, isLoading, refetch, isRefetching } = useListNFTs()
+
+  const renderHeaderList = () => {
+    if (isLoading) {
+      return (
+        <View style={{ padding: 20, alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <MyLoading />
+          <ThemedText>Loading...</ThemedText>
+        </View>
+      )
+    } else {
+      return (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 16,
+              paddingBottom: 8,
+              alignContent: 'center',
+              alignItems: 'center',
+              gap: GAP_DEFAULT.Gap8,
+            }}
+          >
+            <ThemedText>NFTs ({nfts?.length})</ThemedText>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              paddingHorizontal: 16,
+              paddingBottom: 8,
+              alignContent: 'center',
+              alignItems: 'center',
+              gap: GAP_DEFAULT.Gap8,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => setIsGridView(false)}
+              style={{
+                opacity: isGridView ? 0.5 : 1,
+              }}
+            >
+              <Ionicons name='list' size={32} color={text.color} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setIsGridView(true)}
+              style={{
+                opacity: isGridView ? 1 : 0.5,
+              }}
+            >
+              <Ionicons name='grid' size={24} color={text.color} />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.push(`/filter-data/nfts`)} style={{ padding: 6 }}>
+              <AntDesign name='filter' size={20} color={text.color} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    }
+  }
 
   const renderNFTItem = ({ item }: { item: NFTType }) => {
     const metadata = item.normalized_metadata
@@ -159,54 +220,7 @@ const Nfts = ({ scrollY, headerHeight }: Props) => {
       isRefetching={isRefetching}
       refetch={refetch}
       numColumns={isGridView ? 2 : 1}
-      listHeaderComponent={
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 16,
-              paddingBottom: 8,
-              alignContent: 'center',
-              alignItems: 'center',
-              gap: GAP_DEFAULT.Gap8,
-            }}
-          >
-            <ThemedText>NFTs ({nfts?.length})</ThemedText>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              paddingHorizontal: 16,
-              paddingBottom: 8,
-              alignContent: 'center',
-              alignItems: 'center',
-              gap: GAP_DEFAULT.Gap8,
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => setIsGridView(false)}
-              style={{
-                opacity: isGridView ? 0.5 : 1,
-              }}
-            >
-              <Ionicons name='list' size={32} color={text.color} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setIsGridView(true)}
-              style={{
-                opacity: isGridView ? 1 : 0.5,
-              }}
-            >
-              <Ionicons name='grid' size={24} color={text.color} />
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => router.push(`/filter-data/nfts`)} style={{ padding: 6 }}>
-              <AntDesign name='filter' size={20} color={text.color} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      }
+      listHeaderComponent={renderHeaderList()}
     />
   )
 }

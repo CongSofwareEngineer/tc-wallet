@@ -66,7 +66,6 @@ export const getStyles = (isDark: boolean) => {
       backgroundColor,
     },
     importButton: {
-      backgroundColor: '#007AFF',
       height: 48,
       borderRadius: 24,
       justifyContent: 'center',
