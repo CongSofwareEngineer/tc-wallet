@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     gap: 12,
   },
   actionButton: {
-    flex: 1,
+    // flex: 1,
   },
   actionText: {
     fontSize: 14,
@@ -41,7 +41,6 @@ export const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
   },

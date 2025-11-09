@@ -15,20 +15,38 @@ const useChains = () => {
   const chainIdCurrent = useAppSelector((state) => state.chainSelected)
   const dispatch = useAppDispatch()
 
-  const chainsDefault = useMemo(() => {
-    return chains.filter((chain) => {
-      return CHAIN_DEFAULT.findIndex((item) => item.id.toString() === chain.id.toString()) !== -1
-    })
-  }, [chains])
-
-  const chainsCustom = useMemo(() => {
-    return chains.filter((chain) => {
-      return CHAIN_DEFAULT.findIndex((item) => item.id.toString() === chain.id.toString()) === -1
-    })
-  }, [chains])
-
   const chainCurrent = useMemo(() => {
     return chains.find((chain) => chain.id.toString() === chainIdCurrent.toString())
+  }, [chains, chainIdCurrent])
+
+  const chainsDefault = useMemo(() => {
+    const arrChain = chains.filter((chain) => {
+      return CHAIN_DEFAULT.findIndex((item) => item.id.toString() === chain.id.toString()) !== -1
+    })
+    return arrChain.sort((a, b) => {
+      if (a.id.toString() === chainIdCurrent.toString()) {
+        return -1
+      }
+      if (b.id.toString() === chainIdCurrent.toString()) {
+        return 1
+      }
+      return 0
+    })
+  }, [chains, chainIdCurrent])
+
+  const chainsCustom = useMemo(() => {
+    const arrChain = chains.filter((chain) => {
+      return CHAIN_DEFAULT.findIndex((item) => item.id.toString() === chain.id.toString()) === -1
+    })
+    return arrChain.sort((a, b) => {
+      if (a.id.toString() === chainIdCurrent.toString()) {
+        return -1
+      }
+      if (b.id.toString() === chainIdCurrent.toString()) {
+        return 1
+      }
+      return 0
+    })
   }, [chains, chainIdCurrent])
 
   const addNetwork = (network: Network) => {

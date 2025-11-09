@@ -1,4 +1,4 @@
-import { Feather, MaterialIcons } from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import { useLocalSearchParams } from 'expo-router'
 import React from 'react'
@@ -24,6 +24,7 @@ const NFTDetailScreen = () => {
   const { chainCurrent } = useChains()
 
   const { data: nft, isLoading } = useNFTDetail(addressNFT, tokenId)
+
   const metadata = nft?.normalized_metadata
 
   const handleOpenExplorer = () => {
@@ -61,16 +62,20 @@ const NFTDetailScreen = () => {
         </View>
 
         <View style={styles.actions}>
-          <ThemeTouchableOpacity style={styles.actionButton} type='default' onPress={() => { }}>
+          <ThemeTouchableOpacity style={[styles.actionButton, { flex: 1, paddingHorizontal: 10 }]} type='default' onPress={() => { }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'center' }}>
-              <Feather name='send' size={20} color='white' />
-              <ThemedText style={[styles.actionText, { color: 'white' }]}>Send NFT</ThemedText>
+              {/* <Feather name='send' size={20} color='white' /> */}
+              <ThemedText numberOfLines={1} style={[styles.actionText, { color: 'white' }]}>
+                Send NFT
+              </ThemedText>
             </View>
           </ThemeTouchableOpacity>
-          <ThemeTouchableOpacity style={styles.actionButton} type='outline' onPress={handleOpenExplorer}>
+          <ThemeTouchableOpacity style={[styles.actionButton, { flex: 1, paddingHorizontal: 10 }]} type='outline' onPress={handleOpenExplorer}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'center' }}>
               <MaterialIcons name='open-in-new' size={20} color={text.color} />
-              <ThemedText style={styles.actionText}>View on Explorer</ThemedText>
+              <ThemedText numberOfLines={1} style={styles.actionText}>
+                View on Explorer
+              </ThemedText>
             </View>
           </ThemeTouchableOpacity>
         </View>
@@ -82,7 +87,7 @@ const NFTDetailScreen = () => {
             <View style={styles.row}>
               <View style={styles.labelContainer}>
                 <MaterialIcons name='account-balance-wallet' size={18} color={text.color} />
-                <ThemedText style={styles.label}>Contract Address</ThemedText>
+                <ThemedText style={styles.label}>Address</ThemedText>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <ThemeTouchableOpacity onPress={handleOpenExplorer} type='text'>
@@ -132,7 +137,7 @@ const NFTDetailScreen = () => {
           {metadata?.description && (
             <View style={styles.section}>
               <ThemedText style={styles.sectionTitle}>Description</ThemedText>
-              <ThemedText style={styles.description}>{metadata.description}</ThemedText>
+              <ThemedText style={[styles.description, { fontSize: 13 }]}>{metadata.description}</ThemedText>
             </View>
           )}
 

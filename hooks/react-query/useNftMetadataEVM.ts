@@ -16,9 +16,9 @@ type UseNftMetadataEVM = {
 }
 
 const getData = async ({ queryKey }: IQueryKey): Promise<UseNftMetadataEVM> => {
-  try {
-    const nft = queryKey[1] as NFT
+  const nft = queryKey[1] as NFT
 
+  try {
     if (nft?.token_uri) {
       const resTokenUrl = await fetcher({
         url: nft?.token_uri,
@@ -31,9 +31,9 @@ const getData = async ({ queryKey }: IQueryKey): Promise<UseNftMetadataEVM> => {
       return resTokenUrl?.data
     }
 
-    return {}
+    return nft?.normalized_metadata as UseNftMetadataEVM
   } catch (error) {
-    return {}
+    return nft?.normalized_metadata as UseNftMetadataEVM
   }
 }
 const useNftMetadataEVM = (nft: NFT) => {

@@ -10,6 +10,7 @@ import { COLORS } from '@/constants/style'
 import useNftMetadataEVM from '@/hooks/react-query/useNftMetadataEVM'
 import useTypeUrlImage from '@/hooks/react-query/useTypeUrlImage'
 import { NFT } from '@/services/moralis/type'
+import { detectUrlImage } from '@/utils/functions'
 
 type Props = {
   nft: NFT
@@ -42,12 +43,12 @@ const ImageMain = ({ nft }: Props) => {
         <>
           {/* Image View */}
           {!showAnimation && metaData?.image && typeUrlImage === 'Image' && (
-            <MyImage src={metaData?.image} style={styles.image} resizeMode='contain' />
+            <MyImage src={detectUrlImage(metaData?.image)} style={styles.image} resizeMode='contain' />
           )}
 
           {!showAnimation && metaData?.image && typeUrlImage === 'Video' && (
             <View style={styles.animationContainer}>
-              <MyIframe src={metaData?.animation_url!} style={styles.animation} />
+              <MyIframe src={detectUrlImage(metaData?.animation_url!)} style={styles.animation} />
             </View>
           )}
           {!metaData?.image && !typeUrlImage && (

@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native'
 
+import { PADDING_DEFAULT } from '@/constants/style'
+
 export const styles = StyleSheet.create({
   headerAddButton: {
     width: 40,
@@ -11,6 +13,7 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0A0A0A',
+    paddingBottom: PADDING_DEFAULT.Padding20,
   },
   header: {
     flexDirection: 'row',

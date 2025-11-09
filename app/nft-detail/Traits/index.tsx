@@ -45,14 +45,7 @@ const Traits = ({ nft }: Props) => {
       const isNumber = checkIsNumber(value as any)
 
       return isLinkItem ? (
-        <TouchableOpacity
-          onPress={() => Linking.openURL(value)}
-        // className=' justify-start text-blue text-sm font-normal leading-[21px]'
-
-        // rel='noopener noreferrer'
-        // style={{ wordBreak: 'break-word' }}
-        // target='_blank'
-        >
+        <TouchableOpacity onPress={() => Linking.openURL(value)}>
           <ThemedText type='small' style={{ color: COLORS.green600 }}>
             {value}
           </ThemedText>
@@ -85,13 +78,7 @@ const Traits = ({ nft }: Props) => {
             const isLinkItem = isLink(formatUrl)
 
             return isLinkItem ? (
-              <TouchableOpacity
-                key={`traits-link-${index}`}
-                onPress={() => Linking.openURL(formatUrl)}
-              // className=' justify-start text-blue text-sm font-normal leading-[21px]'
-              // rel='noopener noreferrer'
-              // style={{ wordBreak: 'break-word' }}
-              >
+              <TouchableOpacity key={`traits-link-${index}`} onPress={() => Linking.openURL(formatUrl)}>
                 <ThemedText type='small' style={{ color: COLORS.green600 }}>
                   {formatUrl}
                 </ThemedText>
