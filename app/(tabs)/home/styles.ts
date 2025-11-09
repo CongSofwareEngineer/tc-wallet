@@ -16,15 +16,11 @@ export const styles = StyleSheet.create({
     backgroundColor: '#0A0A0A',
   },
   addressContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 15,
-    width: 'auto',
   },
   addressIcon: {
     width: 32,
@@ -39,12 +35,13 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: '#FFFFFF',
     fontWeight: '500',
-    flex: 1,
+    // flex: 1,
   },
   headerIcons: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,
+    flex: 1,
   },
   iconButton: {
     width: 40,

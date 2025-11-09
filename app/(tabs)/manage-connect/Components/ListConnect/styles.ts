@@ -162,9 +162,6 @@ const styles = StyleSheet.create({
   },
   disconnectAllButton: {
     backgroundColor: '#FF6B6B',
-    marginHorizontal: 20,
-    marginBottom: 20,
-    paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
   },

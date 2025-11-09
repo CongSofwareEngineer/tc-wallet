@@ -76,10 +76,10 @@ const ModalWarning: React.FC<ModalWarningProps> = ({
 
       <View style={styles.actions}>
         <ThemeTouchableOpacity disabled={loading} style={styles.button} onPress={handleCancel} type='default'>
-          <ThemedText> {cancelText} </ThemedText>
+          <ThemedText style={{ textAlign: 'center' }}> {cancelText} </ThemedText>
         </ThemeTouchableOpacity>
         <ThemeTouchableOpacity style={styles.button} onPress={handleConfirm} type='danger' loading={loading}>
-          <ThemedText> {confirmText} </ThemedText>
+          <ThemedText style={{ textAlign: 'center' }}> {confirmText} </ThemedText>
         </ThemeTouchableOpacity>
       </View>
     </View>

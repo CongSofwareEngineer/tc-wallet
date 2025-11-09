@@ -12,7 +12,6 @@ import { COLORS } from '@/constants/style'
 import useSheet from '@/hooks/useSheet'
 import { sleep } from '@/utils/functions'
 import { isAddress } from '@/utils/nvm'
-import { height } from '@/utils/systems'
 import WalletKit from '@/utils/walletKit'
 
 type QrScanProps = {
@@ -189,7 +188,6 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     alignSelf: 'center',
-    marginTop: height(8),
     position: 'relative',
   },
   cornerTL: {

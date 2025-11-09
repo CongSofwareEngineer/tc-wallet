@@ -46,21 +46,6 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   })
 
-  const handleTestApi = async () => {
-    // try {
-    //   const res = await fetcher({
-    //     url: 'https://api.cryptorank.io/v2/drophunting/activities',
-    //     headers: {
-    //       'X-Api-Key': '6c57832b030cdbc054195c0627e61d3581f4f63213d053c841365ea68641',
-    //     },
-    //   })
-    //   console.log({ res })
-    // } catch (error) {
-    //   console.log({ error })
-    // }
-    router.push('/moralis')
-  }
-
   // Content translateY removed as header is now absolute
 
   const renderChainSelected = () => {
@@ -89,18 +74,17 @@ export default function HomeScreen() {
         <Animated.View style={{ opacity: headerOpacity }}>
           {/* Header */}
           <View style={[styles.header]}>
-            <View style={{ width: 150 }}>
-              <ThemeTouchableOpacity
-                type='text'
-                onPress={() => router.push('/wallet')}
-                style={[styles.addressContainer, { backgroundColor: COLORS.black3 }]}
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap4 }}>
-                  <ThemedText style={styles.addressText}>{wallet?.name || ellipsisText(wallet?.address, 4, 5)}</ThemedText>
-                  <AntDesign name='down' size={14} color='#FFFFFF' />
-                </View>
-              </ThemeTouchableOpacity>
-            </View>
+            <ThemeTouchableOpacity
+              type='text'
+              onPress={() => router.push('/wallet')}
+              style={[styles.addressContainer, { backgroundColor: COLORS.black3 }]}
+            >
+              <ThemedText style={styles.addressText}>
+                {wallet?.name || ellipsisText(wallet?.address, 4, 5)}
+                {` `} <AntDesign name='down' size={14} color='#FFFFFF' />
+                {/* <View style={{ width: '100%' }} /> */}
+              </ThemedText>
+            </ThemeTouchableOpacity>
 
             <View style={[styles.headerIcons, { flex: 1, justifyContent: 'flex-end' }]}>
               <ThemeTouchableOpacity type='text' onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>

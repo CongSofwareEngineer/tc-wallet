@@ -1,22 +1,22 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import React, { useState, useTransition } from 'react'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, TouchableOpacity, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
 import ThemeCheckBox from '@/components/UI/ThemeCheckBox'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
-import { GAP_DEFAULT } from '@/constants/style'
+import { GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
-import { Alert } from '@/utils/alert'
 import AllWalletUtils from '@/utils/allWallet'
 import { copyToClipboard } from '@/utils/functions'
 import PassPhase from '@/utils/passPhare'
+import { width } from '@/utils/systems'
 
 import styles from '../../styles'
 
@@ -70,8 +70,8 @@ const Step2 = ({ handleClose }: Props) => {
           const globalIndex = rowIndex * 2 + colIndex
           return (
             <View key={`cell-${globalIndex}`} style={stylesCustom.cell}>
-              <ThemedText style={[stylesCustom.cellIndex, { color: text.color }]}>{globalIndex + 1}.</ThemedText>
-              <ThemedText style={[stylesCustom.cellWord, { color: text.color }]}>{hidden ? '----' : word}</ThemedText>
+              <ThemedText style={[stylesCustom.cellIndex, { color: text.color, fontSize: 12 }]}>{globalIndex + 1}.</ThemedText>
+              <ThemedText style={[stylesCustom.cellWord, { color: text.color, fontSize: 12 }]}>{hidden ? '----' : word}</ThemedText>
             </View>
           )
         })}
@@ -84,12 +84,19 @@ const Step2 = ({ handleClose }: Props) => {
   }
 
   return (
-    <ScrollView>
-      <View style={[styles.containerContent, styles[`containerContent${mode}`]]}>
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <View style={[styles.containerContent, styles[`containerContent${mode}`], { maxWidth: width(100) - PADDING_DEFAULT.Padding20 * 2 }]}>
+        {/* <View style={{ gap: GAP_DEFAULT.Gap16, width: '100%', maxWidth: width(96), padding: 20, backgroundColor: 'green' }}> */}
         <View style={{ flexDirection: 'row', gap: GAP_DEFAULT.Gap8, alignItems: 'center', marginBottom: 10 }}>
-          <View>
-            <AntDesign disabled={isCreatingAccount} onPress={handleClose} name='arrow-left' size={16} color={text.color} />
-          </View>
+          <TouchableOpacity disabled={isCreatingAccount} onPress={handleClose}>
+            <AntDesign disabled={isCreatingAccount} name='arrow-left' size={16} color={text.color} />
+          </TouchableOpacity>
 
           <ThemedText>Backup Your Seed Phrase</ThemedText>
         </View>
@@ -107,8 +114,9 @@ const Step2 = ({ handleClose }: Props) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
                   <ThemeTouchableOpacity
                     onPress={() => {
+                      console.log('onValueChange')
+
                       copyToClipboard(passPhrase)
-                      Alert.alert('Copied')
                     }}
                     style={{ flex: 1, alignItems: 'center' }}
                   >
@@ -117,16 +125,24 @@ const Step2 = ({ handleClose }: Props) => {
                       <ThemedText>{translate('common.copy')}</ThemedText>
                     </View>
                   </ThemeTouchableOpacity>
-                  <ThemeTouchableOpacity>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-                      <AntDesign name={hidden ? 'eye' : 'eye-invisible'} size={16} color={text.color} onPress={() => setHidden(!hidden)} />
+                  <ThemeTouchableOpacity onPress={() => setHidden(!hidden)}>
+                    <View
+                      style={{ flexDirection: 'row', width: 40, height: 35, alignItems: 'center', justifyContent: 'center', gap: GAP_DEFAULT.Gap8 }}
+                    >
+                      <AntDesign name={hidden ? 'eye' : 'eye-invisible'} size={20} color={text.color} />
                     </View>
                   </ThemeTouchableOpacity>
                 </View>
               </>
             ) : (
               <View style={stylesCustom.containerShow}>
-                {isCreating ? <MyLoading /> : <AntDesign name='eye' size={30} color={text.color} onPress={() => handleCreatePassPhrase()} />}
+                {isCreating ? (
+                  <MyLoading />
+                ) : (
+                  <TouchableOpacity onPress={() => handleCreatePassPhrase()}>
+                    <AntDesign name='eye' size={30} color={text.color} />
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           </View>
@@ -134,7 +150,16 @@ const Step2 = ({ handleClose }: Props) => {
         {isShow && (
           <>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-              <ThemeCheckBox disabled={isCreatingAccount} value={agree} onValueChange={setAgree} />
+              <TouchableOpacity
+                style={{ paddingVertical: 10 }}
+                onPress={() => {
+                  console.log('onValueChange')
+
+                  setAgree(!agree)
+                }}
+              >
+                <ThemeCheckBox disabled={isCreatingAccount} value={agree} />
+              </TouchableOpacity>
               <ThemedText>I have safely backed up my seed phrase</ThemedText>
             </View>
             <ThemeTouchableOpacity

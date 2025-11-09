@@ -7,6 +7,7 @@ import { FlatList, TouchableOpacity, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 
 import ThemedText from '@/components/UI/ThemedText'
+import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import useMode from '@/hooks/useMode'
 import { useAppSelector } from '@/redux/hooks'
 import { setSessions } from '@/redux/slices/sessionsSlice'
@@ -26,9 +27,6 @@ const ListConnect = () => {
     if (!sessions) return []
     return Object.values(sessions).sort((a, b) => (b.expiry || 0) - (a.expiry || 0))
   }, [sessions])
-  console.log('====================================')
-  console.log({ sessionsSorted })
-  console.log('====================================')
 
   const handleDisconnect = (item: Session) => {
     const data = cloneDeep(sessions)
@@ -130,9 +128,9 @@ const ListConnect = () => {
       />
 
       {sessionsSorted.length > 0 && (
-        <TouchableOpacity style={styles.disconnectAllButton} onPress={handleDisconnectAll}>
+        <ThemeTouchableOpacity style={styles.disconnectAllButton} onPress={handleDisconnectAll}>
           <ThemedText style={styles.disconnectAllText}>Disconnect All</ThemedText>
-        </TouchableOpacity>
+        </ThemeTouchableOpacity>
       )}
     </View>
   )

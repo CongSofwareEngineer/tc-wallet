@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     height: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    margin: 'auto',
   },
   default: {
     backgroundColor: '#00875A',

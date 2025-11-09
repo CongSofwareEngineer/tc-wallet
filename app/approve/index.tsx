@@ -112,11 +112,11 @@ const ApproveScreen = () => {
             {renderRequest()}
           </ScrollView>
           <View style={{ flexDirection: 'row', gap: 20, paddingBottom: 10, paddingTop: 10 }}>
-            <ThemeTouchableOpacity disabled={isApproving} loading={isRejecting} onPress={handleReject} style={{ flex: 1 }}>
-              <ThemedText>{translate('common.reject')} </ThemedText>
+            <ThemeTouchableOpacity type='outline' disabled={isApproving} loading={isRejecting} onPress={handleReject} style={{ flex: 1 }}>
+              <ThemedText style={{ textAlign: 'center' }}>{translate('common.reject')} </ThemedText>
             </ThemeTouchableOpacity>
             <ThemeTouchableOpacity loading={isApproving} disabled={isRejecting} style={{ flex: 1 }} onPress={handleApprove}>
-              <ThemedText>{translate('common.approve')}</ThemedText>
+              <ThemedText style={{ textAlign: 'center' }}>{translate('common.approve')}</ThemedText>
             </ThemeTouchableOpacity>
           </View>
         </>

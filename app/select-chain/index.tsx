@@ -30,10 +30,7 @@ const SelectChainScreen = () => {
     <TouchableOpacity style={[styles.networkItem, chainCurrent?.id === item.id && styles.selectedNetworkItem]}>
       <View style={styles.networkInfo}>
         <View style={{ flex: 1 }}>
-          <TouchableOpacity
-            style={[{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'green' }]}
-            onPress={() => handleChangeChain(item.id)}
-          >
+          <TouchableOpacity style={[{ flexDirection: 'row', alignItems: 'center' }]} onPress={() => handleChangeChain(item.id)}>
             <View style={[styles.networkIcon]}>
               {item?.iconChain ? (
                 <Image source={{ uri: item.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />
@@ -48,7 +45,7 @@ const SelectChainScreen = () => {
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => router.push(`/chain-detail/${item.id}`)} style={[styles.menuButton, { backgroundColor: 'blue' }]}>
+      <TouchableOpacity onPress={() => router.push(`/chain-detail/${item.id}`)} style={[styles.menuButton]}>
         <AntDesign name='ellipsis' size={24} color='#FFFFFF' />
       </TouchableOpacity>
     </TouchableOpacity>

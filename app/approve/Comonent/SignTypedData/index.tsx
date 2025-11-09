@@ -182,7 +182,6 @@ const createLocalStyles = (colors: any) =>
       paddingVertical: 12,
     },
     sectionTitle: {
-      fontSize: 16,
       fontWeight: '700',
       color: colors.text || '#FFFFFF',
     },
