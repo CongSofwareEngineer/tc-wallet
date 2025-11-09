@@ -83,6 +83,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    backgroundColor: 'orange',
   },
   networkIcon: {
     width: 40,
@@ -102,6 +103,7 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '500',
     flex: 1,
+    backgroundColor: 'red',
   },
   addButton: {
     width: 32,

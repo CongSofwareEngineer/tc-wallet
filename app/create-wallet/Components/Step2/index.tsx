@@ -1,7 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import React, { useState, useTransition } from 'react'
-import { View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
 import ThemeCheckBox from '@/components/UI/ThemeCheckBox'
@@ -84,64 +84,71 @@ const Step2 = ({ handleClose }: Props) => {
   }
 
   return (
-    <View style={[styles.containerContent, styles[`containerContent${mode}`]]}>
-      <View style={{ flexDirection: 'row', gap: GAP_DEFAULT.Gap8, alignItems: 'center', marginBottom: 10 }}>
-        <View>
-          <AntDesign disabled={isCreatingAccount} onPress={handleClose} name='arrow-left' size={16} color={text.color} />
-        </View>
-
-        <ThemedText>Backup Your Seed Phrase</ThemedText>
-      </View>
-      <ThemedText>Write down these 12 words in order. You&apos;ll need them to recover your wallet.</ThemedText>
-      <View style={stylesCustom.containerWarning}>
-        <AntDesign name='warning' size={20} color={text.color} />
-        <ThemedText type='small'>Never share your seed phrase. Anyone with these words can access your wallet.</ThemedText>
-      </View>
-      <View>
-        <View style={[styles.containerContent, styles[`containerContent${mode}`]]}>
-          {isShow ? (
-            <>
-              <View style={stylesCustom.containerPassPhrase}>{renderPassPhrase()}</View>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-                <ThemeTouchableOpacity
-                  onPress={() => {
-                    copyToClipboard(passPhrase)
-                    Alert.alert('Copied')
-                  }}
-                  style={{ flex: 1 }}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-                    <AntDesign name='copy' size={16} color={text.color} />
-                    <ThemedText>{translate('common.copy')}</ThemedText>
-                  </View>
-                </ThemeTouchableOpacity>
-                <ThemeTouchableOpacity>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-                    <AntDesign name={hidden ? 'eye' : 'eye-invisible'} size={16} color={text.color} onPress={() => setHidden(!hidden)} />
-                  </View>
-                </ThemeTouchableOpacity>
-              </View>
-            </>
-          ) : (
-            <View style={stylesCustom.containerShow}>
-              {isCreating ? <MyLoading /> : <AntDesign name='eye' size={30} color={text.color} onPress={() => handleCreatePassPhrase()} />}
-            </View>
-          )}
-        </View>
-      </View>
-      {isShow && (
-        <>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-            <ThemeCheckBox disabled={isCreatingAccount} value={agree} onValueChange={setAgree} />
-            <ThemedText>I have safely backed up my seed phrase</ThemedText>
+    <ScrollView>
+      <View style={[styles.containerContent, styles[`containerContent${mode}`]]}>
+        <View style={{ flexDirection: 'row', gap: GAP_DEFAULT.Gap8, alignItems: 'center', marginBottom: 10 }}>
+          <View>
+            <AntDesign disabled={isCreatingAccount} onPress={handleClose} name='arrow-left' size={16} color={text.color} />
           </View>
-          <ThemeTouchableOpacity onPress={handleCreateAccount} loading={isCreatingAccount} disabled={!agree} style={{ opacity: agree ? 1 : 0.5 }}>
-            <ThemedText>Create Account</ThemedText>
-          </ThemeTouchableOpacity>
-        </>
-      )}
-    </View>
+
+          <ThemedText>Backup Your Seed Phrase</ThemedText>
+        </View>
+        <ThemedText>Write down these 12 words in order. You&apos;ll need them to recover your wallet.</ThemedText>
+        <View style={stylesCustom.containerWarning}>
+          <AntDesign name='warning' size={20} color={text.color} />
+          <ThemedText type='small'>Never share your seed phrase. Anyone with these words can access your wallet.</ThemedText>
+        </View>
+        <View>
+          <View style={[styles.containerContent, styles[`containerContent${mode}`]]}>
+            {isShow ? (
+              <>
+                <View style={stylesCustom.containerPassPhrase}>{renderPassPhrase()}</View>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+                  <ThemeTouchableOpacity
+                    onPress={() => {
+                      copyToClipboard(passPhrase)
+                      Alert.alert('Copied')
+                    }}
+                    style={{ flex: 1, alignItems: 'center' }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+                      <AntDesign name='copy' size={16} color={text.color} />
+                      <ThemedText>{translate('common.copy')}</ThemedText>
+                    </View>
+                  </ThemeTouchableOpacity>
+                  <ThemeTouchableOpacity>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+                      <AntDesign name={hidden ? 'eye' : 'eye-invisible'} size={16} color={text.color} onPress={() => setHidden(!hidden)} />
+                    </View>
+                  </ThemeTouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <View style={stylesCustom.containerShow}>
+                {isCreating ? <MyLoading /> : <AntDesign name='eye' size={30} color={text.color} onPress={() => handleCreatePassPhrase()} />}
+              </View>
+            )}
+          </View>
+        </View>
+        {isShow && (
+          <>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
+              <ThemeCheckBox disabled={isCreatingAccount} value={agree} onValueChange={setAgree} />
+              <ThemedText>I have safely backed up my seed phrase</ThemedText>
+            </View>
+            <ThemeTouchableOpacity
+              onPress={handleCreateAccount}
+              loading={isCreatingAccount}
+              disabled={!agree}
+              style={{ opacity: agree ? 1 : 0.5, alignItems: 'center' }}
+            >
+              <ThemedText>Create Account</ThemedText>
+            </ThemeTouchableOpacity>
+          </>
+        )}
+      </View>
+    </ScrollView>
   )
 }
 

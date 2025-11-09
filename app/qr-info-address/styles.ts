@@ -98,6 +98,7 @@ export const createStyles = (isDark: boolean) =>
       paddingVertical: 10,
       paddingHorizontal: 16,
       borderRadius: 20,
+      flex: 1,
     },
     copyButtonText: {
       fontSize: 14,

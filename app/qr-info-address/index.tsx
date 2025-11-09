@@ -75,13 +75,17 @@ const QRInfoAddressScreen = () => {
       <View style={{ flexDirection: 'row', gap: GAP_DEFAULT.Gap8, justifyContent: 'center' }}>
         <ThemeTouchableOpacity type='outline' style={styles.copyButton} onPress={handleCopyAddress}>
           <Ionicons name='copy-outline' size={16} color={COLORS.green600} />
-          <ThemedText style={styles.copyButtonText}>Copy address</ThemedText>
+          <ThemedText numberOfLines={1} style={styles.copyButtonText}>
+            Copy address
+          </ThemedText>
         </ThemeTouchableOpacity>
 
         {chainCurrent?.blockExplorers?.default && (
           <ThemeTouchableOpacity type='outline' style={styles.copyButton} onPress={handleOpenExplorer}>
             <Ionicons name='open-outline' size={16} color={COLORS.green600} />
-            <ThemedText style={styles.copyButtonText}>View on Explorer</ThemedText>
+            <ThemedText numberOfLines={1} style={styles.copyButtonText}>
+              View on Explorer
+            </ThemedText>
           </ThemeTouchableOpacity>
         )}
       </View>
