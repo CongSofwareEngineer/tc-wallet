@@ -1,28 +1,15 @@
-import { Address, createPublicClient, Hex, http, TransactionRequest } from 'viem'
+import { Address, TransactionRequest } from 'viem'
 
 import { store } from '@/redux/store'
-import { ChainId, RawTransactionEVM } from '@/types/web3'
+import { RawTransactionEVM } from '@/types/web3'
 
-class EVMServices {
-  static getClient(chainId: ChainId) {
-    const listChain = store.getState().chains
+import Web3Service from '../web3'
 
-    const chain = listChain.find((item) => item.id.toFixed() === chainId.toString())
-
-    const publicClient = createPublicClient({
-      chain: chain,
-      transport: http(chain!.rpcUrls.default.http[0]),
-    })
-
-    return publicClient
-  }
-
+class EVMServices extends Web3Service {
   static async estimateGas(transaction: RawTransactionEVM) {
     const publicClient = this.getClient(transaction.chainId!)
 
     const account = transaction.from
-
-    delete transaction.from
 
     const gas = await publicClient.estimateGas({
       account,
@@ -32,46 +19,25 @@ class EVMServices {
     return gas
   }
 
-  static async tracking(hash: Hex, chainId: ChainId, limit: number = 20) {
-    const publicClient = this.getClient(chainId)
-    let limitCurrent = 0
-    while (true) {
-      try {
-        if (limitCurrent++ >= limit) {
-          return true
-        }
-
-        const receipt = await publicClient.getTransactionReceipt({
-          hash,
-        })
-
-        if (receipt) {
-          return receipt
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1500)) // wait for 1 second before checking again
-      } catch {
-        await new Promise((resolve) => setTimeout(resolve, 1500)) // wait for 1 second before checking again
-      } finally {
-        limitCurrent++
-      }
-    }
-  }
-
   static async getRawTransactions(raw: RawTransactionEVM): Promise<RawTransactionEVM> {
     const publicClient = this.getClient(raw.chainId!)
+    const chainId = raw.chainId!
     const tx: TransactionRequest = {
       to: raw.to,
-      data: raw.data,
+      data: raw.data || '0x',
       value: raw.value,
-      from: raw.from,
     }
 
-    if (raw.nonce !== undefined) {
-      tx.nonce = raw.nonce
-    } else if (tx.from) {
-      const nonce = await publicClient.getTransactionCount({ address: tx.from as Address, blockTag: 'latest' })
-
+    if (raw.from) {
+      const nonce = await publicClient.getTransactionCount({ address: raw.from as Address, blockTag: 'latest' })
       tx.nonce = nonce
+      tx.from = raw.from
+    } else {
+      const walletActive = store.getState().wallet.wallet
+
+      const nonce = await publicClient.getTransactionCount({ address: walletActive!.address as Address, blockTag: 'latest' })
+      tx.nonce = nonce
+      tx.from = walletActive!.address as Address
     }
 
     // 3) Gas price / fees
@@ -86,7 +52,8 @@ class EVMServices {
           tx.maxPriorityFeePerGas = raw.maxPriorityFeePerGas
         }
       } else {
-        const gasPrice = await publicClient.getGasPrice()
+        const gasPrice = await this.getGasPrice(chainId, raw?.multiplier)
+
         tx.gasPrice = gasPrice
       }
     }

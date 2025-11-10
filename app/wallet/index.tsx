@@ -170,11 +170,15 @@ const WalletScreen = () => {
     <View style={{ flex: 1 }}>
       <HeaderScreen title={'Wallets'} />
 
-      <View style={styles.tableHeader}>
+      <View style={[styles.tableHeader, { gap: GAP_DEFAULT.Gap8 }]}>
         <ThemedText style={styles.headerCellLeft}>Wallet Name</ThemedText>
         <ThemeTouchableOpacity type='default' style={styles.addButton} onPress={handleCreateWalletAndPassPhrase}>
           <AntDesign name='plus' size={20} color={colors.white} />
-          <ThemedText style={styles.addButtonText}>Account</ThemedText>
+          {/* <ThemedText style={styles.addButtonText}>Account</ThemedText> */}
+        </ThemeTouchableOpacity>
+        <ThemeTouchableOpacity type='default' style={styles.addButton} onPress={() => router.push('/import-account')}>
+          <AntDesign name='import' size={20} color={colors.white} />
+          {/* <ThemedText style={styles.addButtonText}>Account</ThemedText> */}
         </ThemeTouchableOpacity>
       </View>
       <View style={styles.separator} />

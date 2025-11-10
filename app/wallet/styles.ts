@@ -5,7 +5,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 24,
     paddingBottom: 8,
     backgroundColor: 'transparent',
     justifyContent: 'space-between',
@@ -110,4 +109,4 @@ export const styles = StyleSheet.create({
   },
 })
 
-export default () => { }
+export default () => {}

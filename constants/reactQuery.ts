@@ -6,4 +6,6 @@ export enum KEY_REACT_QUERY {
   getNFtDetail = 'getNFtDetail',
   getTypeUrlImage = 'getTypeUrlImage',
   getNftMetadataEVM = 'getNftMetadataEVM',
+  getEstimateGas = 'getEstimateGas',
+  getBalanceNative = 'getBalanceNative',
 }

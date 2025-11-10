@@ -40,6 +40,7 @@ export type RawTransactionEVM = TransactionRequest &
     domain?: any
     types?: any
     primaryType?: string
+    multiplier?: number
   }
 
 export type Network = {

@@ -1,6 +1,6 @@
 import * as Clipboard from 'expo-clipboard'
 import { Alert } from 'react-native'
-import { formatUnits } from 'viem'
+import { formatUnits, parseUnits } from 'viem'
 
 import { images } from '@/configs/images'
 import { IsIos } from '@/constants/app'
@@ -30,8 +30,8 @@ export const numberWithCommas = (num: number | string | bigint | null | undefine
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-export const copyToClipboard = async (text: string, duration: number = 2000, type: 'text' | 'url' | 'image' = 'text') => {
-  if (IsIos) {
+export const copyToClipboard = async (text: string, isEx = false, duration: number = 2000, type: 'text' | 'url' | 'image' = 'text') => {
+  if (isEx) {
     Alert.alert(text, text)
   } else {
     store.dispatch(openAlert({ text: 'Copied', duration }))
@@ -78,7 +78,7 @@ export const convertWeiToBalance = (wei: string | number | bigint | null | undef
 }
 export const convertBalanceToWei = (balance: string | number | bigint | null | undefined, decimals = 18): string => {
   if (balance === null || balance === undefined) return ''
-  return formatUnits(BigInt(balance), decimals)
+  return parseUnits(balance.toString(), decimals).toString()
 }
 
 export const detectUrlImage = (src: string | null | undefined) => {

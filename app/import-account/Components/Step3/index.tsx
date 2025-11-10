@@ -3,16 +3,16 @@ import { Checkbox } from 'expo-checkbox'
 import { useRouter } from 'expo-router'
 import React, { useMemo, useState, useTransition } from 'react'
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
-import { Hex } from 'viem'
 
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { COLORS, GAP_DEFAULT } from '@/constants/style'
+import useAlert from '@/hooks/useAlert'
 import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import AllWalletUtils from '@/utils/allWallet'
-import { cloneDeep } from '@/utils/functions'
+import { sleep } from '@/utils/functions'
 
 type Props = {
   handleClose: () => void
@@ -26,8 +26,9 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
 
   const router = useRouter()
   const [isImporting, startImporting] = useTransition()
-  const { setWallets, wallets } = useWallets()
+  const { addWallet, wallets } = useWallets()
   const { setPassPhrase } = usePassPhrase()
+  const { showAlert } = useAlert()
 
   const wordsCount = useMemo(() => {
     return value.trim().split(/\s+/).filter(Boolean).length
@@ -42,27 +43,34 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
     startImporting(async () => {
       try {
         if (type === 'passPhrase') {
-          const walletClone = cloneDeep(wallets)
           const wallet = await AllWalletUtils.createWalletFromPassPhrase(value.trim())
+          const isExit = wallets.find((w) => w.address.toLowerCase() === wallet.address.toLowerCase())
+
+          if (isExit) {
+            showAlert({
+              text: 'This private key is already imported',
+            })
+            return
+          }
+
           await setPassPhrase(value.trim())
-          walletClone.push(wallet)
-          setWallets(walletClone)
+          addWallet(wallet)
+          await sleep(500)
           router.replace('/home')
         } else {
-          const walletClone = cloneDeep(wallets)
-          const wallet = await AllWalletUtils.createWalletFromPrivateKey(value.trim() as any)
-
-          walletClone.push(wallet)
-          setWallets(walletClone)
+          const wallet = await AllWalletUtils.createWalletFromPrivateKey(`0x${value.trim()}`)
+          const isExit = wallets.find((w) => w.address.toLowerCase() === wallet.address.toLowerCase())
+          if (isExit) {
+            showAlert({
+              text: 'This private key is already imported',
+            })
+            return
+          }
+          addWallet(wallet)
+          await sleep(500)
           router.replace('/home')
         }
-      } catch (error) {
-        const walletClone = cloneDeep(wallets)
-        const wallet = await AllWalletUtils.createWalletFromPrivateKey(value.trim() as Hex)
-        walletClone.push(wallet)
-        setWallets(walletClone)
-        router.replace('/home')
-      }
+      } catch (error) { }
     })
   }
 

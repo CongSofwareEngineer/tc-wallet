@@ -143,7 +143,7 @@ const ConnectAccountScreen = () => {
             )}
           </View>
           <View style={{ flexDirection: 'row', gap: 20, paddingBottom: 10, paddingTop: 10 }}>
-            <ThemeTouchableOpacity disabled={isPending} onPress={handleReject} style={{ flex: 1 }}>
+            <ThemeTouchableOpacity type='outline' disabled={isPending} onPress={handleReject} style={{ flex: 1 }}>
               <ThemedText style={{ textAlign: 'center' }}>{translate('common.reject')} </ThemedText>
             </ThemeTouchableOpacity>
             <ThemeTouchableOpacity loading={isPending} style={{ flex: 1 }} onPress={handleConnect}>

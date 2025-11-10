@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router'
 import ModalAuth from '@/components/ModalAuth'
 import { ERROR_TYPE } from '@/constants/erros'
 import { KEY_STORAGE } from '@/constants/storage'
+import { useAppSelector } from '@/redux/hooks'
 import { sleep } from '@/utils/functions'
 import { getSecureData } from '@/utils/secureStorage'
 
@@ -10,14 +11,14 @@ import useModal from './useModal'
 
 const useAuth = () => {
   const { openModal, closeModal } = useModal()
+  const setting = useAppSelector((state) => state.settings)
   const router = useRouter()
 
   const handleAuth = async (isNewModal = true) => {
     return await new Promise<boolean>(async (resolve, reject) => {
       const data = await getSecureData(KEY_STORAGE.PasscodeAuth)
-      console.log({ data })
 
-      if (data) {
+      if (data || setting.isFaceId) {
         openModal({
           maskClosable: false,
           onClose: () => reject(new Error(ERROR_TYPE.PassAuthClose)),

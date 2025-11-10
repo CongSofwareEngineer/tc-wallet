@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react'
-import { TextInput, TextInputProps, TouchableOpacity, View } from 'react-native'
+import { StyleProp, TextInput, TextInputProps, TouchableOpacity, View, ViewStyle } from 'react-native'
 
 import useTheme from '@/hooks/useTheme'
 
@@ -21,6 +21,7 @@ export type ThemedInputProps = {
   ref?: any
   noBorder?: boolean
   disabled?: boolean
+  styleContentInput?:StyleProp<ViewStyle>
 } & TextInputProps
 
 const ThemedInput = ({
@@ -36,6 +37,7 @@ const ThemedInput = ({
   ref,
   noBorder,
   disabled,
+  styleContentInput,
   ...props
 }: ThemedInputProps) => {
   const { background, text } = useTheme()
@@ -44,7 +46,7 @@ const ThemedInput = ({
   return (
     <View style={[styles.container]}>
       {label && <ThemedText style={styles.label}>{label}</ThemedText>}
-      <View style={[styles.containerSub, { width: '100%', backgroundColor: background.backgroundInput }, noBorder && { borderWidth: 0 }]}>
+      <View style={[styles.containerSub, { width: '100%', backgroundColor: background.backgroundInput }, noBorder && { borderWidth: 0 }, styleContentInput]}>
         {leftIcon && (
           <TouchableOpacity style={styles.leftIcon} onPress={() => onPressLeftIcon?.()}>
             <ThemedText>{leftIcon}</ThemedText>

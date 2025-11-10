@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 
     // alignItems: 'center',
     // justifyContent: 'center',
-    minHeight: 35,
+    minHeight: 30,
   },
   loadingWrapper: {
     height: 20,

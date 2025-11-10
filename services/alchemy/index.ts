@@ -1,11 +1,20 @@
+import { Platform } from 'react-native'
+
 import fetcherConfig from '@/configs/fetcher'
 import { IFetch } from '@/configs/fetcher/type'
+import { APP_CONFIG } from '@/constants/appConfig'
 
 const fetcher = (params: IFetch) => {
   let url = 'api/alchemy/' + (params?.url || '')
   url = url.replace('//', '/')
+
+  if (Platform.OS !== 'web') {
+    url = url.replace('api/alchemy/', '/')
+    url = url.replace('apiKey', APP_CONFIG.apiKeyAlchemy || '')
+  }
+
   return fetcherConfig({
-    baseUrl: `${window.origin}`,
+    baseUrl: Platform.OS === 'web' ? `${window.origin}` : 'https://api.g.alchemy.com',
     headers: {
       accept: 'application/json',
     },
@@ -30,6 +39,8 @@ class AlchemyService {
 
       return res?.data?.price || '0'
     } catch (error) {
+      console.log({ errorgetPriceBySymbol: error })
+
       return '0'
     }
   }

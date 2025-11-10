@@ -1,5 +1,5 @@
 import Bignumber from 'bignumber.js'
-import { Address, createWalletClient, custom, Hash, Hex, isAddress, isHex, stringToHex } from 'viem'
+import { Address, createWalletClient, custom, Hash, Hex, isAddress, isHex, publicActions, stringToHex } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 
 import { store } from '@/redux/store'
@@ -20,33 +20,36 @@ class WalletEvmUtil {
   static async sendTransaction(raw: RawTransactionEVM, privateKey: Hex): Promise<Hash> {
     try {
       raw.callbackBefore?.()
+      const chainSelected = store.getState().chainSelected
+      const chainId = raw.chainId || chainSelected
 
       const publicClient = EVMServices.getClient(raw.chainId!)
       const privateKeyDecode = await decodeData(privateKey)
 
+      const account = privateKeyToAccount(privateKeyDecode)
       const wallet = createWalletClient({
-        account: privateKeyToAccount(privateKeyDecode),
+        account,
         transport: custom(publicClient.transport),
-      })
+      }).extend(publicActions)
 
       const tx = await EVMServices.getRawTransactions({
         to: raw.to,
         data: raw.data,
         value: raw.value,
         from: raw.from || wallet.account.address,
-        chainId: raw.chainId,
+        chainId,
       })
 
       if (raw.gas) {
         tx.gas = raw.gas
       } else {
-        const gas = await EVMServices.estimateGas({ ...tx })
+        const gas = await EVMServices.estimateGas({ ...tx, chainId })
+
         tx.gas = BigInt(Bignumber(gas.toString()).multipliedBy(1.05).decimalPlaces(0).toFixed()) // add 5% buffer
       }
 
       const hash = await wallet.sendTransaction({
         chain: publicClient.chain,
-        account: wallet.account.address,
         ...tx,
       })
 

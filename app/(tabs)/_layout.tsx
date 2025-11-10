@@ -100,6 +100,7 @@ const TabNavigation = () => {
         tabBarStyle: {
           height: 60,
           paddingBottom: 0,
+          backgroundColor: '#1d1d1d',
         },
       }}
     >

@@ -30,7 +30,9 @@ const TokenDetailScreen = () => {
   const priceChangeColor = priceChange >= 0 ? '#00D09C' : '#FF4D4D'
 
   const handleCopy = async () => {
-    copyToClipboard(tokenCurrent.token_address)
+    const tokenAddress = isTokenNative(tokenCurrent.token_address) ? zeroAddress : tokenCurrent.token_address
+
+    copyToClipboard(tokenAddress, true)
   }
 
   const { chainCurrent } = useChains()

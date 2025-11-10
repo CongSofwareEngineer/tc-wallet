@@ -18,6 +18,7 @@ const getData = async ({ queryKey }: IQueryKey): Promise<string> => {
       return res
     } else {
       const resAl = await AlchemyService.getPriceBySymbol(symbolOrAddress)
+      console.log({ AlchemyService: resAl })
 
       return BigNumber(resAl || 0).toFixed()
     }

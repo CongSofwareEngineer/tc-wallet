@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native'
 
+import { GAP_DEFAULT } from '@/constants/style'
+
 export const createStyles = (isDark: boolean) =>
   StyleSheet.create({
     container: {
@@ -11,6 +13,7 @@ export const createStyles = (isDark: boolean) =>
       paddingHorizontal: 20,
       paddingTop: 8,
       paddingBottom: 24,
+      gap: GAP_DEFAULT.Gap12,
     },
     card: {
       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
@@ -32,7 +35,6 @@ export const createStyles = (isDark: boolean) =>
       fontSize: 14,
       fontWeight: '600',
       color: isDark ? '#9CA3AF' : '#6B7280',
-      marginBottom: 12,
       textTransform: 'uppercase',
       letterSpacing: 0.5,
     },
@@ -57,7 +59,7 @@ export const createStyles = (isDark: boolean) =>
     sendButton: {
       backgroundColor: '#3B82F6',
       paddingHorizontal: 24,
-      paddingVertical: 12,
+      paddingVertical: 6,
       borderRadius: 12,
       shadowColor: '#3B82F6',
       shadowOffset: {
@@ -83,12 +85,14 @@ export const createStyles = (isDark: boolean) =>
       color: isDark ? '#6B7280' : '#9CA3AF',
     },
     inputContainer: {
-      backgroundColor: isDark ? '#111827' : '#F9FAFB',
-      borderRadius: 16,
-      borderWidth: 2,
-      borderColor: isDark ? '#374151' : '#E5E7EB',
+      // backgroundColor: isDark ? '#111827' : '#F9FAFB',
+      // borderRadius: 16,
+      // borderWidth: 2,
+      // borderColor: isDark ? '#374151' : '#E5E7EB',
       // paddingHorizontal: 16,
       // paddingVertical: 4,
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? '#374151' : '#E5E7EB',
     },
     inputContainerFocused: {
       borderColor: '#3B82F6',
@@ -97,7 +101,7 @@ export const createStyles = (isDark: boolean) =>
     input: {
       fontSize: 16,
       color: isDark ? '#FFFFFF' : '#1F2937',
-      paddingVertical: 12,
+      paddingVertical: 0,
       fontWeight: '500',
     },
     inputActions: {
@@ -129,8 +133,8 @@ export const createStyles = (isDark: boolean) =>
       elevation: 3,
     },
     avatar: {
-      width: 48,
-      height: 48,
+      width: 40,
+      height: 40,
       borderRadius: 24,
     },
     chainIcon: {

@@ -22,6 +22,7 @@ export const encodeData = async (value: any, password?: string) => {
 export const decodeData = async (value: any, password?: string) => {
   try {
     const keyEncode = password || (await getKeyEncode())
+
     const bytes = CryptoJS.AES.decrypt(value.toString(), CryptoJS.enc.Utf8.parse(keyEncode), {
       iv: getIV(),
     })

@@ -1,9 +1,11 @@
-import React, { useMemo, useRef, useState } from 'react'
+import * as LocalAuthentication from 'expo-local-authentication'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 
 import ThemedText from '@/components/UI/ThemedText'
 import { KEY_STORAGE } from '@/constants/storage'
 import useTheme from '@/hooks/useTheme'
+import { useAppSelector } from '@/redux/hooks'
 import { getSecureData } from '@/utils/secureStorage'
 
 type Props = {
@@ -13,12 +15,38 @@ type Props = {
 const PIN_LENGTH = 4
 
 const ModalAuth = ({ callback }: Props) => {
+  const setting = useAppSelector((state) => state.settings)
+
   const { background, text, colors } = useTheme()
   const inputRef = useRef<TextInput>(null)
   const [pin, setPin] = useState('')
   const [error, setError] = useState('')
 
   const boxes = useMemo(() => new Array(PIN_LENGTH).fill(''), [])
+
+  useEffect(() => {
+    const checkFace = async () => {
+      try {
+        if (setting.isFaceId) {
+          const isSupport = await LocalAuthentication.hasHardwareAsync()
+          if (isSupport) {
+            const dataFaceId: any = await LocalAuthentication.authenticateAsync({
+              biometricsSecurityLevel: 'strong',
+              promptMessage: 'Xác thực sinh trắc học',
+              cancelLabel: 'Huỷ',
+              fallbackLabel: 'Sử dụng mật khẩu',
+              disableDeviceFallback: true,
+              requireConfirmation: true,
+            })
+            if (dataFaceId?.success) {
+              callback(true)
+            }
+          }
+        }
+      } catch (error) { }
+    }
+    checkFace()
+  }, [setting])
 
   const onChange = async (value: string) => {
     const pass = await getSecureData(KEY_STORAGE.PasscodeAuth)

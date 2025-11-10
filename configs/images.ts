@@ -5,4 +5,7 @@ export const images = {
     placeholder: require('@/assets/images/icons/placeholder.png'),
     unknown: require('@/assets/images/icons/unknow.png'),
   },
+  tokens: {
+    usdIcon: require('@/assets/images/tokens/usdIcon.png'),
+  },
 }

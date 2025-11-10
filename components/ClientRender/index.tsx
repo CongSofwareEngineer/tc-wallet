@@ -51,7 +51,8 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
           </View>
         ) : (
           <View style={{ flex: 1, backgroundColor: background.background, maxWidth: 576, width: '100%' }}>
-            <SafeAreaView style={{ flex: 1 }}>{children}</SafeAreaView>
+            {/* <SafeAreaView style={{ flex: 1 }}>{children}</SafeAreaView> */}
+            <SafeAreaView style={{ flex: 1, backgroundColor: '#1d1d1d' }}>{children}</SafeAreaView>
             <MyModal />
             <MySheet />
           </View>

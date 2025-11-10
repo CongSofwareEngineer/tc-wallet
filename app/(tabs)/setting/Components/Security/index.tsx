@@ -13,6 +13,7 @@ import useAlert from '@/hooks/useAlert'
 import useAuth from '@/hooks/useAuth'
 import useModal from '@/hooks/useModal'
 import useMode from '@/hooks/useMode'
+import useSetting from '@/hooks/useSetting'
 import useTheme from '@/hooks/useTheme'
 import { useAppSelector } from '@/redux/hooks'
 import { setPasscode } from '@/redux/slices/settingsSlice'
@@ -29,6 +30,7 @@ const Security = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const { closeModal, openModal } = useModal()
+  const { setSetting } = useSetting()
   const setting = useAppSelector((state) => state.settings)
 
   const handleChangePasscode = () => {
@@ -73,8 +75,7 @@ const Security = () => {
       try {
         const isAuth = await handleAuth(false)
         if (isAuth) {
-          dispatch(setPasscode(false))
-          removeSecureData(KEY_STORAGE.PasscodeAuth)
+          setSetting({ isFaceId: false })
         }
       } catch (error) { }
     }
@@ -84,10 +85,8 @@ const Security = () => {
       })
     } else {
       const isSupport = await LocalAuthentication.hasHardwareAsync()
-      console.log({ isSupport })
 
       if (isSupport) {
-        await LocalAuthentication.cancelAuthenticate()
         const isEnrolled = await LocalAuthentication.isEnrolledAsync()
         const dataFaceId: any = await LocalAuthentication.authenticateAsync({
           biometricsSecurityLevel: 'strong',
@@ -101,6 +100,7 @@ const Security = () => {
           showAlert({ text: 'Hệ thống ko hộ trợ' })
         }
         if (dataFaceId.success) {
+          setSetting({ isFaceId: true })
           showAlert({ text: 'Xác thực thành công' })
         }
 

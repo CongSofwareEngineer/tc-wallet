@@ -46,6 +46,7 @@ const WalletDetailScreen = () => {
     const getData = async () => {
       setEditName(walletSelected?.name || '')
       const pKey = await decodeData(walletSelected?.privateKey || '')
+
       setPrivateKey(pKey)
     }
 
@@ -130,7 +131,7 @@ const WalletDetailScreen = () => {
           {/* Account Name Section */}
           <View style={styles.section}>
             <View style={styles.row}>
-              <ThemedText style={styles.label}>Account Name</ThemedText>
+              {!isEditing && <ThemedText style={styles.label}>Account Name</ThemedText>}
               {isEditing ? (
                 <View style={styles.editRow}>
                   <ThemedInput value={editName} onChangeText={setEditName} style={styles.input} placeholder='Tên tài khoản' />
@@ -172,8 +173,9 @@ const WalletDetailScreen = () => {
             <View style={styles.row}>
               <ThemedText style={styles.label}>Wallet</ThemedText>
               <View style={styles.valueRow}>
-                <ThemedText style={styles.value}>Imported accounts</ThemedText>
-                <AntDesign name='right' size={16} color={text.color} />
+                <ThemedText numberOfLines={1} style={styles.value}>
+                  {walletSelected?.indexMnemonic === -1 ? 'Imported accounts' : 'Mnemonic wallets'}
+                </ThemedText>
               </View>
             </View>
           </View>
@@ -187,10 +189,11 @@ const WalletDetailScreen = () => {
             {showPrivateKey && (
               <View style={styles.hiddenContent}>
                 <ThemedText style={styles.hiddenText}>
-                  {privateKey}
-                  <TouchableOpacity style={{ padding: 4 }} onPress={() => handleCopy(privateKey, 'Private key')}>
-                    <AntDesign name='copy' size={16} color={text.color} />
+                  {privateKey}{' '}
+                  <TouchableOpacity style={{ paddingHorizontal: 2 }} onPress={() => handleCopy(privateKey, 'Private key')}>
+                    <AntDesign style={{ position: 'relative', top: 4 }} name='copy' size={16} color={text.color} />
                   </TouchableOpacity>
+                  <View style={{ flex: 1 }} />
                 </ThemedText>
               </View>
             )}
@@ -206,10 +209,11 @@ const WalletDetailScreen = () => {
               {showPassPhrase && (
                 <View style={styles.hiddenContent}>
                   <ThemedText style={styles.hiddenText} selectable>
-                    {walletSelected.passPhrase}
-                    <TouchableOpacity style={{ padding: 4 }} onPress={() => handleCopy(walletSelected.passPhrase, 'Seed phrase')}>
-                      <AntDesign name='copy' size={16} color={text.color} />
+                    {walletSelected.passPhrase}{' '}
+                    <TouchableOpacity style={{ paddingHorizontal: 2 }} onPress={() => handleCopy(walletSelected.passPhrase, 'Private key')}>
+                      <AntDesign style={{ position: 'relative', top: 4 }} name='copy' size={16} color={text.color} />
                     </TouchableOpacity>
+                    <View style={{ flex: 1 }} />
                   </ThemedText>
                 </View>
               )}
