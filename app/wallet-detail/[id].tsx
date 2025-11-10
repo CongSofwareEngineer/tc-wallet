@@ -186,7 +186,7 @@ const WalletDetailScreen = () => {
             {showPrivateKey && (
               <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(privateKey, 'Private key')}>
                 <ThemedText style={styles.hiddenText}>
-                  {privateKey} <AntDesign style={{ position: 'relative', top: 4, paddingHorizontal: 2 }} name='copy' size={16} color={text.color} />
+                  {privateKey} <AntDesign style={{ position: 'relative', top: 4, paddingHorizontal: 2 }} name='copy' size={14} color={text.color} />
                   <View style={{ width: '100%' }} />
                 </ThemedText>
               </TouchableOpacity>

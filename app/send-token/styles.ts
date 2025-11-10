@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 
-import { GAP_DEFAULT } from '@/constants/style'
+import { COLORS, GAP_DEFAULT } from '@/constants/style'
 
 export const createStyles = (isDark: boolean) =>
   StyleSheet.create({
@@ -48,12 +48,10 @@ export const createStyles = (isDark: boolean) =>
       gap: 4,
     },
     walletName: {
-      fontSize: 16,
       fontWeight: '600',
       color: isDark ? '#FFFFFF' : '#1F2937',
     },
     walletAddress: {
-      fontSize: 14,
       color: isDark ? '#9CA3AF' : '#6B7280',
     },
     sendButton: {
@@ -85,14 +83,8 @@ export const createStyles = (isDark: boolean) =>
       color: isDark ? '#6B7280' : '#9CA3AF',
     },
     inputContainer: {
-      // backgroundColor: isDark ? '#111827' : '#F9FAFB',
-      // borderRadius: 16,
-      // borderWidth: 2,
-      // borderColor: isDark ? '#374151' : '#E5E7EB',
-      // paddingHorizontal: 16,
-      // paddingVertical: 4,
       borderBottomWidth: 1,
-      borderBottomColor: isDark ? '#374151' : '#E5E7EB',
+      borderBottomColor: isDark ? '#374151' : COLORS.gray1,
     },
     inputContainerFocused: {
       borderColor: '#3B82F6',
@@ -103,6 +95,7 @@ export const createStyles = (isDark: boolean) =>
       color: isDark ? '#FFFFFF' : '#1F2937',
       paddingVertical: 0,
       fontWeight: '500',
+      backgroundColor: 'transparent',
     },
     inputActions: {
       flexDirection: 'row',

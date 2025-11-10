@@ -10,7 +10,6 @@ import HeaderScreen from '@/components/Header'
 import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import MyImage from '@/components/MyImage'
 import QrScan from '@/components/QrScan'
-import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
 import { images } from '@/configs/images'
 import { COLORS } from '@/constants/style'
@@ -31,6 +30,7 @@ import { isAddress, isTokenNative } from '@/utils/nvm'
 import { height } from '@/utils/systems'
 import WalletEvmUtil from '@/utils/walletEvm'
 
+import InputEnter from './Component/InputEnter'
 import { createStyles } from './styles'
 
 type FormSendToken = {
@@ -332,7 +332,7 @@ const SendTokenScreen = () => {
       >
         {/* From Wallet Section */}
         <View style={styles.card}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
             <ThemedText style={styles.sectionLabel}>FROM</ThemedText>
             <TouchableOpacity
               style={[
@@ -362,7 +362,9 @@ const SendTokenScreen = () => {
 
             <View style={{ flex: 1, marginLeft: 12 }}>
               <ThemedText style={styles.walletName}>{wallet?.name || `Account ${indexWalletActive + 1}`}</ThemedText>
-              <ThemedText style={styles.walletAddress}>{ellipsisText(wallet?.address || '', 6, 6)}</ThemedText>
+              <ThemedText type='small' style={styles.walletAddress}>
+                {ellipsisText(wallet?.address || '', 6, 6)}
+              </ThemedText>
             </View>
 
             {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent.iconChain }} style={styles.chainIcon} />}
@@ -379,8 +381,10 @@ const SendTokenScreen = () => {
             }}
           >
             <View>
-              <ThemedText style={{ fontSize: 12, opacity: 0.6, marginBottom: 4 }}>Balance</ThemedText>
-              <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
+              <ThemedText type='small' style={{ opacity: 0.6, marginBottom: 4 }}>
+                Balance
+              </ThemedText>
+              <ThemedText style={{ fontWeight: '600' }}>
                 {BigNumber(selectedToken?.balance_formatted || 0)
                   .decimalPlaces(8, BigNumber.ROUND_DOWN)
                   .toFormat()}{' '}
@@ -391,8 +395,8 @@ const SendTokenScreen = () => {
               onPress={handleMax}
               disabled={isSending || loadingTokenPrice}
               style={{
-                paddingHorizontal: 16,
-                paddingVertical: 8,
+                paddingHorizontal: 12,
+                paddingVertical: 4,
                 backgroundColor: colorIcon.colorDefault,
                 borderRadius: 8,
                 opacity: isSending || loadingTokenPrice ? 0.5 : 1,
@@ -424,15 +428,10 @@ const SendTokenScreen = () => {
             </View>
           </View>
           <View style={[styles.inputContainer]}>
-            <ThemedInput
-              multiline
-              noBorder={true}
-              styleContentInput={{ paddingHorizontal: 0 }}
-              style={styles.input}
+            <InputEnter
               disabled={isSending || loadingTokenPrice}
               placeholder='Recipient address'
               autoCapitalize='none'
-              autoCorrect={false}
               value={form.toAddress}
               onChangeText={(text: string) => {
                 onChangeForm({ toAddress: text })
@@ -445,15 +444,14 @@ const SendTokenScreen = () => {
         </View>
         <View>
           <View style={[styles.inputContainer]}>
-            <ThemedInput
-              noBorder
+            <InputEnter
               rightIcon={<ThemedText style={styles.amountLabel}>{selectedToken?.symbol || 'TOKEN'}</ThemedText>}
               leftIcon={<MyImage src={selectedToken?.logo || selectedToken?.thumbnail} style={{ width: 30, height: 30 }} />}
               styleContentInput={{ paddingHorizontal: 0 }}
               disabled={isSending || loadingTokenPrice}
               keyboardType='numeric'
               // inputMode='numeric'
-              style={[styles.input, { fontSize: 20, fontWeight: '700' }]}
+              style={[{ fontSize: 20, fontWeight: '700' }]}
               placeholder='0.00'
               value={form.amountToken}
               onChangeText={(text: string) => {
@@ -468,15 +466,14 @@ const SendTokenScreen = () => {
         {BigNumber(tokenPrice || 0).isGreaterThan(0) && (
           <View>
             <View style={[styles.inputContainer]}>
-              <ThemedInput
-                noBorder
+              <InputEnter
                 rightIcon={<ThemedText style={styles.amountLabel}>{'USD'}</ThemedText>}
                 leftIcon={<MyImage src={images.tokens.usdIcon} style={{ width: 30, height: 30 }} />}
                 styleContentInput={{ paddingHorizontal: 0 }}
                 disabled={isSending || loadingTokenPrice}
                 keyboardType='numeric'
                 // inputMode='numeric'
-                style={[styles.input, { fontSize: 20, fontWeight: '700' }]}
+                style={[{ fontSize: 20, fontWeight: '700' }]}
                 placeholder='$0.00'
                 value={form.amountUsd}
                 onChangeText={(text: string) => {
@@ -493,7 +490,7 @@ const SendTokenScreen = () => {
         {/* Network Fee */}
         <View style={styles.feeCard}>
           <View style={styles.feeRow}>
-            <ThemedText style={styles.feeLabel}>Network Fee</ThemedText>
+            <ThemedText style={styles.feeLabel}>Fee</ThemedText>
             <ThemedText style={styles.feeValue}>
               {loadingEstimatedGas && 'Calculating...'}
               {estimatedGas?.totalFee && BigNumber(estimatedGas.totalFee).toFixed(8)}

@@ -77,7 +77,7 @@ const ThemedInput = ({
       >
         {leftIcon && (
           <TouchableOpacity style={styles.leftIcon} onPress={() => onPressLeftIcon?.()}>
-            <ThemedText>{leftIcon}</ThemedText>
+            {typeof leftIcon === 'string' ? <ThemedText>{leftIcon}</ThemedText> : leftIcon}
           </TouchableOpacity>
         )}
         <TextInput
@@ -103,7 +103,7 @@ const ThemedInput = ({
               onPressRightIcon?.()
             }}
           >
-            <ThemedText>{rightIcon}</ThemedText>
+            {typeof rightIcon === 'string' ? <ThemedText>{rightIcon}</ThemedText> : rightIcon}
           </TouchableOpacity>
         )}
         {disabled && <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 8 }} />}

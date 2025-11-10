@@ -34,16 +34,16 @@ export default function ThemedText({ opacity = 1, style, lightColor, darkColor, 
 
 const styles = StyleSheet.create({
   small: {
-    fontSize: 13,
-    lineHeight: 16,
+    fontSize: 11,
+    lineHeight: 11,
   },
   default: {
     fontSize: 14,
-    lineHeight: 24,
+    lineHeight: 20,
   },
   defaultSemiBold: {
     fontSize: 14,
-    lineHeight: 24,
+    lineHeight: 20,
     fontWeight: '600',
   },
   title: {
