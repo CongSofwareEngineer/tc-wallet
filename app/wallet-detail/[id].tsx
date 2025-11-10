@@ -131,7 +131,7 @@ const WalletDetailScreen = () => {
           {/* Account Name Section */}
           <View style={styles.section}>
             <View style={styles.row}>
-              {!isEditing && <ThemedText style={styles.label}>Account Name</ThemedText>}
+              {!isEditing && <ThemedText style={styles.label}>Name</ThemedText>}
               {isEditing ? (
                 <View style={styles.editRow}>
                   <ThemedInput value={editName} onChangeText={setEditName} style={styles.input} placeholder='Tên tài khoản' />
@@ -156,15 +156,12 @@ const WalletDetailScreen = () => {
           {/* Account Address Section */}
           <View style={styles.section}>
             <View style={styles.row}>
-              <ThemedText style={styles.label}>Account Address</ThemedText>
-              <View style={styles.valueRow}>
+              <ThemedText style={styles.label}>Address</ThemedText>
+              <TouchableOpacity style={styles.valueRow} onPress={() => handleCopy(walletSelected.address, 'Địa chỉ')}>
                 <ThemedText style={styles.addressValue} numberOfLines={1}>
-                  {ellipsisText(walletSelected.address, 4, 6)}
+                  {ellipsisText(walletSelected.address, 4, 6)} <AntDesign name='copy' size={16} color={text.color} />
                 </ThemedText>
-                <TouchableOpacity onPress={() => handleCopy(walletSelected.address, 'Địa chỉ')}>
-                  <AntDesign name='copy' size={16} color={text.color} />
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -187,15 +184,12 @@ const WalletDetailScreen = () => {
               <AntDesign name='right' size={16} color={text.color} />
             </TouchableOpacity>
             {showPrivateKey && (
-              <View style={styles.hiddenContent}>
+              <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(privateKey, 'Private key')}>
                 <ThemedText style={styles.hiddenText}>
-                  {privateKey}{' '}
-                  <TouchableOpacity style={{ paddingHorizontal: 2 }} onPress={() => handleCopy(privateKey, 'Private key')}>
-                    <AntDesign style={{ position: 'relative', top: 4 }} name='copy' size={16} color={text.color} />
-                  </TouchableOpacity>
-                  <View style={{ flex: 1 }} />
+                  {privateKey} <AntDesign style={{ position: 'relative', top: 4, paddingHorizontal: 2 }} name='copy' size={16} color={text.color} />
+                  <View style={{ width: '100%' }} />
                 </ThemedText>
-              </View>
+              </TouchableOpacity>
             )}
           </View>
 
@@ -207,21 +201,19 @@ const WalletDetailScreen = () => {
                 <AntDesign name='right' size={16} color={text.color} />
               </TouchableOpacity>
               {showPassPhrase && (
-                <View style={styles.hiddenContent}>
+                <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(walletSelected.passPhrase, 'Private key')}>
                   <ThemedText style={styles.hiddenText} selectable>
                     {walletSelected.passPhrase}{' '}
-                    <TouchableOpacity style={{ paddingHorizontal: 2 }} onPress={() => handleCopy(walletSelected.passPhrase, 'Private key')}>
-                      <AntDesign style={{ position: 'relative', top: 4 }} name='copy' size={16} color={text.color} />
-                    </TouchableOpacity>
-                    <View style={{ flex: 1 }} />
+                    <AntDesign style={{ position: 'relative', top: 4, paddingHorizontal: 4 }} name='copy' size={14} color={text.color} />
+                    <View style={{ width: '100%' }} />
                   </ThemedText>
-                </View>
+                </TouchableOpacity>
               )}
             </View>
           )}
 
           {/* Delete Account Section */}
-          <View style={[styles.section, styles.dangerSection]}>
+          <View style={[styles.section, styles.dangerSection, { marginBottom: 40 }]}>
             <TouchableOpacity style={styles.row} onPress={handleDeleteAccount}>
               <ThemedText style={[styles.label, styles.dangerText]}>Delete Account</ThemedText>
               <AntDesign name='delete' size={16} color='#EF4444' />

@@ -3,10 +3,11 @@ import BigNumber from 'bignumber.js'
 import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useMemo, useState } from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from 'react-native'
-import { encodeFunctionData, erc20Abi, zeroAddress } from 'viem'
+import { Platform, ScrollView, TouchableOpacity, View } from 'react-native'
+import { encodeFunctionData, erc20Abi } from 'viem'
 
 import HeaderScreen from '@/components/Header'
+import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import MyImage from '@/components/MyImage'
 import QrScan from '@/components/QrScan'
 import ThemedInput from '@/components/UI/ThemedInput'
@@ -18,6 +19,7 @@ import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useEstimateGas from '@/hooks/react-query/useEastimse'
 import useTokenPrice from '@/hooks/react-query/useTokenPrice'
 import useChains from '@/hooks/useChains'
+import useErrorWeb3 from '@/hooks/useErrorWeb3'
 import useMode from '@/hooks/useMode'
 import useSheet from '@/hooks/useSheet'
 import useTheme from '@/hooks/useTheme'
@@ -44,6 +46,7 @@ const SendTokenScreen = () => {
   const { text, colorIcon } = useTheme()
   const styles = createStyles(isDark)
   const { chainCurrent } = useChains()
+  const { getError } = useErrorWeb3()
   const { wallet, wallets, indexWalletActive } = useWallets()
   const { data: tokens, refetch: refetchBalanceTokens } = useBalanceToken()
   const { openSheet, closeSheet } = useSheet()
@@ -97,12 +100,8 @@ const SendTokenScreen = () => {
   }, [selectedToken, wallet])
 
   const { data: estimatedGas, isLoading: loadingEstimatedGas, refetch: refetchEstimatedGas } = useEstimateGas(rawTransaction)
-  const { data: tokenPrice, isLoading: loadingTokenPrice } = useTokenPrice(
-    isTokenNative(selectedToken?.token_address) ? selectedToken?.symbol : selectedToken?.token_address || ''
-  )
+  const { data: tokenPrice, isLoading: loadingTokenPrice } = useTokenPrice(isNativeToken ? selectedToken?.symbol : selectedToken?.token_address)
   const { data: balanceNative } = useBalanceNative(!isNativeToken)
-  const { data: tokenPriceNative, isLoading: loadingTokenPriceNative } = useTokenPrice(isTokenNative(selectedToken?.token_address) ? '' : zeroAddress)
-  console.log({ balanceNative, rawTransaction, selectedToken })
 
   const isErrorForm = useMemo(() => {
     if (loadingEstimatedGas) {
@@ -138,49 +137,6 @@ const SendTokenScreen = () => {
       }
     }
   }, [tokens, addressToken])
-
-  const handleSelectToken = () => {
-    openSheet({
-      isOpen: true,
-      content: (
-        <View>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn token
-          </ThemedText>
-          <ScrollView style={{ maxHeight: 400 }}>
-            {(tokens || []).map((t) => (
-              <TouchableOpacity
-                key={t.token_address}
-                style={styles.tokenItem}
-                onPress={() => {
-                  setSelectedToken(t)
-                  // auto convert amount between fields
-                  closeSheet()
-                }}
-              >
-                {t.logo || t.thumbnail ? (
-                  <Image source={{ uri: t.logo || t.thumbnail }} style={styles.tokenIcon} />
-                ) : (
-                  <View style={[styles.tokenIcon, { alignItems: 'center', justifyContent: 'center' }]}>
-                    <AntDesign name='database' size={20} color={text.color} />
-                  </View>
-                )}
-                <View style={styles.tokenItemContent}>
-                  <ThemedText style={styles.tokenItemSymbol}>{t.symbol}</ThemedText>
-                  <ThemedText style={styles.tokenItemBalance}>
-                    {BigNumber(t.balance_formatted || 0)
-                      .decimalPlaces(6, BigNumber.ROUND_DOWN)
-                      .toFormat()}
-                  </ThemedText>
-                </View>
-                <ThemedText style={styles.tokenItemName}>{t.name}</ThemedText>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      ),
-    })
-  }
 
   const handlePickFromMyAccounts = () => {
     openSheet({
@@ -364,208 +320,213 @@ const SendTokenScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoiding>
       <HeaderScreen title='Send Token' />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps='handled'>
-          {/* From Wallet Section */}
-          <View style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <ThemedText style={styles.sectionLabel}>FROM</ThemedText>
-              <TouchableOpacity
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps='handled'
+        automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
+        bounces={false}
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* From Wallet Section */}
+        <View style={styles.card}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <ThemedText style={styles.sectionLabel}>FROM</ThemedText>
+            <TouchableOpacity
+              style={[
+                styles.sendButton,
+                (loadingTokenPrice || !form?.toAddress || !selectedToken || !form?.amountToken || isSending) && styles.sendButtonDisabled,
+              ]}
+              disabled={isErrorForm}
+              onPress={handleSend}
+            >
+              <ThemedText
                 style={[
-                  styles.sendButton,
-                  (loadingTokenPrice || !form?.toAddress || !selectedToken || !form?.amountToken || isSending) && styles.sendButtonDisabled,
+                  styles.sendButtonText,
+                  (loadingTokenPrice || !form?.toAddress || !selectedToken || !form?.amountToken || isSending) && styles.sendButtonTextDisabled,
                 ]}
-                disabled={isErrorForm}
-                onPress={handleSend}
               >
-                <ThemedText
-                  style={[
-                    styles.sendButtonText,
-                    (loadingTokenPrice || !form?.toAddress || !selectedToken || !form?.amountToken || isSending) && styles.sendButtonTextDisabled,
-                  ]}
-                >
-                  {isSending ? 'Sending…' : 'Send'}
-                </ThemedText>
-              </TouchableOpacity>
+                {isSending ? 'Sending…' : 'Send'}
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            {wallet?.avatar ? (
+              <Image source={{ uri: wallet?.avatar }} style={styles.avatar} />
+            ) : (
+              <View style={[styles.avatar, { backgroundColor: getRadomColor(wallet?.address) }]} />
+            )}
+
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <ThemedText style={styles.walletName}>{wallet?.name || `Account ${indexWalletActive + 1}`}</ThemedText>
+              <ThemedText style={styles.walletAddress}>{ellipsisText(wallet?.address || '', 6, 6)}</ThemedText>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-              {wallet?.avatar ? (
-                <Image source={{ uri: wallet?.avatar }} style={styles.avatar} />
-              ) : (
-                <View style={[styles.avatar, { backgroundColor: getRadomColor(wallet?.address) }]} />
-              )}
+            {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent.iconChain }} style={styles.chainIcon} />}
+          </View>
 
-              <View style={{ flex: 1, marginLeft: 12 }}>
-                <ThemedText style={styles.walletName}>{wallet?.name || `Account ${indexWalletActive + 1}`}</ThemedText>
-                <ThemedText style={styles.walletAddress}>{ellipsisText(wallet?.address || '', 6, 6)}</ThemedText>
-              </View>
-
-              {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent.iconChain }} style={styles.chainIcon} />}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingTop: 8,
+              borderTopWidth: 1,
+              borderTopColor: isDark ? '#374151' : '#E5E7EB',
+            }}
+          >
+            <View>
+              <ThemedText style={{ fontSize: 12, opacity: 0.6, marginBottom: 4 }}>Balance</ThemedText>
+              <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
+                {BigNumber(selectedToken?.balance_formatted || 0)
+                  .decimalPlaces(8, BigNumber.ROUND_DOWN)
+                  .toFormat()}{' '}
+                {selectedToken?.symbol || ''}
+              </ThemedText>
             </View>
-
-            <View
+            <TouchableOpacity
+              onPress={handleMax}
+              disabled={isSending || loadingTokenPrice}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingTop: 8,
-                borderTopWidth: 1,
-                borderTopColor: isDark ? '#374151' : '#E5E7EB',
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                backgroundColor: colorIcon.colorDefault,
+                borderRadius: 8,
+                opacity: isSending || loadingTokenPrice ? 0.5 : 1,
               }}
             >
-              <View>
-                <ThemedText style={{ fontSize: 12, opacity: 0.6, marginBottom: 4 }}>Balance</ThemedText>
-                <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
-                  {BigNumber(selectedToken?.balance_formatted || 0)
-                    .decimalPlaces(8, BigNumber.ROUND_DOWN)
-                    .toFormat()}{' '}
-                  {selectedToken?.symbol || ''}
-                </ThemedText>
-              </View>
+              <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 14 }}>MAX</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* To Address Section */}
+        {/* <View style={styles.card}> */}
+        <View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <ThemedText style={styles.sectionLabel}>To</ThemedText>
+            <View style={styles.inputActions}>
               <TouchableOpacity
-                onPress={handleMax}
-                disabled={isSending || loadingTokenPrice}
-                style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                  backgroundColor: colorIcon.colorDefault,
-                  borderRadius: 8,
-                  opacity: isSending || loadingTokenPrice ? 0.5 : 1,
-                }}
+                onPress={handleScanAddress}
+                style={[styles.iconButton, styles.iconButtonActive, { backgroundColor: colorIcon.colorDefault }]}
               >
-                <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 14 }}>MAX</ThemedText>
+                <AntDesign name='scan' size={18} color={'#FFFFFF'} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handlePickFromMyAccounts}
+                style={[styles.iconButton, styles.iconButtonActive, { backgroundColor: colorIcon.colorDefault }]}
+              >
+                <AntDesign name='user' size={18} color={'#FFFFFF'} />
               </TouchableOpacity>
             </View>
           </View>
-
-          {/* To Address Section */}
-          {/* <View style={styles.card}> */}
-          <View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <ThemedText style={styles.sectionLabel}>To</ThemedText>
-              <View style={styles.inputActions}>
-                <TouchableOpacity
-                  onPress={handleScanAddress}
-                  style={[styles.iconButton, styles.iconButtonActive, { backgroundColor: colorIcon.colorDefault }]}
-                >
-                  <AntDesign name='scan' size={18} color={'#FFFFFF'} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handlePickFromMyAccounts}
-                  style={[styles.iconButton, styles.iconButtonActive, { backgroundColor: colorIcon.colorDefault }]}
-                >
-                  <AntDesign name='user' size={18} color={'#FFFFFF'} />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={[styles.inputContainer]}>
-              <ThemedInput
-                noBorder={true}
-                styleContentInput={{ paddingHorizontal: 0 }}
-                style={styles.input}
-                disabled={isSending || loadingTokenPrice}
-                placeholder='Recipient address'
-                autoCapitalize='none'
-                autoCorrect={false}
-                value={form.toAddress}
-                onChangeText={(text: string) => {
-                  onChangeForm({ toAddress: text })
-                }}
-              />
-            </View>
-            <ThemedText type='small' style={{ color: COLORS.red, marginTop: 5 }}>
-              {formError?.toAddress}
-            </ThemedText>
+          <View style={[styles.inputContainer]}>
+            <ThemedInput
+              noBorder={true}
+              styleContentInput={{ paddingHorizontal: 0 }}
+              style={styles.input}
+              disabled={isSending || loadingTokenPrice}
+              placeholder='Recipient address'
+              autoCapitalize='none'
+              autoCorrect={false}
+              value={form.toAddress}
+              onChangeText={(text: string) => {
+                onChangeForm({ toAddress: text })
+              }}
+            />
           </View>
+          <ThemedText type='small' style={{ color: COLORS.red, marginTop: 5 }}>
+            {formError?.toAddress}
+          </ThemedText>
+        </View>
+        <View>
+          <View style={[styles.inputContainer]}>
+            <ThemedInput
+              noBorder
+              rightIcon={<ThemedText style={styles.amountLabel}>{selectedToken?.symbol || 'TOKEN'}</ThemedText>}
+              leftIcon={<MyImage src={selectedToken?.logo || selectedToken?.thumbnail} style={{ width: 30, height: 30 }} />}
+              styleContentInput={{ paddingHorizontal: 0 }}
+              disabled={isSending || loadingTokenPrice}
+              keyboardType='numeric'
+              // inputMode='numeric'
+              style={[styles.input, { fontSize: 20, fontWeight: '700' }]}
+              placeholder='0.00'
+              value={form.amountToken}
+              onChangeText={(text: string) => {
+                onChangeForm({ amountToken: text.toString() })
+              }}
+            />
+          </View>
+          <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5, opacity: formError?.amountToken ? 1 : 0 }}>
+            {formError?.amountToken || 'non'}
+          </ThemedText>
+        </View>
+        {BigNumber(tokenPrice || 0).isGreaterThan(0) && (
           <View>
             <View style={[styles.inputContainer]}>
               <ThemedInput
                 noBorder
-                rightIcon={<ThemedText style={styles.amountLabel}>{selectedToken?.symbol || 'TOKEN'}</ThemedText>}
-                leftIcon={<MyImage src={selectedToken?.logo || selectedToken?.thumbnail} style={{ width: 30, height: 30 }} />}
+                rightIcon={<ThemedText style={styles.amountLabel}>{'USD'}</ThemedText>}
+                leftIcon={<MyImage src={images.tokens.usdIcon} style={{ width: 30, height: 30 }} />}
                 styleContentInput={{ paddingHorizontal: 0 }}
                 disabled={isSending || loadingTokenPrice}
                 keyboardType='numeric'
                 // inputMode='numeric'
                 style={[styles.input, { fontSize: 20, fontWeight: '700' }]}
-                placeholder='0.00'
-                value={form.amountToken}
+                placeholder='$0.00'
+                value={form.amountUsd}
                 onChangeText={(text: string) => {
-                  onChangeForm({ amountToken: text.toString() })
+                  onChangeForm({ amountUsd: text.toString() })
                 }}
               />
             </View>
-            <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5, opacity: formError?.amountToken ? 1 : 0 }}>
-              {formError?.amountToken || 'non'}
+            <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5, opacity: formError?.amountUsd ? 1 : 0 }}>
+              {formError?.amountUsd || 'non'}
             </ThemedText>
           </View>
-          {BigNumber(tokenPrice || 0).isGreaterThan(0) && (
-            <View>
-              <View style={[styles.inputContainer]}>
-                <ThemedInput
-                  noBorder
-                  rightIcon={<ThemedText style={styles.amountLabel}>{'USD'}</ThemedText>}
-                  leftIcon={<MyImage src={images.tokens.usdIcon} style={{ width: 30, height: 30 }} />}
-                  styleContentInput={{ paddingHorizontal: 0 }}
-                  disabled={isSending || loadingTokenPrice}
-                  keyboardType='numeric'
-                  // inputMode='numeric'
-                  style={[styles.input, { fontSize: 20, fontWeight: '700' }]}
-                  placeholder='$0.00'
-                  value={form.amountUsd}
-                  onChangeText={(text: string) => {
-                    onChangeForm({ amountUsd: text.toString() })
-                  }}
-                />
-              </View>
-              <ThemedText type='small' style={{ color: COLORS.red, marginBottom: 5, marginTop: 5, opacity: formError?.amountUsd ? 1 : 0 }}>
-                {formError?.amountUsd || 'non'}
-              </ThemedText>
-            </View>
-          )}
+        )}
 
-          {/* Network Fee */}
-          <View style={styles.feeCard}>
-            <View style={styles.feeRow}>
-              <ThemedText style={styles.feeLabel}>Network Fee</ThemedText>
-              <ThemedText style={styles.feeValue}>
-                {loadingEstimatedGas && 'Calculating...'}
-                {estimatedGas?.totalFee && BigNumber(estimatedGas.totalFee).toFixed(8)}
-                {estimatedGas?.error} {!loadingEstimatedGas && chainCurrent?.nativeCurrency.symbol}
-                {/* {feeInfo.nativeSymbol} */}
-                {/* {feeInfo.gasFeeUsd !== '—' ? ` (~$${feeInfo.gasFeeUsd})` : ''} */}
-              </ThemedText>
-            </View>
+        {/* Network Fee */}
+        <View style={styles.feeCard}>
+          <View style={styles.feeRow}>
+            <ThemedText style={styles.feeLabel}>Network Fee</ThemedText>
+            <ThemedText style={styles.feeValue}>
+              {loadingEstimatedGas && 'Calculating...'}
+              {estimatedGas?.totalFee && BigNumber(estimatedGas.totalFee).toFixed(8)}
+              {estimatedGas?.error && getError(estimatedGas.error)} {!loadingEstimatedGas && chainCurrent?.nativeCurrency.symbol}
+              {/* {feeInfo.nativeSymbol} */}
+              {/* {feeInfo.gasFeeUsd !== '—' ? ` (~$${feeInfo.gasFeeUsd})` : ''} */}
+            </ThemedText>
           </View>
+        </View>
 
-          {/* Transaction Result */}
-          {!!txHash && (
-            <View style={styles.resultCard}>
-              <ThemedText style={[styles.resultTitle, { color: isDark ? '#10B981' : '#047857' }]}>Transaction Successful</ThemedText>
-              <ThemedText selectable style={[styles.resultText, { color: isDark ? '#10B981' : '#065F46' }]}>
-                {txHash}{' '}
-                <TouchableOpacity onPress={() => copyToClipboard(txHash)}>
-                  <AntDesign style={{ position: 'relative', top: 4 }} name='copy' size={16} color={isDark ? '#10B981' : '#065F46'} />
-                </TouchableOpacity>
-                <View style={{ flex: 1 }} />
-              </ThemedText>
-            </View>
-          )}
+        {/* Transaction Result */}
+        {!!txHash && (
+          <View style={styles.resultCard}>
+            <ThemedText style={[styles.resultTitle, { color: isDark ? '#10B981' : '#047857' }]}>Transaction Successful</ThemedText>
+            <ThemedText selectable style={[styles.resultText, { color: isDark ? '#10B981' : '#065F46' }]}>
+              {txHash}{' '}
+              <TouchableOpacity onPress={() => copyToClipboard(txHash)}>
+                <AntDesign style={{ position: 'relative', top: 4 }} name='copy' size={16} color={isDark ? '#10B981' : '#065F46'} />
+              </TouchableOpacity>
+              <View style={{ flex: 1 }} />
+            </ThemedText>
+          </View>
+        )}
 
-          {!!txError && (
-            <View style={styles.errorCard}>
-              <ThemedText style={[styles.resultTitle, { color: isDark ? '#EF4444' : '#DC2626' }]}>Transaction Failed</ThemedText>
-              <ThemedText selectable style={[styles.resultText, { color: isDark ? '#DC2626' : '#7F1D1D' }]}>
-                {txError}
-              </ThemedText>
-            </View>
-          )}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </View>
+        {!!txError && (
+          <View style={styles.errorCard}>
+            <ThemedText style={[styles.resultTitle, { color: isDark ? '#EF4444' : '#DC2626' }]}>Transaction Failed</ThemedText>
+            <ThemedText selectable style={[styles.resultText, { color: isDark ? '#DC2626' : '#7F1D1D' }]}>
+              {txError}
+            </ThemedText>
+          </View>
+        )}
+      </ScrollView>
+    </KeyboardAvoiding>
   )
 }
 

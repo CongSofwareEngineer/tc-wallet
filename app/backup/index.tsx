@@ -2,9 +2,10 @@ import { Ionicons } from '@expo/vector-icons'
 import { EncodingType, StorageAccessFramework } from 'expo-file-system/legacy'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { Animated, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import { Animated, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
+import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import ThemedText from '@/components/UI/ThemedText'
 import { APP_CONFIG } from '@/constants/appConfig'
 import { useAlert } from '@/hooks/useAlert'
@@ -173,12 +174,7 @@ const BackupScreen = () => {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-      enabled
-    >
+    <KeyboardAvoiding>
       <HeaderScreen title='Backup Wallet' />
 
       <ScrollView
@@ -254,7 +250,7 @@ const BackupScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAvoiding>
   )
 }
 

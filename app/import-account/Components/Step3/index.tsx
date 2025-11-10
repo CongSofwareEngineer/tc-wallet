@@ -124,6 +124,7 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
           <ThemedText type='defaultSemiBold'>Private Key (64 hex)</ThemedText>
           <View style={[styles.seedBox, { borderColor: colors.gray1 }]}>
             <TextInput
+              multiline
               style={[styles.singleLine, { color: text.color }]}
               placeholder='Enter your private key...'
               placeholderTextColor={colors.gray2}
@@ -169,12 +170,7 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
           <ThemedText type='defaultSemiBold'>Import Wallet</ThemedText>
         </ThemeTouchableOpacity>
       </LinearGradient> */}
-      <ThemeTouchableOpacity
-        disabled={!accepted}
-        style={[styles.importButton, { backgroundColor: 'transparent' }]}
-        onPress={handleSubmit}
-        loading={isImporting}
-      >
+      <ThemeTouchableOpacity disabled={!accepted || !isPkValid} style={[styles.importButton]} onPress={handleSubmit} loading={isImporting}>
         <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>
           Import Wallet
         </ThemedText>

@@ -25,7 +25,7 @@ const Step1 = ({ handleCreateWallet, handleImportWalletWithPrivateKey, handleImp
   return (
     <View style={[styles.containerContent, styles[`containerContent${mode}`], { width: '100%' }]}>
       <View style={{ alignItems: 'center', gap: GAP_DEFAULT.Gap12 }}>
-        <ThemedText type='subtitle'>Import Account</ThemedText>
+        {/* <ThemedText type='subtitle'>Import Account</ThemedText> */}
         <View style={styles.containerLogo}>
           <AntDesign name='wallet' size={30} color={text.color} />
         </View>

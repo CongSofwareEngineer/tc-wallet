@@ -9,6 +9,7 @@ import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { zeroAddress } from 'viem'
 
 import HeaderScreen from '@/components/Header'
+import { IsIos } from '@/constants/app'
 import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
@@ -55,7 +56,7 @@ const TokenDetailScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, IsIos && { flex: 1 }]}>
       <HeaderScreen title='Token Detail' />
       {/* Token Image & Name */}
       <View style={[styles.header, { marginTop: 16 }]}>
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   container: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: '#181A20',
     padding: PADDING_DEFAULT.Padding16,
     paddingTop: 0,

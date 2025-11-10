@@ -87,6 +87,8 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
           if (currentSwipeable.current) {
             currentSwipeable.current = false
           } else {
+            console.log({ item })
+
             router.push(`/token-detail/${item.token_address}`)
           }
         }}

@@ -21,7 +21,7 @@ export type ThemedInputProps = {
   ref?: any
   noBorder?: boolean
   disabled?: boolean
-  styleContentInput?:StyleProp<ViewStyle>
+  styleContentInput?: StyleProp<ViewStyle>
 } & TextInputProps
 
 const ThemedInput = ({
@@ -43,10 +43,38 @@ const ThemedInput = ({
   const { background, text } = useTheme()
   const [isPassword, setIsPassword] = useState(props?.secureTextEntry)
 
+  const onChangeText = (text: string) => {
+    if (props?.keyboardType === 'numeric' || props?.inputMode === 'numeric') {
+      text = text.replaceAll(',', '.')
+      // Remove any non-numeric characters except for a single decimal point
+      const numericText = text.replace(/[^0-9.]/g, '')
+      text = numericText
+
+      const firstDotIndex = text.indexOf('.')
+
+      if (firstDotIndex !== -1) {
+        // Nếu có dấu chấm, chỉ giữ lại dấu chấm đầu tiên và xóa các dấu chấm sau
+        text = text.substring(0, firstDotIndex + 1) + text.substring(firstDotIndex + 1).replace(/\./g, '')
+      }
+
+      if (text?.startsWith('.') === true) {
+        text = ''
+      }
+    }
+    props?.onChangeText?.(text)
+  }
+
   return (
     <View style={[styles.container]}>
       {label && <ThemedText style={styles.label}>{label}</ThemedText>}
-      <View style={[styles.containerSub, { width: '100%', backgroundColor: background.backgroundInput }, noBorder && { borderWidth: 0 }, styleContentInput]}>
+      <View
+        style={[
+          styles.containerSub,
+          { width: '100%', backgroundColor: background.backgroundInput },
+          noBorder && { borderWidth: 0 },
+          styleContentInput,
+        ]}
+      >
         {leftIcon && (
           <TouchableOpacity style={styles.leftIcon} onPress={() => onPressLeftIcon?.()}>
             <ThemedText>{leftIcon}</ThemedText>
@@ -57,14 +85,11 @@ const ThemedInput = ({
           className={stylesCss.input}
           placeholderTextColor={text.colorPlaceholder}
           style={[
-            {
-              $$css: true,
-              _: 'input',
-            },
             { opacity: disabled ? 0.5 : 1, width: '100%', backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 },
             style,
           ]}
           {...props}
+          onChangeText={onChangeText}
           secureTextEntry={isPassword}
         />
 

@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native'
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
+    paddingVertical: 20,
   },
   header: {
     alignItems: 'center',
@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   addressValue: {
-    fontSize: 16,
     color: '#9CA3AF',
     marginRight: 8,
   },

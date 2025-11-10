@@ -18,6 +18,7 @@
   },
   "userName": "Tên người dùng",
   "password": "Mật khẩu",
+  "somethingWentWrong": "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
   "textPopular": {
     "userName": "Tên người dùng",
     "password": "Mật khẩu",
@@ -46,6 +47,13 @@
     "emptyField": "Trường này không được để trống",
     "invalidInput": "Đầu vào không hợp lệ",
     "passwordAgain": "Mật khẩu không khớp, vui lòng nhập lại"
+  },
+  "errorWeb3": {
+    "transactionUnderpriced": "Giá giao dịch quá thấp.",
+    "transactionTimeout": "Giao dịch đã hết giờ chờ.",
+    "userRejected": "Người dùng đã từ chối giao dịch này.",
+    "insufficientFunds": "Số dư không đủ",
+    "wrongNetwork": "Mạng lưới không hợp lệ. Vui lòng chuyển đến mạng lưới hỗ trợ."
   },
   "placeholder": {
     "enterUserName": "Nhập tên người dùng",

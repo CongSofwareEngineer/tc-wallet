@@ -1,7 +1,7 @@
 import React from 'react'
 
-import ImportAccountPage from './page'
+import ImportAccountScreen from '.'
 
 export default function ImportAccountLayout() {
-  return <ImportAccountPage />
+  return <ImportAccountScreen />
 }
