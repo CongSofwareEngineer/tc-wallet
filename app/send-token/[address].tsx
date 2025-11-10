@@ -413,18 +413,19 @@ const SendTokenScreen = () => {
                 onPress={handleScanAddress}
                 style={[styles.iconButton, styles.iconButtonActive, { backgroundColor: colorIcon.colorDefault }]}
               >
-                <AntDesign name='scan' size={18} color={'#FFFFFF'} />
+                <AntDesign name='scan' size={14} color={'#FFFFFF'} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handlePickFromMyAccounts}
                 style={[styles.iconButton, styles.iconButtonActive, { backgroundColor: colorIcon.colorDefault }]}
               >
-                <AntDesign name='user' size={18} color={'#FFFFFF'} />
+                <AntDesign name='user' size={14} color={'#FFFFFF'} />
               </TouchableOpacity>
             </View>
           </View>
           <View style={[styles.inputContainer]}>
             <ThemedInput
+              multiline
               noBorder={true}
               styleContentInput={{ paddingHorizontal: 0 }}
               style={styles.input}

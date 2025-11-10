@@ -110,8 +110,8 @@ export const createStyles = (isDark: boolean) =>
       gap: 8,
     },
     iconButton: {
-      width: 36,
-      height: 36,
+      width: 32,
+      height: 32,
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: 10,

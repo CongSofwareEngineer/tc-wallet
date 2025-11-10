@@ -87,13 +87,10 @@ const QrScan = ({ type = 'connect', onScanned }: QrScanProps) => {
 
   if (!permission?.granted) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ThemedText style={styles.message}>Ứng dụng cần quyền truy cập camera để quét mã QR.</ThemedText>
-        <ThemeTouchableOpacity type='primary' onPress={requestPermission} style={styles.button}>
-          <ThemedText style={styles.text}>Cấp quyền Camera</ThemedText>
-        </ThemeTouchableOpacity>
-        <ThemeTouchableOpacity type='text' onPress={() => closeSheet()}>
-          <ThemedText>Back</ThemedText>
+        <ThemeTouchableOpacity type='text' onPress={requestPermission} style={styles.button}>
+          <ThemedText style={[styles.text]}>Cấp quyền Camera</ThemedText>
         </ThemeTouchableOpacity>
       </View>
     )
@@ -168,10 +165,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   button: {
-    width: 80,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0,0,0,0.3)',
     alignItems: 'center',
     justifyContent: 'center',
   },

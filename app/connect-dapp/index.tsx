@@ -73,9 +73,6 @@ const ConnectDAppScreen = ({ type = 'connect' }: Props) => {
         <TouchableOpacity style={styles.button} onPress={requestPermission}>
           <ThemedText style={styles.text}>Cấp quyền Camera</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.back()}>
-          <ThemedText>{translate('common.back')}</ThemedText>
-        </TouchableOpacity>
       </View>
     )
   }
