@@ -44,31 +44,7 @@ module.exports = defineConfig([
       "react/self-closing-comp": "warn",
       "unused-imports/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "warn",
-      "import/order": [
-        "warn",
-        {
-          groups: [
-            "type",
-            "builtin",
-            "object",
-            "external",
-            "internal",
-            "parent",
-            "sibling",
-            "index",
-          ],
 
-          pathGroups: [
-            {
-              pattern: "~/**",
-              group: "external",
-              position: "after",
-            },
-          ],
-
-          "newlines-between": "always",
-        },
-      ],
       // "padding-line-between-statements": [
       //   "warn",
       //   {

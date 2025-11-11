@@ -34,8 +34,8 @@ export default function ThemedText({ opacity = 1, style, lightColor, darkColor, 
 
 const styles = StyleSheet.create({
   small: {
-    fontSize: 11,
-    lineHeight: 11,
+    fontSize: 12,
+    lineHeight: 16,
   },
   default: {
     fontSize: 14,

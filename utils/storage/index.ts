@@ -1,9 +1,7 @@
 import { MMKV } from 'react-native-mmkv'
 
-import { SECURITY_CONFIG } from '@/constants/appConfig'
-
 const create = () => {
-  const storage = new MMKV({ id: 'LOCAL_STORAGE', encryptionKey: process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE || SECURITY_CONFIG.defaultKeyEncode })
+  const storage = new MMKV({ id: 'LOCAL_STORAGE' })
 
   return storage
 }

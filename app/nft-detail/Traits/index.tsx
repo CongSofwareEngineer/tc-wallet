@@ -122,9 +122,7 @@ const Traits = ({ nft }: Props) => {
     )
   }
 
-  return (
-    traits &&
-    traits?.length > 0 &&
+  return traits && traits?.length > 0 ? (
     traits?.map((item, index: number) => {
       return (
         <View key={`traits-${index}`} style={styles.attributeItem}>
@@ -135,6 +133,10 @@ const Traits = ({ nft }: Props) => {
         </View>
       )
     })
+  ) : (
+    <ThemedText type='small' style={{ fontStyle: 'italic', opacity: 0.6 }}>
+      No Attributes
+    </ThemedText>
   )
 }
 

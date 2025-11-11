@@ -46,8 +46,6 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   })
 
-  // Content translateY removed as header is now absolute
-
   const renderChainSelected = () => {
     return (
       <View>

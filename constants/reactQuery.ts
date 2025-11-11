@@ -8,4 +8,6 @@ export enum KEY_REACT_QUERY {
   getNftMetadataEVM = 'getNftMetadataEVM',
   getEstimateGas = 'getEstimateGas',
   getBalanceNative = 'getBalanceNative',
+  getABIContract = 'getABIContract',
+  getDecodeTx = 'getDecodeTx',
 }
