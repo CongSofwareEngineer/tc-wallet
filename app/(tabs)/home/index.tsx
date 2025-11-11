@@ -14,6 +14,7 @@ import useChains from '@/hooks/useChains'
 import useWallets from '@/hooks/useWallets'
 import { ellipsisText } from '@/utils/functions'
 
+import useTheme from '@/hooks/useTheme'
 import Nfts from './Components/Nfts'
 import Tokens from './Components/Tokens'
 import { styles } from './styles'
@@ -25,6 +26,7 @@ const HEIGHT_HEADER_SCROLL = 200
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('Tokens')
   const router = useRouter()
+  const { background } = useTheme()
   const { chainCurrent } = useChains()
   const { wallet } = useWallets()
   const { totalUSD } = useBalanceToken()
@@ -65,7 +67,7 @@ export default function HomeScreen() {
       <Animated.View
         style={[
           { transform: [{ translateY: headerTranslateY }] },
-          { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, padding: PADDING_DEFAULT.Padding16, paddingBottom: 0 },
+          { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1, padding: PADDING_DEFAULT.Padding16, paddingBottom: 0 },
         ]}
         onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
       >
@@ -120,7 +122,7 @@ export default function HomeScreen() {
 
         {/* Network Filter + Tabs inside header */}
         <View>
-          <View style={[styles.tabsContainer, { backgroundColor: '#0A0A0A' }]}>
+          <View style={[styles.tabsContainer, { backgroundColor: background.background }]}>
             {['Tokens', 'NFTs'].map((tab) => (
               <ThemeTouchableOpacity
                 type='text'
@@ -134,7 +136,7 @@ export default function HomeScreen() {
               </ThemeTouchableOpacity>
             ))}
           </View>
-          <View style={[{ backgroundColor: '#0A0A0A', height: 12, width: '100%' }]} />
+          <View style={[{ backgroundColor: background.background, height: 12, width: '100%' }]} />
 
           {/* {renderChainSelected()} */}
         </View>

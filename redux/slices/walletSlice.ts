@@ -17,10 +17,10 @@ const walletSlice = createSlice({
   initialState,
   reducers: {
     setWallets(state, action: PayloadAction<Wallet[]>) {
-      state.wallets = action.payload
-      // auto set current wallet from default if any
       const walletDefault = action.payload.find((w) => w.isDefault)
-      state.wallet = walletDefault ?? action.payload[0] ?? null
+
+      state.wallets = action.payload
+      state.wallet = walletDefault ?? action.payload[0]
     },
     setWallet(state, action: PayloadAction<{ wallet: Wallet; index: number }>) {
       const { wallet, index } = action.payload

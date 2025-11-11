@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 
-import { COLORS } from '@/constants/style'
+import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 
 export const getStyles = (isDark: boolean) => {
   const backgroundColor = isDark ? COLORS.black1 : '#fff'
@@ -16,7 +16,7 @@ export const getStyles = (isDark: boolean) => {
     },
     content: {
       flex: 1,
-      padding: 16,
+      padding: PADDING_DEFAULT.Padding16,
     },
     inputContainer: {
       marginBottom: 20,
@@ -61,8 +61,6 @@ export const getStyles = (isDark: boolean) => {
     },
     bottomContainer: {
       padding: 16,
-      borderTopWidth: 1,
-      borderTopColor: borderColor,
       backgroundColor,
     },
     importButton: {

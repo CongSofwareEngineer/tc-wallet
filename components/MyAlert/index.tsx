@@ -53,11 +53,12 @@ const MyAlert = () => {
         ]).start(() => {
           dispatch(closeAlert())
         })
-      }, alert.duration || 2000)
+      }, alert.duration || 1000)
 
       return () => clearTimeout(timer)
     }
   }, [alert, dispatch, fadeAnim, translateYAnim])
+  console.log({ alert })
 
   if (!alert?.text) {
     return null

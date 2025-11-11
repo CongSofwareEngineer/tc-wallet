@@ -10,13 +10,13 @@ export const useAlert = () => {
 
   const showAlert = useCallback(
     (alert: MyAlert) => {
-      dispatch(openAlert({ duration: 3000, ...alert }))
+      dispatch(openAlert({ duration: 1000, ...alert }))
     },
     [dispatch]
   )
 
   const showSuccess = useCallback(
-    (text: string, duration = 3000) => {
+    (text: string, duration = 1000) => {
       if (IsIos) {
         Alert.alert(text, text)
         return
@@ -44,7 +44,7 @@ export const useAlert = () => {
   )
 
   const showInfo = useCallback(
-    (text: string, duration = 3000) => {
+    (text: string, duration = 1000) => {
       dispatch(
         openAlert({
           text,

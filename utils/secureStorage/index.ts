@@ -49,6 +49,15 @@ export const getKeyEncode = async () => {
   }
 }
 
+export const restoreKeyEncode = async (encryptionKeyDefault: string) => {
+  const isSupportSecure = await checkSupportSecure()
+  if (isSupportSecure) {
+    await SecureStore.setItemAsync(KEY_STORAGE.keyEncrypt, encryptionKeyDefault, {
+      authenticationPrompt: `Auth require ${KEY_STORAGE.keyEncrypt}`,
+    })
+  }
+}
+
 const create = async () => {
   const encryptionKey = await getKeyEncode()
 

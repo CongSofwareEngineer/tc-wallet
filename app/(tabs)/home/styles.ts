@@ -5,7 +5,6 @@ import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
     padding: PADDING_DEFAULT.Padding16,
   },
   header: {
@@ -13,7 +12,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingBottom: 5,
-    backgroundColor: '#0A0A0A',
   },
   addressContainer: {
     gap: 8,

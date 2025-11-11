@@ -58,110 +58,116 @@ const TokenDetailScreen = () => {
   return (
     <View style={[styles.container, IsIos && { flex: 1 }]}>
       <HeaderScreen title='Token Detail' />
-      {/* Token Image & Name */}
-      <View style={[styles.header, { marginTop: 16 }]}>
-        <Image source={{ uri: tokenCurrent.logo }} style={styles.tokenImage} />
-        <View style={{ marginLeft: 16 }}>
-          <Text style={styles.tokenName}>{tokenCurrent.name}</Text>
-          <View style={styles.verifiedRow}>
-            <Text style={styles.tokenSymbol}>{tokenCurrent.symbol}</Text>
-            {tokenCurrent.verified_contract && (
-              <View style={styles.verifiedBadge}>
-                <AntDesign name='check-circle' size={14} color='#00D09C' />
-                <Text style={styles.verifiedText}>Verified</Text>
+      <View
+        style={{
+          padding: PADDING_DEFAULT.Padding16,
+        }}
+      >
+        {/* Token Image & Name */}
+        <View style={[styles.header, { marginTop: 16 }]}>
+          <Image source={{ uri: tokenCurrent.logo }} style={styles.tokenImage} />
+          <View style={{ marginLeft: 16 }}>
+            <Text style={styles.tokenName}>{tokenCurrent.name}</Text>
+            <View style={styles.verifiedRow}>
+              <Text style={styles.tokenSymbol}>{tokenCurrent.symbol}</Text>
+              {tokenCurrent.verified_contract && (
+                <View style={styles.verifiedBadge}>
+                  <AntDesign name='check-circle' size={14} color='#00D09C' />
+                  <Text style={styles.verifiedText}>Verified</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
+
+        {/* Token Address with Copy */}
+        <View style={styles.addressContainer}>
+          <Feather name='hash' size={18} color='#aaa' style={styles.infoIcon} />
+          <View style={styles.addressInner}>
+            <Text style={styles.addressText}>
+              {ellipsisText(isTokenNative(tokenCurrent.token_address) ? zeroAddress : tokenCurrent.token_address, 8, 12)}
+            </Text>
+            <TouchableOpacity onPress={handleCopy} style={styles.copyButton}>
+              <Feather name='copy' size={16} color={COLORS.green600} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Balance & Value */}
+        <View style={styles.infoRow}>
+          <Feather name='dollar-sign' size={18} color='#aaa' style={styles.infoIcon} />
+          <Text style={styles.balanceText}>
+            {BigNumber(tokenCurrent.balance_formatted || '0')
+              .decimalPlaces(8, BigNumber.ROUND_DOWN)
+              .toFormat()}{' '}
+            {tokenCurrent.symbol}
+          </Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Feather name='credit-card' size={18} color='#aaa' style={styles.infoIcon} />
+          <Text style={styles.usdValueText}>${tokenCurrent.usd_value.toFixed(2)}</Text>
+        </View>
+
+        {/* Price & Change */}
+        <View style={styles.infoRow}>
+          <Feather name='trending-up' size={18} color='#aaa' style={styles.infoIcon} />
+          <Text style={styles.priceText}>${BigNumber(tokenCurrent.usd_price).decimalPlaces(2).toFormat()}</Text>
+          <Text style={[styles.priceChangeText, { color: priceChangeColor, marginLeft: 8 }]}>
+            {priceChange >= 0 ? '+' : ''}
+            {priceChange.toFixed(2)}%
+          </Text>
+        </View>
+
+        {/* Extra Info */}
+        <View style={styles.extraInfoColumn}>
+          <View style={styles.extraInfoItem}>
+            <View style={styles.extraInfoRow}>
+              <Feather name='hash' size={15} color='#aaa' style={styles.infoIcon} />
+              <Text style={styles.extraInfoLabel}>Decimals</Text>
+            </View>
+            <Text style={styles.extraInfoValue}>{tokenCurrent.decimals}</Text>
+          </View>
+
+          {tokenCurrent.security_score !== undefined && (
+            <View style={styles.extraInfoItem}>
+              <View style={styles.extraInfoRow}>
+                <AntDesign name='safety' size={15} color='#aaa' style={styles.infoIcon} />
+                <Text style={styles.extraInfoLabel}>Security score</Text>
               </View>
+              <Text style={styles.extraInfoValue}>{tokenCurrent.security_score || 0}</Text>
+            </View>
+          )}
+
+          <View style={styles.extraInfoItem}>
+            <View style={styles.extraInfoRow}>
+              <MaterialIcons name='all-inclusive' size={15} color='#aaa' style={styles.infoIcon} />
+              <Text style={styles.extraInfoLabel}>Total Supply</Text>
+            </View>
+            {tokenCurrent.total_supply_formatted ? (
+              <Text style={styles.extraInfoValue}>{BigNumber(tokenCurrent.total_supply_formatted).toFormat()}</Text>
+            ) : (
+              <Text style={styles.extraInfoValue}>
+                <MaterialIcons name='all-inclusive' size={16} color={text.color} style={styles.infoIcon} />
+              </Text>
             )}
           </View>
         </View>
-      </View>
 
-      {/* Token Address with Copy */}
-      <View style={styles.addressContainer}>
-        <Feather name='hash' size={18} color='#aaa' style={styles.infoIcon} />
-        <View style={styles.addressInner}>
-          <Text style={styles.addressText}>
-            {ellipsisText(isTokenNative(tokenCurrent.token_address) ? zeroAddress : tokenCurrent.token_address, 8, 12)}
-          </Text>
-          <TouchableOpacity onPress={handleCopy} style={styles.copyButton}>
-            <Feather name='copy' size={16} color={COLORS.green600} />
+        {/* Action Buttons - Circular with Icon */}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity onPress={handleSend} style={styles.circleButton}>
+            <Feather name='send' size={20} color={COLORS.green600} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleReceive} style={styles.circleButton}>
+            <Feather name='download' size={20} color={COLORS.green600} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.circleButton}>
+            <MaterialIcons name='swap-horiz' size={22} color={COLORS.green600} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.circleButton} onPress={handleOpenExplorer}>
+            <Feather name='external-link' size={20} color={COLORS.green600} />
           </TouchableOpacity>
         </View>
-      </View>
-
-      {/* Balance & Value */}
-      <View style={styles.infoRow}>
-        <Feather name='dollar-sign' size={18} color='#aaa' style={styles.infoIcon} />
-        <Text style={styles.balanceText}>
-          {BigNumber(tokenCurrent.balance_formatted || '0')
-            .decimalPlaces(8, BigNumber.ROUND_DOWN)
-            .toFormat()}{' '}
-          {tokenCurrent.symbol}
-        </Text>
-      </View>
-      <View style={styles.infoRow}>
-        <Feather name='credit-card' size={18} color='#aaa' style={styles.infoIcon} />
-        <Text style={styles.usdValueText}>${tokenCurrent.usd_value.toFixed(2)}</Text>
-      </View>
-
-      {/* Price & Change */}
-      <View style={styles.infoRow}>
-        <Feather name='trending-up' size={18} color='#aaa' style={styles.infoIcon} />
-        <Text style={styles.priceText}>${tokenCurrent.usd_price.toFixed(2)}</Text>
-        <Text style={[styles.priceChangeText, { color: priceChangeColor, marginLeft: 8 }]}>
-          {priceChange >= 0 ? '+' : ''}
-          {priceChange.toFixed(2)}%
-        </Text>
-      </View>
-
-      {/* Extra Info */}
-      <View style={styles.extraInfoColumn}>
-        <View style={styles.extraInfoItem}>
-          <View style={styles.extraInfoRow}>
-            <Feather name='hash' size={15} color='#aaa' style={styles.infoIcon} />
-            <Text style={styles.extraInfoLabel}>Decimals</Text>
-          </View>
-          <Text style={styles.extraInfoValue}>{tokenCurrent.decimals}</Text>
-        </View>
-
-        {tokenCurrent.security_score !== undefined && (
-          <View style={styles.extraInfoItem}>
-            <View style={styles.extraInfoRow}>
-              <AntDesign name='safety' size={15} color='#aaa' style={styles.infoIcon} />
-              <Text style={styles.extraInfoLabel}>Security score</Text>
-            </View>
-            <Text style={styles.extraInfoValue}>{tokenCurrent.security_score || 0}</Text>
-          </View>
-        )}
-
-        <View style={styles.extraInfoItem}>
-          <View style={styles.extraInfoRow}>
-            <MaterialIcons name='all-inclusive' size={15} color='#aaa' style={styles.infoIcon} />
-            <Text style={styles.extraInfoLabel}>Total Supply</Text>
-          </View>
-          {tokenCurrent.total_supply_formatted ? (
-            <Text style={styles.extraInfoValue}>{BigNumber(tokenCurrent.total_supply_formatted).toFormat()}</Text>
-          ) : (
-            <Text style={styles.extraInfoValue}>
-              <MaterialIcons name='all-inclusive' size={16} color={text.color} style={styles.infoIcon} />
-            </Text>
-          )}
-        </View>
-      </View>
-
-      {/* Action Buttons - Circular with Icon */}
-      <View style={styles.buttonRow}>
-        <TouchableOpacity onPress={handleSend} style={styles.circleButton}>
-          <Feather name='send' size={20} color={COLORS.green600} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleReceive} style={styles.circleButton}>
-          <Feather name='download' size={20} color={COLORS.green600} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.circleButton}>
-          <MaterialIcons name='swap-horiz' size={22} color={COLORS.green600} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.circleButton} onPress={handleOpenExplorer}>
-          <Feather name='external-link' size={20} color={COLORS.green600} />
-        </TouchableOpacity>
       </View>
     </View>
   )
@@ -198,7 +204,6 @@ const styles = StyleSheet.create({
   container: {
     // flex: 1,
     backgroundColor: '#181A20',
-    padding: PADDING_DEFAULT.Padding16,
     paddingTop: 0,
   },
   header: {

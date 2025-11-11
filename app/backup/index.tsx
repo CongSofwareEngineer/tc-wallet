@@ -15,6 +15,7 @@ import { useAppSelector } from '@/redux/hooks'
 import { encodeData } from '@/utils/crypto'
 import { getDataLocal, saveDataLocal } from '@/utils/storage'
 
+import { getKeyEncode } from '@/utils/secureStorage'
 import { createStyles } from './styles'
 
 const BackupScreen = () => {
@@ -45,6 +46,7 @@ const BackupScreen = () => {
       timestamp = timestamp.replaceAll(':', '_')
       timestamp = timestamp.replaceAll('-', '_')
       timestamp = timestamp.replaceAll('.', '_')
+      const encryptionKey = await getKeyEncode()
 
       // Tạo backup data với password để tăng security
       const backupData = {
@@ -52,6 +54,7 @@ const BackupScreen = () => {
         timestamp: timestamp,
         wallets: wallets.wallets,
         passphrases: passphrases,
+        encryptionKey,
       }
 
       // Sử dụng encodeData từ crypto utils (AES encryption)

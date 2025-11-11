@@ -30,7 +30,7 @@ export const numberWithCommas = (num: number | string | bigint | null | undefine
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-export const copyToClipboard = async (text: string, isEx = false, duration: number = 2000, type: 'text' | 'url' | 'image' = 'text') => {
+export const copyToClipboard = async (text: string, isEx = false, duration: number = 1000, type: 'text' | 'url' | 'image' = 'text') => {
   if (isEx) {
     Alert.alert('Copied')
   } else {

@@ -12,6 +12,7 @@ import usePassPhrase from '@/hooks/usePassPhrase'
 import useWallets from '@/hooks/useWallets'
 import { decodeData } from '@/utils/crypto'
 
+import { restoreKeyEncode } from '@/utils/secureStorage'
 import { createStyles } from './styles'
 
 const RestoreScreen = () => {
@@ -68,8 +69,8 @@ const RestoreScreen = () => {
       setIsLoading(true)
 
       const dataDecode = await decodeData(fileContent, password)
-      if (dataDecode?.wallets && dataDecode?.passphrases && dataDecode?.timestamp && dataDecode?.wallets?.length > 0) {
-        console.log({ dataDecode })
+      if (dataDecode?.wallets && dataDecode?.passphrases && dataDecode?.timestamp && dataDecode?.wallets?.length > 0 && dataDecode?.encryptionKey) {
+        await restoreKeyEncode(dataDecode.encryptionKey)
         setWallets(dataDecode.wallets)
         setListPassPhrase(dataDecode.passphrases)
         showSuccess('Wallet restored successfully!')
