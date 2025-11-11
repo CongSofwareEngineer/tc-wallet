@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
-import { EncodingType, StorageAccessFramework } from 'expo-file-system/legacy'
+import { EncodingType, StorageAccessFramework, cacheDirectory, makeDirectoryAsync, writeAsStringAsync } from 'expo-file-system/legacy'
 import { useRouter } from 'expo-router'
+import { shareAsync } from 'expo-sharing'
 import React, { useState } from 'react'
 import { Animated, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 
@@ -63,8 +64,6 @@ const BackupScreen = () => {
       // Tạo file TXT
       const fileName = `tc-wallet-backup_${timestamp}.txt`
 
-      // Tạo nội dung text cho file backup
-
       if (Platform.OS === 'web') {
         // Trên web, download file trực tiếp
         const blob = new Blob([backupText], { type: 'text/plain' })
@@ -76,7 +75,26 @@ const BackupScreen = () => {
         link.click()
         document.body.removeChild(link)
         URL.revokeObjectURL(url)
-        showSuccess('Backup saved to custom location!')
+        showSuccess('Backup file downloaded!')
+        router.back()
+      } else if (Platform.OS === 'ios') {
+        // iOS: Lưu vào cache rồi share để user chọn nơi lưu
+        const fileUri = `${cacheDirectory}${fileName}`
+
+        // Ghi file vào cache
+        await writeAsStringAsync(fileUri, backupText, {
+          encoding: EncodingType.UTF8,
+        })
+
+        // Share file để user chọn nơi lưu (Files, iCloud, etc.)
+        await shareAsync(fileUri, {
+          UTI: 'public.plain-text',
+          dialogTitle: 'Save Backup File',
+        })
+
+        // File đã được share/saved thành công
+        showSuccess('Backup file saved successfully!')
+        router.back()
       } else {
         const urlDefault = getDataLocal('default_backup_location') || null
 
@@ -86,6 +104,9 @@ const BackupScreen = () => {
           // Gets SAF URI from response
           const uri = permissions.directoryUri
           saveDataLocal('default_backup_location', uri)
+          if (!urlDefault) {
+            await makeDirectoryAsync(uri)
+          }
           const fileUri = await StorageAccessFramework.createFileAsync(uri, fileName, 'text/plain')
 
           // Gets all files inside of selected directory
@@ -99,12 +120,7 @@ const BackupScreen = () => {
           showError('No location selected. Please try again.')
         }
       }
-
-      // showSuccess('Backup process completed!')
-      // router.back()
-    } catch (error) {
-      console.log({ error })
-
+    } catch {
       showError('Failed to create backup file. Please try again.')
     } finally {
       setIsLoading(false)
