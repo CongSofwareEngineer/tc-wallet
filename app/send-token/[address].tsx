@@ -313,8 +313,6 @@ const SendTokenScreen = () => {
       }
     }
 
-    console.log({ param, formClone })
-
     setForm(formClone)
     setFormError(formErrorClone)
   }

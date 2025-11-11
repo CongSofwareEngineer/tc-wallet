@@ -15,7 +15,6 @@ export const createStyles = (isDark: boolean) =>
       alignItems: 'center',
     },
     title: {
-      fontSize: 28,
       fontWeight: '800',
       color: isDark ? '#FFFFFF' : '#000000',
       marginBottom: 12,

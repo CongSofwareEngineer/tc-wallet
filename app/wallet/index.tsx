@@ -170,7 +170,7 @@ const WalletScreen = () => {
     <View style={{ flex: 1 }}>
       <HeaderScreen title={'Wallets'} />
 
-      <View style={[styles.tableHeader, { gap: GAP_DEFAULT.Gap8 }]}>
+      <View style={[styles.tableHeader, { gap: GAP_DEFAULT.Gap8, marginTop: 20 }]}>
         <ThemedText style={styles.headerCellLeft}>Wallet Name</ThemedText>
         <ThemeTouchableOpacity type='default' style={styles.addButton} onPress={handleCreateWalletAndPassPhrase}>
           <AntDesign name='plus' size={20} color={colors.white} />

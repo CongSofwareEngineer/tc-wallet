@@ -186,7 +186,6 @@ const BackupScreen = () => {
         bounces={false}
       >
         <View style={styles.headerSection}>
-          <ThemedText style={styles.title}>Create Backup</ThemedText>
           <ThemedText style={styles.subtitle}>
             Secure your wallet data with a password-protected backup text file. Choose Downloads, custom location, or share to save.
           </ThemedText>

@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   [`container${MODE.Dark}`]: {
-    borderBottomColor: COLORS.green2,
+    borderBottomColor: COLORS.gray2,
   },
   [`container${MODE.Light}`]: {
     // borderBottomColor: COLORS.gray1,

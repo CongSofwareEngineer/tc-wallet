@@ -9,10 +9,8 @@ export const createStyles = (isDark: boolean) =>
       backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC',
     },
     scrollContent: {
-      flexGrow: 1,
       paddingHorizontal: 20,
       paddingTop: 8,
-      paddingBottom: 24,
       gap: GAP_DEFAULT.Gap12,
     },
     card: {

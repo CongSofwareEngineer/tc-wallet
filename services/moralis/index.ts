@@ -2,6 +2,7 @@ import fetcherConfig from '@/configs/fetcher'
 import { IFetch } from '@/configs/fetcher/type'
 import { CHAIN_MORALIS_SUPPORT } from '@/constants/moralis'
 import { ChainId } from '@/types/web3'
+import MoralisUtils from '@/utils/moralis'
 
 import { NFT, NFTResponse, Token } from './type'
 
@@ -11,7 +12,7 @@ const fetcher = (params: IFetch) => {
     baseUrl: 'https://deep-index.moralis.io',
     headers: {
       accept: 'application/json',
-      'X-API-Key': process.env.EXPO_PUBLIC_MORALIS_API_KEY || '',
+      'X-API-Key': MoralisUtils.getApiKey(),
     },
     ...params,
     url,

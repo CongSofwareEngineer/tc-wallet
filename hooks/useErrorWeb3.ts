@@ -23,6 +23,7 @@ const useErrorWeb3 = () => {
       switch (true) {
         case message.includes('insufficient funds for gas * price + value'):
         case message.includes('Missing or invalid parameters'):
+        case message.includes('total cost (gas * gas fee + value)'):
           return translate('errorWeb3.insufficientFunds')
         case message.includes('User rejected the request'):
           return translate('errorWeb3.userRejected')
