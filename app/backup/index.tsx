@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons'
-import { EncodingType, StorageAccessFramework, cacheDirectory, makeDirectoryAsync, writeAsStringAsync } from 'expo-file-system/legacy'
+import { EncodingType, makeDirectoryAsync, StorageAccessFramework } from 'expo-file-system/legacy'
 import { useRouter } from 'expo-router'
-import { shareAsync } from 'expo-sharing'
 import React, { useState } from 'react'
-import { Animated, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import { Animated, Platform, ScrollView, Share, TextInput, TouchableOpacity, View } from 'react-native'
+import RNFS from 'react-native-fs'
 
 import HeaderScreen from '@/components/Header'
 import KeyboardAvoiding from '@/components/KeyboardAvoiding'
@@ -79,22 +79,49 @@ const BackupScreen = () => {
         router.back()
       } else if (Platform.OS === 'ios') {
         // iOS: Lưu vào cache rồi share để user chọn nơi lưu
-        const fileUri = `${cacheDirectory}${fileName}`
+        const filePath = `${RNFS.TemporaryDirectoryPath}/${fileName}`
 
-        // Ghi file vào cache
-        await writeAsStringAsync(fileUri, backupText, {
-          encoding: EncodingType.UTF8,
-        })
+        RNFS.writeFile(filePath, backupText, 'utf8')
+          .then(async (success) => {
+            try {
+              const result = await Share.share({
+                url: filePath,
+                title: fileName,
+              })
 
-        // Share file để user chọn nơi lưu (Files, iCloud, etc.)
-        await shareAsync(fileUri, {
-          UTI: 'public.plain-text',
-          dialogTitle: 'Save Backup File',
-        })
+              if (result && result.action === Share.sharedAction) {
+                showSuccess('Backup file saved successfully!')
+                router.back()
+              }
+            } catch (error) {
+              showError('Failed to create backup file. Please try again.')
+            }
+          })
+          .catch((_err) => {
+            showError('Failed to create backup file. Please try again.')
+          })
+        // const fileUri = `${cacheDirectory}${fileName}`
 
-        // File đã được share/saved thành công
-        showSuccess('Backup file saved successfully!')
-        router.back()
+        // // // Ghi file vào cache
+
+        // await writeAsStringAsync(fileUri, backupText, {
+        //   encoding: EncodingType.UTF8,
+        // })
+
+        // const canShare = await isAvailableAsync()
+        // if (!canShare) {
+        //   throw new Error('Sharing is not available on this device')
+        // }
+
+        // // Share file để user chọn nơi lưu (Files, iCloud, etc.)
+        // await shareAsync(fileUri, {
+        //   UTI: 'public.plain-text',
+        //   dialogTitle: 'Save Backup File',
+        // })
+
+        // // File đã được share/saved thành công
+        // showSuccess('Backup file saved successfully!')
+        // router.back()
       } else {
         const urlDefault = getDataLocal('default_backup_location') || null
 
