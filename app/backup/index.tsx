@@ -247,7 +247,9 @@ const BackupScreen = () => {
 
         <View style={styles.formSection}>
           <View style={styles.inputContainer}>
-            <ThemedText style={styles.label}>Backup Password</ThemedText>
+            <ThemedText type='subtitle' style={styles.label}>
+              Backup Password
+            </ThemedText>
             {renderPasswordInput(password, setPassword, 'Enter strong password', showPassword, () => setShowPassword(!showPassword), 'password')}
             {password && (
               <View style={styles.strengthContainer}>
@@ -261,7 +263,9 @@ const BackupScreen = () => {
           </View>
 
           <View style={styles.inputContainer}>
-            <ThemedText style={styles.label}>Confirm Password</ThemedText>
+            <ThemedText type='subtitle' style={styles.label}>
+              Confirm Password
+            </ThemedText>
             {renderPasswordInput(
               confirmPassword,
               setConfirmPassword,

@@ -1,3 +1,4 @@
+import { width } from '@/utils/systems'
 import { StyleSheet } from 'react-native'
 
 export const createStyles = (isDark: boolean) =>
@@ -81,12 +82,12 @@ export const createStyles = (isDark: boolean) =>
       marginBottom: 20,
     },
     keypadButton: {
-      width: 80,
-      height: 80,
+      width: width(20),
+      height: width(20),
       borderRadius: 8,
       justifyContent: 'center',
       alignItems: 'center',
-      marginHorizontal: 20,
+      marginHorizontal: width(5),
       shadowColor: '#000000',
       shadowOffset: {
         width: 0,
@@ -115,12 +116,12 @@ export const createStyles = (isDark: boolean) =>
       color: isDark ? '#FFFFFF' : '#000000',
     },
     keypadActionButton: {
-      width: 80,
-      height: 80,
+      width: width(20),
+      height: width(20),
       borderRadius: 8,
       justifyContent: 'center',
       alignItems: 'center',
-      marginHorizontal: 20,
+      marginHorizontal: width(5),
     },
     deleteButton: {
       backgroundColor: isDark ? '#FF4444' : '#FF6B6B',

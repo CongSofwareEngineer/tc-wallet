@@ -34,13 +34,7 @@ const CurrentSession = ({ session, params }: { session: Session; params: Request
           {wallet?.name || `Account`}: {ellipsisText(wallet?.address, 5, 6)}
         </ThemedText>
       </View>
-      <ThemedText
-        style={{
-          fontSize: 20,
-        }}
-      >
-        {session.peer.metadata.name}
-      </ThemedText>
+      <ThemedText type='subtitle'>{session.peer.metadata.name}</ThemedText>
       <ThemedText>{session.peer.metadata.url}</ThemedText>
     </View>
   )

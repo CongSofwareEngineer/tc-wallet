@@ -7,6 +7,7 @@ import { COLORS, MODE } from '@/constants/style'
 import useMode from '@/hooks/useMode'
 import useTheme from '@/hooks/useTheme'
 
+import { width } from '@/utils/systems'
 import IconAntd from '../UI/Icon/Antd'
 import ThemedText from '../UI/ThemedText'
 
@@ -38,10 +39,12 @@ const HeaderScreen = ({ title, urlDefault = '/(tabs)/home', onBackPress, leftSid
           }
         }}
       >
-        {leftSide || <IconAntd color={text.color} name='arrow-left' size={20} />}
+        {leftSide || <IconAntd color={text.color} name='arrow-left' size={width(6)} />}
       </ThemeTouchableOpacity>
       <View style={styles.titleContainer}>
-        <ThemedText style={styles.titleText}>{title}</ThemedText>
+        <ThemedText type='title' style={styles.titleText}>
+          {title}
+        </ThemedText>
       </View>
       {rightSide || <View />}
     </View>
@@ -69,7 +72,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titleText: {
-    fontSize: 18,
     fontWeight: '600',
   },
 })

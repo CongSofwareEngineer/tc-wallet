@@ -101,7 +101,6 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   networkName: {
-    fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '500',
     flex: 1,

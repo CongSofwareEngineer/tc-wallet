@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "tcwallet",
     "splash": {
-      "image": "./assets/images/icons/flashIcon.gif",
+      "image": "./assets/images/splashIcon.png",
       "resizeMode": "contain",
       "backgroundColor": "#272728"
     },
@@ -40,7 +40,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icons/flashIcon.gif",
+          "image": "./assets/images/splashIcon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#272728",

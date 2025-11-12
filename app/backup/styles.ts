@@ -21,10 +21,8 @@ export const createStyles = (isDark: boolean) =>
       textAlign: 'center',
     },
     subtitle: {
-      fontSize: 16,
       color: isDark ? '#999999' : '#666666',
       textAlign: 'center',
-      lineHeight: 24,
     },
     formSection: {
       marginBottom: 40,
@@ -33,7 +31,6 @@ export const createStyles = (isDark: boolean) =>
       marginBottom: 20,
     },
     label: {
-      fontSize: 16,
       fontWeight: '600',
       color: isDark ? '#FFFFFF' : '#000000',
       marginBottom: 8,
@@ -56,7 +53,6 @@ export const createStyles = (isDark: boolean) =>
     },
     input: {
       flex: 1,
-      fontSize: 16,
       color: isDark ? '#FFFFFF' : '#000000',
       paddingVertical: 0,
     },
@@ -73,7 +69,6 @@ export const createStyles = (isDark: boolean) =>
       marginTop: 8,
     },
     strengthText: {
-      fontSize: 12,
       fontWeight: '500',
       marginBottom: 4,
     },
@@ -97,15 +92,12 @@ export const createStyles = (isDark: boolean) =>
       borderColor: isDark ? '#FFB800' : '#FFEAA7',
     },
     warningTitle: {
-      fontSize: 16,
       fontWeight: '700',
       color: isDark ? '#FFD700' : '#8B6914',
       marginBottom: 8,
     },
     warningText: {
-      fontSize: 14,
       color: isDark ? '#FFEB3B' : '#8B6914',
-      lineHeight: 20,
     },
     buttonContainer: {
       marginTop: 'auto',
@@ -131,7 +123,6 @@ export const createStyles = (isDark: boolean) =>
       elevation: 0,
     },
     backupButtonText: {
-      fontSize: 16,
       fontWeight: '600',
       color: '#FFFFFF',
     },
@@ -143,7 +134,6 @@ export const createStyles = (isDark: boolean) =>
       alignItems: 'center',
     },
     progressText: {
-      fontSize: 14,
       color: isDark ? '#999999' : '#666666',
       marginBottom: 8,
     },

@@ -12,10 +12,10 @@ import { COLORS, GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
 import useWallets from '@/hooks/useWallets'
-import { ellipsisText } from '@/utils/functions'
 
 import useTheme from '@/hooks/useTheme'
 import Collections from './Components/Collections'
+import HeaderHome from './Components/Header'
 import Tokens from './Components/Tokens'
 import { styles } from './styles'
 
@@ -73,36 +73,7 @@ export default function HomeScreen() {
       >
         <Animated.View style={{ opacity: headerOpacity }}>
           {/* Header */}
-          <View style={[styles.header]}>
-            <ThemeTouchableOpacity
-              type='text'
-              onPress={() => router.push('/wallet')}
-              style={[styles.addressContainer, { backgroundColor: COLORS.black3 }]}
-            >
-              {/* <LinearGradient
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  top: 0,
-                  height: 300,
-                }}
-                colors={['#4c669f', '#3b5998', 'red']}
-              /> */}
-              <ThemedText style={styles.addressText}>
-                {wallet?.name || ellipsisText(wallet?.address, 4, 5)}
-                {` `} <AntDesign name='down' size={14} color='#FFFFFF' />
-                {/* <View style={{ width: '100%' }} /> */}
-              </ThemedText>
-            </ThemeTouchableOpacity>
-
-            <View style={[styles.headerIcons, { flex: 1, justifyContent: 'flex-end' }]}>
-              <ThemeTouchableOpacity type='text' onPress={() => router.push('/connect-dapp')} style={styles.iconButton}>
-                <AntDesign name='scan' size={24} color='#FFFFFF' />
-              </ThemeTouchableOpacity>
-            </View>
-          </View>
-          {renderChainSelected()}
+          <HeaderHome />
 
           {/* Balance Section */}
           <View style={[styles.balanceSection, { paddingTop: 16 }]}>
@@ -142,7 +113,9 @@ export default function HomeScreen() {
                   setActiveTab(tab)
                 }}
               >
-                <ThemedText style={[styles.tabText, activeTab === tab && { color: COLORS.green600 }]}>{tab}</ThemedText>
+                <ThemedText type='subtitle' style={[styles.tabText, activeTab === tab && { color: COLORS.green600 }]}>
+                  {tab}
+                </ThemedText>
               </ThemeTouchableOpacity>
             ))}
           </View>

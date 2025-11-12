@@ -72,8 +72,8 @@ const SettingScreen = () => {
           style={[
             {
               borderRadius: 100,
-              backgroundColor: colors.gray1,
-              padding: 15,
+              backgroundColor: isDark ? colors.black : colors.gray1,
+              paddingTop: 15,
               marginTop: 10,
             },
           ]}

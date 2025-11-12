@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerTitle: {
-    fontSize: 20,
     fontWeight: '600',
   },
   closeButton: {
@@ -41,7 +40,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
   },
@@ -57,7 +55,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
     paddingVertical: 12,
   },
   dropdownIcon: {
@@ -70,10 +67,8 @@ const styles = StyleSheet.create({
   },
   rpcText: {
     flex: 1,
-    fontSize: 16,
   },
   rpcSubtext: {
-    fontSize: 14,
     marginTop: 2,
   },
   failoverTag: {
@@ -84,7 +79,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   failoverText: {
-    fontSize: 12,
     fontWeight: '500',
   },
   saveButton: {
@@ -105,7 +99,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   saveButtonText: {
-    fontSize: 18,
     fontWeight: '600',
   },
 })

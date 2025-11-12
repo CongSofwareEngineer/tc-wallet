@@ -51,9 +51,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   dappName: {
-    fontSize: 18,
     fontWeight: '700',
-    // color:  '#000000',
     marginBottom: 4,
   },
   urlContainer: {
@@ -61,8 +59,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dappUrl: {
-    fontSize: 14,
-    // color:  '#666666',
     marginRight: 8,
   },
   verifiedBadge: {
@@ -76,7 +72,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   verifiedText: {
-    fontSize: 12,
     fontWeight: '600',
     // color: '#FFFFFF',
     marginLeft: 4,
@@ -90,7 +85,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   disconnectText: {
-    fontSize: 14,
     fontWeight: '600',
     // color: '#FFFFFF',
   },
@@ -113,7 +107,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   detailLabel: {
-    fontSize: 14,
     fontWeight: '600',
     color: '#666666',
     marginBottom: 2,
@@ -135,7 +128,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   chainText: {
-    fontSize: 12,
     fontWeight: '500',
   },
   emptyState: {
@@ -148,14 +140,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 20,
     fontWeight: '700',
     // color: isDark ? '#FFFFFF' : '#000000',
     marginBottom: 8,
     textAlign: 'center',
   },
   emptyDescription: {
-    fontSize: 16,
     // color: isDark ? '#999999' : '#666666',
     textAlign: 'center',
     lineHeight: 24,
@@ -166,7 +156,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   disconnectAllText: {
-    fontSize: 16,
     fontWeight: '600',
     // color: '#FFFFFF',
   },

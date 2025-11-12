@@ -16,6 +16,10 @@ import { Wallet } from '@/types/wallet'
 import { decodeData } from '@/utils/crypto'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
 
+import MyImage from '@/components/MyImage'
+import { images } from '@/configs/images'
+import { IsIos } from '@/constants/app'
+import { width } from '@/utils/systems'
 import styles from './styles'
 
 const WalletDetailScreen = () => {
@@ -79,25 +83,11 @@ const WalletDetailScreen = () => {
   }
 
   const handleShowPrivateKey = async () => {
-    try {
-      const result = await handleAuth()
-      if (result) {
-        setShowPrivateKey(!showPrivateKey)
-      }
-    } catch {
-      // Auth failed silently
-    }
+    setShowPrivateKey(!showPrivateKey)
   }
 
   const handleShowPassPhrase = async () => {
-    try {
-      const result = await handleAuth()
-      if (result) {
-        setShowPassPhrase(!showPassPhrase)
-      }
-    } catch {
-      // Auth failed silently
-    }
+    setShowPassPhrase(!showPassPhrase)
   }
 
   const handleDeleteAccount = () => {
@@ -117,16 +107,33 @@ const WalletDetailScreen = () => {
     })
   }
 
+  const renderAvatar = () => {
+    return (
+      <View style={styles.header}>
+        <View style={{ position: 'relative' }}>
+          {!walletSelected?.avatar ? (
+            <MyImage src={images.icons.placeholder} style={styles.avatar} />
+          ) : (
+            <View style={[styles.avatar, { backgroundColor: getAvatarColor(walletSelected?.address) }]} />
+          )}
+          <View style={{ position: 'absolute', bottom: width(11) - 10, right: width(11) - 10, backgroundColor: 'rgba(1, 1, 1, 0.5)' }}>
+            <TouchableOpacity>
+              <AntDesign name='edit' size={20} color={text.color} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <ThemedText style={styles.headerTitle}>{walletSelected?.name || `Account ${parseInt(id || '0') + 1}`}</ThemedText>
+      </View>
+    )
+  }
+
   if (walletSelected) {
     return (
       <View style={{ flex: 1 }}>
         <HeaderScreen title={walletSelected?.name || `Account ${parseInt(id || '0') + 1}`} />
         <ScrollView style={[styles.container]}>
           {/* Header with Avatar */}
-          <View style={styles.header}>
-            <View style={[styles.avatar, { backgroundColor: getAvatarColor(walletSelected?.address) }]} />
-            <ThemedText style={styles.headerTitle}>{walletSelected?.name || `Account ${parseInt(id || '0') + 1}`}</ThemedText>
-          </View>
+          {renderAvatar()}
 
           {/* Account Name Section */}
           <View style={styles.section}>
@@ -187,7 +194,7 @@ const WalletDetailScreen = () => {
               <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(privateKey, 'Private key')}>
                 <ThemedText style={styles.hiddenText}>
                   {privateKey} <AntDesign style={{ position: 'relative', top: 4, paddingHorizontal: 2 }} name='copy' size={14} color={text.color} />
-                  <View style={{ width: '100%' }} />
+                  {!IsIos && <View style={{ width: '100%' }} />}
                 </ThemedText>
               </TouchableOpacity>
             )}
@@ -205,7 +212,7 @@ const WalletDetailScreen = () => {
                   <ThemedText style={styles.hiddenText} selectable>
                     {walletSelected.passPhrase}{' '}
                     <AntDesign style={{ position: 'relative', top: 4, paddingHorizontal: 4 }} name='copy' size={14} color={text.color} />
-                    <View style={{ width: '100%' }} />
+                    {!IsIos && <View style={{ width: '100%' }} />}
                   </ThemedText>
                 </TouchableOpacity>
               )}

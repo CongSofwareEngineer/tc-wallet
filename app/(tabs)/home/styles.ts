@@ -24,13 +24,11 @@ export const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#2A2A2A',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
   },
   addressText: {
-    fontSize: 14,
     color: '#FFFFFF',
     fontWeight: '500',
     // flex: 1,
@@ -54,7 +52,6 @@ export const styles = StyleSheet.create({
     // paddingHorizontal: 20,
   },
   balanceAmount: {
-    // fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 20,
@@ -95,7 +92,6 @@ export const styles = StyleSheet.create({
     borderBottomColor: COLORS.green600,
   },
   tabText: {
-    fontSize: 16,
     color: '#666666',
     fontWeight: '500',
   },
@@ -110,7 +106,6 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
   },
   networkFilterText: {
-    fontSize: 14,
     color: '#FFFFFF',
     fontWeight: '500',
   },
@@ -139,7 +134,6 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   cryptoName: {
-    fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '600',
     marginBottom: 2,
@@ -147,12 +141,10 @@ export const styles = StyleSheet.create({
     maxWidth: '95%',
   },
   cryptoBalance: {
-    fontSize: 14,
     color: '#999999',
     fontWeight: '400',
   },
   cryptoChange: {
-    fontSize: 14,
     fontWeight: '500',
     textAlign: 'right',
   },

@@ -33,7 +33,6 @@ export const styles = StyleSheet.create({
   },
   input: {
     color: '#000',
-    fontSize: 16,
     flex: 1,
     paddingLeft: 0,
     borderColor: 'transparent',

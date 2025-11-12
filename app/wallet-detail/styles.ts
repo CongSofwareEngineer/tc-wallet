@@ -1,3 +1,4 @@
+import { width } from '@/utils/systems'
 import { StyleSheet } from 'react-native'
 
 const styles = StyleSheet.create({
@@ -11,10 +12,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   avatar: {
-    width: 80,
-    height: 80,
+    width: width(22),
+    height: width(22),
     borderRadius: 16,
-    marginBottom: 16,
   },
   headerTitle: {
     fontSize: 20,

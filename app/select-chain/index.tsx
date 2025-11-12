@@ -11,6 +11,7 @@ import useChains from '@/hooks/useChains'
 import useChainSelected from '@/hooks/useChainSelected'
 import { ChainId, Network } from '@/types/web3'
 
+import useTheme from '@/hooks/useTheme'
 import { styles } from './styles'
 
 type NetworkType = 'Popular' | 'Custom'
@@ -18,6 +19,7 @@ type NetworkType = 'Popular' | 'Custom'
 const SelectChainScreen = () => {
   const [activeTab, setActiveTab] = useState<NetworkType>('Popular')
   const router = useRouter()
+  const { text } = useTheme()
   const { setChainId } = useChainSelected()
   const { chainsDefault, chainsCustom, chainCurrent } = useChains()
 
@@ -46,7 +48,7 @@ const SelectChainScreen = () => {
       </View>
 
       <TouchableOpacity onPress={() => router.push(`/chain-detail/${item.id}`)} style={[styles.menuButton]}>
-        <AntDesign name='ellipsis' size={24} color='#FFFFFF' />
+        <AntDesign name='edit' size={20} color={text.color} />
       </TouchableOpacity>
     </TouchableOpacity>
   )
