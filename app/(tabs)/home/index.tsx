@@ -15,7 +15,7 @@ import useWallets from '@/hooks/useWallets'
 import { ellipsisText } from '@/utils/functions'
 
 import useTheme from '@/hooks/useTheme'
-import Nfts from './Components/Nfts'
+import Collections from './Components/Collections'
 import Tokens from './Components/Tokens'
 import { styles } from './styles'
 
@@ -79,6 +79,16 @@ export default function HomeScreen() {
               onPress={() => router.push('/wallet')}
               style={[styles.addressContainer, { backgroundColor: COLORS.black3 }]}
             >
+              {/* <LinearGradient
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  height: 300,
+                }}
+                colors={['#4c669f', '#3b5998', 'red']}
+              /> */}
               <ThemedText style={styles.addressText}>
                 {wallet?.name || ellipsisText(wallet?.address, 4, 5)}
                 {` `} <AntDesign name='down' size={14} color='#FFFFFF' />
@@ -123,7 +133,7 @@ export default function HomeScreen() {
         {/* Network Filter + Tabs inside header */}
         <View>
           <View style={[styles.tabsContainer, { backgroundColor: background.background }]}>
-            {['Tokens', 'NFTs'].map((tab) => (
+            {['Tokens', 'Collections'].map((tab) => (
               <ThemeTouchableOpacity
                 type='text'
                 key={tab}
@@ -145,7 +155,11 @@ export default function HomeScreen() {
       {/* <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} /> */}
 
       <View style={[{ flex: 1 }]}>
-        {activeTab === 'Tokens' ? <Tokens headerHeight={headerHeight} scrollY={scrollY} /> : <Nfts headerHeight={headerHeight} scrollY={scrollY} />}
+        {activeTab === 'Tokens' ? (
+          <Tokens headerHeight={headerHeight} scrollY={scrollY} />
+        ) : (
+          <Collections headerHeight={headerHeight} scrollY={scrollY} />
+        )}
 
         {/* <MoralisScreen /> */}
       </View>

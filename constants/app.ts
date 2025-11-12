@@ -15,3 +15,5 @@ export enum TYPE_URL_IMAGE {
   Audio = 'Audio',
   IFrame = 'IFrame',
 }
+
+export const PAGE_SIZE = 20

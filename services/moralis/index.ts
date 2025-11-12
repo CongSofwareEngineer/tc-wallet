@@ -4,7 +4,7 @@ import { CHAIN_MORALIS_SUPPORT } from '@/constants/moralis'
 import { ChainId } from '@/types/web3'
 import MoralisUtils from '@/utils/moralis'
 
-import { NFT, NFTResponse, Token } from './type'
+import { Collection, NFT, NFTResponse, Token } from './type'
 
 const fetcher = (params: IFetch) => {
   const url = `/api/v2.2${params?.url}`
@@ -82,6 +82,46 @@ class MoralisService {
     console.log({ getNFTsByContractTokenId: res })
 
     return res?.data as NFT
+  }
+
+  static async getCollectionsByWallet(params: { address: string; chainId: ChainId; cursor?: string; limit?: number }): Promise<{
+    page: number
+    cursor: null | string
+    page_size: number
+    result: Collection[]
+    status: string
+  }> {
+    try {
+      const paramsSearch = new URLSearchParams({
+        chain: this.getChainType(params.chainId),
+        limit: (params.limit || 20).toString(),
+        cursor: params.cursor || '',
+      })
+
+      const res = await fetcher({
+        url: `/${params.address}/nft/collections?${paramsSearch.toString()}`,
+      })
+
+      console.log({ getCollectionsByWallet: res?.data })
+
+      return (
+        res?.data || {
+          page: 1,
+          cursor: null,
+          page_size: 20,
+          result: [],
+          status: 'FAILED',
+        }
+      )
+    } catch (error) {
+      return {
+        page: 1,
+        cursor: null,
+        page_size: 20,
+        result: [],
+        status: 'FAILED',
+      }
+    }
   }
 }
 

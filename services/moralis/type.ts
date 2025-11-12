@@ -1,3 +1,5 @@
+import { Address } from '@/types/wallet'
+
 export interface NFTResponse {
   status?: string
   page?: string
@@ -5,12 +7,12 @@ export interface NFTResponse {
   cursor: string | null
   result: NFT[]
 }
-
+export type NFTType = 'ERC721' | 'erc1155'
 export interface NFT {
   amount: string
   token_id: string
-  token_address: string
-  contract_type: string
+  token_address: Address
+  contract_type: NFTType
   owner_of: string
   last_metadata_sync: string
   last_token_uri_sync: string
@@ -80,4 +82,18 @@ export interface Token {
   native_token: boolean
   portfolio_percentage: number
   is_imported: boolean
+}
+
+export interface Collection {
+  token_address: Address
+  possible_spam: boolean
+  contract_type: NFTType
+  name: string
+  symbol: string
+  verified_collection: boolean
+  collection_logo: string | null
+  collection_banner_image: string | null
+  floor_price: string | null
+  floor_price_usd: string | null
+  floor_price_currency: string | null
 }

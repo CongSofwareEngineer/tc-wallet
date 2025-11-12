@@ -14,7 +14,7 @@ export default function ThemedText({ opacity = 1, style, lightColor, darkColor, 
 
   return (
     <Text
-      // ellipsizeMode=''
+      allowFontScaling={false}
       style={[
         { color: text.color, flexShrink: 1 },
         type === 'small' ? styles.small : undefined,

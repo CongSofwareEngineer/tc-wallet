@@ -6,7 +6,7 @@ import ThemedText from '@/components/UI/ThemedText'
 export type Props<T> = {
   data: T[]
   loading?: boolean
-  renderItem: ({ item }: { item: T }) => React.JSX.Element
+  renderItem: ({ item, index }: { item: T; index: number }) => React.JSX.Element
   scrollY: Animated.Value
   headerHeight: number
   isRefetching: boolean
