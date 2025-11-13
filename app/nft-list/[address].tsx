@@ -1,14 +1,15 @@
-import { Ionicons } from '@expo/vector-icons'
+import { AntDesign, Ionicons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useMemo, useState } from 'react'
-import { ActivityIndicator, FlatList, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import { TextInput, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
 import useListNFTs from '@/hooks/react-query/useListNFTs'
 import useMode from '@/hooks/useMode'
 
+import useTheme from '@/hooks/useTheme'
 import createStyles from './styles'
 
 type ViewMode = 'grid' | 'list'
@@ -17,6 +18,7 @@ type FilterType = 'all' | 'image' | 'video' | 'audio'
 const NFTListScreen = () => {
   const { address } = useLocalSearchParams<{ address: string }>()
   const { isDark } = useMode()
+  const { text } = useTheme()
   const styles = createStyles(isDark)
 
   const { data: nfts, isLoading } = useListNFTs(address ? [address] : [])
@@ -92,12 +94,12 @@ const NFTListScreen = () => {
           <ThemedText style={styles.nftCollection} numberOfLines={1}>
             {item.contract_type || 'NFT'}
           </ThemedText>
-          <View style={styles.badge}>
+          {/* <View style={styles.badge}>
             <ThemedText style={styles.badgeText}>{item.symbol || 'NFT'}</ThemedText>
-          </View>
+          </View> */}
         </View>
         <View style={styles.listNftBottom}>
-          <ThemedText style={styles.nftId}>Token ID: {item.token_id?.slice(0, 10)}...</ThemedText>
+          <ThemedText style={styles.nftId}>Token ID: {item.token_id} </ThemedText>
           {item.amount && <ThemedText style={styles.nftChain}>x{item.amount}</ThemedText>}
         </View>
       </View>
@@ -114,10 +116,10 @@ const NFTListScreen = () => {
 
   return (
     <View style={styles.container}>
-      <HeaderScreen title='My NFTs' />
-
       {/* Search and Filter Header */}
       <View style={styles.header}>
+        <HeaderScreen title='My NFTs' />
+
         {/* Search Input */}
         <View style={styles.searchContainer}>
           <Ionicons name='search' size={20} color={isDark ? '#9CA3AF' : '#6B7280'} style={styles.searchIcon} />
@@ -136,50 +138,39 @@ const NFTListScreen = () => {
         </View>
 
         {/* Filter and View Toggle */}
-        <View style={styles.filterRow}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterLeft}>
-            <TouchableOpacity style={[styles.filterButton, filter === 'all' && styles.filterButtonActive]} onPress={() => setFilter('all')}>
-              <ThemedText style={[styles.filterButtonText, filter === 'all' && styles.filterButtonTextActive]}>All</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.filterButton, filter === 'image' && styles.filterButtonActive]} onPress={() => setFilter('image')}>
-              <Ionicons name='image' size={16} color={filter === 'image' ? '#FFFFFF' : isDark ? '#D1D5DB' : '#4B5563'} />
-              <ThemedText style={[styles.filterButtonText, filter === 'image' && styles.filterButtonTextActive]}>Images</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.filterButton, filter === 'video' && styles.filterButtonActive]} onPress={() => setFilter('video')}>
-              <Ionicons name='videocam' size={16} color={filter === 'video' ? '#FFFFFF' : isDark ? '#D1D5DB' : '#4B5563'} />
-              <ThemedText style={[styles.filterButtonText, filter === 'video' && styles.filterButtonTextActive]}>Videos</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.filterButton, filter === 'audio' && styles.filterButtonActive]} onPress={() => setFilter('audio')}>
-              <Ionicons name='musical-notes' size={16} color={filter === 'audio' ? '#FFFFFF' : isDark ? '#D1D5DB' : '#4B5563'} />
-              <ThemedText style={[styles.filterButtonText, filter === 'audio' && styles.filterButtonTextActive]}>Audio</ThemedText>
-            </TouchableOpacity>
-          </ScrollView>
-
-          {/* View Toggle */}
-          <View style={styles.viewToggleContainer}>
-            <TouchableOpacity
-              style={[styles.viewToggleButton, viewMode === 'grid' && styles.viewToggleButtonActive]}
-              onPress={() => setViewMode('grid')}
-            >
-              <Ionicons name='grid' size={18} color={viewMode === 'grid' ? (isDark ? '#F9FAFB' : '#111827') : isDark ? '#9CA3AF' : '#6B7280'} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.viewToggleButton, viewMode === 'list' && styles.viewToggleButtonActive]}
-              onPress={() => setViewMode('list')}
-            >
-              <Ionicons name='list' size={18} color={viewMode === 'list' ? (isDark ? '#F9FAFB' : '#111827') : isDark ? '#9CA3AF' : '#6B7280'} />
-            </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <ThemedText style={styles.countText}>
+            {filteredNFTs.length} {filteredNFTs.length === 1 ? 'NFT' : 'NFTs'}
+          </ThemedText>
+          <View style={[{ flex: 1, position: 'relative', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 12 }]}>
+            {/* View Toggle */}
+            <View style={styles.viewToggleContainer}>
+              <TouchableOpacity
+                style={[styles.viewToggleButton, viewMode === 'grid' && styles.viewToggleButtonActive]}
+                onPress={() => setViewMode('grid')}
+              >
+                <Ionicons name='grid' size={18} color={viewMode === 'grid' ? (isDark ? '#F9FAFB' : '#111827') : isDark ? '#9CA3AF' : '#6B7280'} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.viewToggleButton, viewMode === 'list' && styles.viewToggleButtonActive]}
+                onPress={() => setViewMode('list')}
+              >
+                <Ionicons name='list' size={18} color={viewMode === 'list' ? (isDark ? '#F9FAFB' : '#111827') : isDark ? '#9CA3AF' : '#6B7280'} />
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TouchableOpacity style={[]} onPress={() => setViewMode('grid')}>
+                <AntDesign name='filter' size={20} color={text.color} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
         {/* Count */}
-        <ThemedText style={styles.countText}>
-          {filteredNFTs.length} {filteredNFTs.length === 1 ? 'NFT' : 'NFTs'}
-        </ThemedText>
       </View>
 
       {/* NFT List */}
-      {isLoading ? (
+      {/* {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size='large' color={isDark ? '#60A5FA' : '#3B82F6'} />
           <ThemedText style={styles.emptyText}>Loading NFTs...</ThemedText>
@@ -195,7 +186,7 @@ const NFTListScreen = () => {
           ListEmptyComponent={renderEmpty}
           showsVerticalScrollIndicator={false}
         />
-      )}
+      )} */}
     </View>
   )
 }

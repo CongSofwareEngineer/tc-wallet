@@ -16,7 +16,7 @@ class WalletEvmUtil {
     const chainId = eip.replace('eip155:', '')
     return Number(chainId)
   }
-  static async createWallet(privateKey: Hex): Promise<Address> {
+  static createWallet(privateKey: Hex): Address {
     const account = privateKeyToAccount(privateKey)
     const address = account.address
     return address

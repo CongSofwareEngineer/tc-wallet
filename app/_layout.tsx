@@ -16,6 +16,8 @@ import StackScreen from '@/components/StackScreen'
 import { persistor, store } from '@/redux/store'
 
 SplashScreen.preventAutoHideAsync().catch(() => {
+  console.log('SplashScreen.preventAutoHideAsync')
+
   /* reloading the app might trigger some race conditions, ignore them */
 })
 

@@ -10,7 +10,6 @@ const MyModal = () => {
   const { background, colors } = useTheme()
   const modals = useAppSelector((state) => state.modals)
   const { closeModal } = useModal()
-  console.log({ modals })
 
   return (
     <>

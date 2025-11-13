@@ -9,6 +9,9 @@ import useRequestWC from '@/hooks/useReuestWC'
 import { useAppSelector } from '@/redux/hooks'
 import { sleep } from '@/utils/functions'
 
+import useBalanceToken from '@/hooks/react-query/useBalanceToken'
+import useCollections from '@/hooks/react-query/useCollections'
+import useListNFTs from '@/hooks/react-query/useListNFTs'
 import CurrentSession from './Comonent/CurrentSession'
 import PersonalSign from './Comonent/Personalsign'
 import SendTransaction from './Comonent/SendTransaction'
@@ -21,6 +24,9 @@ const ApproveScreen = () => {
   const sessions = useAppSelector((state) => state.sessions)
   const { requestWC, removeRequest } = useRequestWC()
   const router = useRouter()
+  const { refetch: refetchBalance } = useBalanceToken()
+  const { refetch: refetchCollections } = useCollections()
+  const { refetch: refetchNFTs } = useListNFTs()
 
   const requestLasted = useMemo(() => {
     if (requestWC[requestWC.length - 1]) {
@@ -57,12 +63,16 @@ const ApproveScreen = () => {
   const handleApprove = async () => {
     try {
       setApproving(true)
+      const method = requestLasted?.params?.request?.method
 
       if (requestLasted?.id) {
         const WalletKit = await import('@/utils/walletKit').then((mod) => mod.default)
 
         const { id, params, topic } = requestLasted
         WalletKit.onApproveRequest(id, topic, params as any)
+        if ('eth_sendTransaction' === method) {
+          await Promise.all([refetchBalance(), refetchCollections(), refetchNFTs()])
+        }
         await sleep(500)
         removeRequest(requestLasted.id)
       }
@@ -83,7 +93,6 @@ const ApproveScreen = () => {
 
   const renderRequest = () => {
     const method = requestLasted?.params?.request?.method
-    console.log({ method, requestLasted })
 
     if (method) {
       switch (method) {

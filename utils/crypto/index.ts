@@ -12,9 +12,7 @@ export const encodeData = async (value: any, password?: string) => {
     const text = JSON.stringify(value)
     const encryptedValue = CryptoJS.AES.encrypt(text, CryptoJS.enc.Utf8.parse(keyEncode), { iv: getIV() }).toString()
     return encryptedValue
-  } catch (error) {
-    console.log({ error })
-
+  } catch {
     return null
   }
 }
@@ -28,7 +26,7 @@ export const decodeData = async (value: any, password?: string) => {
     })
     const decryptedValue = bytes.toString(CryptoJS.enc.Utf8)
     return JSON.parse(decryptedValue)
-  } catch (error) {
+  } catch {
     return null
   }
 }

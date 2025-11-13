@@ -152,9 +152,7 @@ const createStyles = (isDarkMode = false) => {
       flex: 1,
       justifyContent: 'space-between',
     },
-    listNftTop: {
-      gap: 4,
-    },
+    listNftTop: {},
     listNftBottom: {
       flexDirection: 'row',
       justifyContent: 'space-between',

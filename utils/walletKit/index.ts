@@ -189,14 +189,11 @@ class WalletKit {
       }
       if (params?.chainId?.includes('eip155')) {
         const result = await WalletEvmUtil.approveRequest(id, topic, params)
-        console.log({ result })
 
         // result returned from approveRequest
         await this.respondSessionRequest(id, topic, result)
       }
     } catch (error) {
-      console.log({ error })
-
       await this.respondSessionRequest(id, topic, error, true)
     }
   }
