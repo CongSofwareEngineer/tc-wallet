@@ -169,12 +169,6 @@ class WalletEvmUtil {
         address = params.request.params[0]?.from
         msgParams = params.request.params[0]
       }
-      console.log({
-        raw: {
-          ...msgParams,
-          chainId,
-        },
-      })
 
       const wallet = store.getState().wallet.wallets.find((w) => lowercase(w.address) === lowercase(address))!
 
