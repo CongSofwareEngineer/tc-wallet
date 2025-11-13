@@ -79,7 +79,6 @@ class MoralisService {
     const res = await fetcher({
       url: apiPath,
     })
-    console.log({ getNFTsByContractTokenId: res })
 
     return res?.data as NFT
   }
@@ -101,8 +100,6 @@ class MoralisService {
       const res = await fetcher({
         url: `/${params.address}/nft/collections?${paramsSearch.toString()}`,
       })
-
-      console.log({ getCollectionsByWallet: res?.data })
 
       return (
         res?.data || {
