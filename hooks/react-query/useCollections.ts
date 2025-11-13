@@ -13,7 +13,7 @@ const useCollections = () => {
   const { filters } = useFilter()
 
   const data = useInfiniteQuery({
-    queryKey: [KEY_REACT_QUERY.getNFTsByWallet, wallet?.address, chainId],
+    queryKey: [KEY_REACT_QUERY.getCollectionsByWallet, wallet?.address, chainId],
     initialPageParam: '',
     queryFn: async ({ pageParam }) => {
       const response = await MoralisService.getCollectionsByWallet({

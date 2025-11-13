@@ -3,6 +3,7 @@ export enum KEY_REACT_QUERY {
   getBalancesTokenImportByAddress = 'getBalancesTokenImportByAddress',
   getTokenPrice = 'getTokenPrice',
   getNFTsByWallet = 'getNFTsByWallet',
+  getCollectionsByWallet = 'getCollectionsByWallet',
   getNFtDetail = 'getNFtDetail',
   getTypeUrlImage = 'getTypeUrlImage',
   getNftMetadataEVM = 'getNftMetadataEVM',

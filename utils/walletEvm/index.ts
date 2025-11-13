@@ -1,5 +1,5 @@
 import Bignumber from 'bignumber.js'
-import { Address, createWalletClient, custom, Hash, Hex, isAddress, isHex, publicActions, stringToHex } from 'viem'
+import { Address, createWalletClient, custom, Hash, Hex, hexToBigInt, isAddress, isHex, publicActions, stringToHex } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 
 import { store } from '@/redux/store'
@@ -11,6 +11,10 @@ import { decodeData } from '../crypto'
 import { lowercase } from '../functions'
 
 class WalletEvmUtil {
+  static getChainIdFromChainRequest(eip: string) {
+    const chainId = eip.replace('eip155:', '')
+    return Number(chainId)
+  }
   static async createWallet(privateKey: Hex): Promise<Address> {
     const account = privateKeyToAccount(privateKey)
     const address = account.address
@@ -33,15 +37,17 @@ class WalletEvmUtil {
       }).extend(publicActions)
 
       const tx = await EVMServices.getRawTransactions({
-        to: raw.to,
-        data: raw.data,
-        value: raw.value,
+        ...raw,
         from: raw.from || wallet.account.address,
         chainId,
       })
+      console.log({ getRawTransactions: tx })
 
       if (raw.gas) {
         tx.gas = raw.gas
+        if (isHex(raw.gas)) {
+          tx.gas = hexToBigInt(raw.gas)
+        }
       } else {
         const gas = await EVMServices.estimateGas({ ...tx, chainId })
 
@@ -149,14 +155,27 @@ class WalletEvmUtil {
 
   static async approveRequest(id: number, topic: string, params: Params) {
     try {
+      const chainSelected = store.getState().chainSelected
       let result: any = { code: -32601, message: 'Method not found' }
       let msgParams: any = params.request.params[0]
       let address = params.request.params[1]
+      const chainId = this.getChainIdFromChainRequest(params.chainId || chainSelected.toString())
 
       if (!isAddress(address)) {
         address = params.request.params[0]
         msgParams = params.request.params[1]
       }
+      if (!isAddress(address)) {
+        address = params.request.params[0]?.from
+        msgParams = params.request.params[0]
+      }
+      console.log({
+        raw: {
+          ...msgParams,
+          chainId,
+        },
+      })
+
       const wallet = store.getState().wallet.wallets.find((w) => lowercase(w.address) === lowercase(address))!
 
       switch (params.request.method) {
@@ -187,10 +206,18 @@ class WalletEvmUtil {
           result = await WalletEvmUtil.signTypedData(raw, wallet?.privateKey)
           break
         case 'eth_signTransaction':
-          result = '0x' + 'abcd'.repeat(16) // Fake tx hash for demonstration
+          msgParams.chainId = chainId
+          result = await WalletEvmUtil.signTransaction(msgParams, wallet?.privateKey)
+          // result = '0x' + 'abcd'.repeat(16) // Fake tx hash for demonstration
           break
         case 'eth_sendTransaction':
-          result = '0x' + 'abcd'.repeat(16) // Fake tx hash for demonstration
+          result = await WalletEvmUtil.sendTransaction(
+            {
+              ...msgParams,
+              chainId,
+            },
+            wallet?.privateKey
+          )
 
           break
         case 'personal_sign':

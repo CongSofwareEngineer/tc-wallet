@@ -111,6 +111,18 @@ const StackScreen = () => {
         />
 
         <StackExpo.Screen
+          name='nft-list'
+          options={{
+            animation: 'fade_from_bottom',
+            presentation: 'formSheet',
+
+            sheetAllowedDetents: 'fitToContents',
+            sheetElevation: 0,
+            headerShown: false,
+          }}
+        />
+
+        <StackExpo.Screen
           name='token-detail'
           options={{
             animation: 'fade_from_bottom',

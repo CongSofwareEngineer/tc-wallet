@@ -20,10 +20,29 @@ const fetcher = (params: IFetch) => {
 }
 
 class MoralisService {
-  static async getNFTsByWallet(params: { address: string; chainId: ChainId; cursor?: string; limit?: number }): Promise<NFTResponse> {
+  static async getNFTsByWallet(params: {
+    address: string
+    chainId: ChainId
+    cursor?: string
+    limit?: number
+    addressCollection?: string[]
+  }): Promise<NFTResponse> {
     try {
+      const queryParams = new URLSearchParams({
+        chain: this.getChainType(params.chainId),
+        format: 'decimal',
+        limit: (params.limit || 20).toString(),
+      })
+      if (params.cursor) {
+        queryParams.append('cursor', params.cursor)
+      }
+      if (params.addressCollection && params.addressCollection.length > 0) {
+        params.addressCollection.forEach((address) => {
+          queryParams.append('token_addresses[]', address)
+        })
+      }
       const res = await fetcher({
-        url: `/${params.address}/nft?chain=${this.getChainType(params.chainId)}&format=decimal${params.cursor ? `&cursor=${params.cursor}` : ''}&limit=${params.limit || 20}`,
+        url: `/${params.address}/nft?${queryParams.toString()}`,
       })
 
       return res?.data || res
@@ -100,6 +119,7 @@ class MoralisService {
       const res = await fetcher({
         url: `/${params.address}/nft/collections?${paramsSearch.toString()}`,
       })
+      console.log({ getCollectionsByWallet: res })
 
       return (
         res?.data || {

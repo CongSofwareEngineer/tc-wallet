@@ -114,7 +114,7 @@ const Collections = ({ scrollY, headerHeight }: Props) => {
             if (currentSwipeable.current) {
               currentSwipeable.current = false
             } else {
-              // router.push(`/nft-detail/${item.token_address}/${item.token_id}`)
+              router.push(`/nft-list/${item.token_address}`)
             }
           }}
           style={styles.cryptoItem}
@@ -146,7 +146,7 @@ const Collections = ({ scrollY, headerHeight }: Props) => {
     return (
       <TouchableOpacity
         key={`${index}-GridItem`}
-        // onPress={() => router.push(`/nft-detail/${item.token_address}/${item.token_id}`)}
+        onPress={() => router.push(`/nft-list/${item.token_address}`)}
         style={{
           width: itemWidth,
           margin: ITEM_MARGIN / 2,

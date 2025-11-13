@@ -11,6 +11,10 @@ export interface FilterState {
     all: boolean
     hideSpam: boolean
   }
+  collections: {
+    all: boolean
+    hideSpam: boolean
+  }
 }
 
 const initialState: FilterState = {
@@ -21,6 +25,10 @@ const initialState: FilterState = {
     hideImported: false,
   },
   nfts: {
+    all: true,
+    hideSpam: false,
+  },
+  collections: {
     all: true,
     hideSpam: false,
   },

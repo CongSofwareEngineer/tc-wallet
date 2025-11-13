@@ -11,26 +11,28 @@ import useWallets from '../useWallets'
 
 const PAGE_SIZE = 20
 
-const useListNFTs = () => {
+const useListNFTs = (addressCollection: string[] = []) => {
   const { wallet } = useWallets()
   const { chainId } = useChainSelected()
   const { filters } = useFilter()
 
   const data = useInfiniteQuery({
-    queryKey: [KEY_REACT_QUERY.getNFTsByWallet, wallet?.address, chainId],
+    queryKey: [KEY_REACT_QUERY.getNFTsByWallet, wallet?.address, chainId, addressCollection],
     initialPageParam: '',
     queryFn: async ({ pageParam }) => {
       const response = await MoralisService.getNFTsByWallet({
-        address: wallet?.address || '',
+        // address: wallet?.address || '',
+        address: '0x9f276af79b2b5de2946a88b0fe2717318f924d7c',
         chainId,
         cursor: pageParam,
         limit: PAGE_SIZE,
+        addressCollection,
       })
 
       return response as NFTResponse
     },
     getNextPageParam: (lastPage: NFTResponse) => lastPage.cursor || undefined,
-    enabled: !!'0x9f276af79b2b5de2946a88b0fe2717318f924d7c' && !!chainId,
+    enabled: !!wallet?.address && !!chainId && addressCollection?.length! > 0,
     refetchInterval: false,
     refetchIntervalInBackground: false,
     refetchOnMount: false,

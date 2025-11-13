@@ -1,8 +1,9 @@
-import { Address, TransactionRequest } from 'viem'
+import { Address, hexToBigInt, isHex, TransactionRequest } from 'viem'
 
 import { store } from '@/redux/store'
 import { RawTransactionEVM } from '@/types/web3'
 
+import { TYPE_TRANSACTION } from '@/constants/walletConncet'
 import Web3Service from '../web3'
 
 class EVMServices extends Web3Service {
@@ -28,6 +29,10 @@ class EVMServices extends Web3Service {
       value: raw.value,
     }
 
+    if (tx.value && isHex(tx.value)) {
+      tx.value = hexToBigInt(tx.value)
+    }
+
     if (raw.from) {
       const nonce = await publicClient.getTransactionCount({ address: raw.from as Address, blockTag: 'latest' })
       tx.nonce = nonce
@@ -43,19 +48,31 @@ class EVMServices extends Web3Service {
     // 3) Gas price / fees
     if (raw.gasPrice) {
       tx.gasPrice = raw.gasPrice
+      if (isHex(raw.gasPrice)) {
+        tx.gasPrice = hexToBigInt(raw.gasPrice)
+      }
     } else {
       if (raw.maxFeePerGas || raw.maxPriorityFeePerGas) {
         if (raw.maxFeePerGas) {
           tx.maxFeePerGas = raw.maxFeePerGas
+          if (isHex(raw.maxFeePerGas)) {
+            tx.maxFeePerGas = hexToBigInt(raw.maxFeePerGas)
+          }
         }
         if (raw.maxPriorityFeePerGas) {
           tx.maxPriorityFeePerGas = raw.maxPriorityFeePerGas
+          if (isHex(raw.maxPriorityFeePerGas)) {
+            tx.maxPriorityFeePerGas = hexToBigInt(raw.maxPriorityFeePerGas)
+          }
         }
       } else {
         const gasPrice = await this.getGasPrice(chainId, raw?.multiplier)
 
         tx.gasPrice = gasPrice
       }
+    }
+    if (raw.type) {
+      tx.type = TYPE_TRANSACTION[raw.type]
     }
 
     return tx

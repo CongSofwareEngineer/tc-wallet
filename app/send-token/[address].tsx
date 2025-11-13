@@ -30,6 +30,7 @@ import { isAddress, isTokenNative } from '@/utils/nvm'
 import { height } from '@/utils/systems'
 import WalletEvmUtil from '@/utils/walletEvm'
 
+import { IsIos } from '@/constants/app'
 import InputEnter from './Component/InputEnter'
 import { createStyles } from './styles'
 
@@ -503,12 +504,12 @@ const SendTokenScreen = () => {
         {!!txHash && (
           <View style={styles.resultCard}>
             <ThemedText style={[styles.resultTitle, { color: isDark ? '#10B981' : '#047857' }]}>Transaction Successful</ThemedText>
-            <ThemedText selectable style={[styles.resultText, { color: isDark ? '#10B981' : '#065F46' }]}>
+            <ThemedText allowFontScaling={false} selectable style={[styles.resultText, { color: isDark ? '#10B981' : '#065F46' }]}>
               {txHash}{' '}
               <TouchableOpacity onPress={() => copyToClipboard(txHash)}>
                 <AntDesign style={{ position: 'relative', top: 4 }} name='copy' size={16} color={isDark ? '#10B981' : '#065F46'} />
               </TouchableOpacity>
-              <View style={{ flex: 1 }} />
+              {!IsIos && <View style={{ width: '100%' }} />}
             </ThemedText>
           </View>
         )}
