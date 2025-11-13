@@ -7,6 +7,7 @@ import EVMServices from '@/services/EVM'
 import { Params } from '@/types/walletConnect'
 import { RawTransactionEVM } from '@/types/web3'
 
+import { TYPE_TRANSACTION } from '@/constants/walletConncet'
 import { decodeData } from '../crypto'
 import { lowercase } from '../functions'
 
@@ -41,7 +42,6 @@ class WalletEvmUtil {
         from: raw.from || wallet.account.address,
         chainId,
       })
-      console.log({ getRawTransactions: tx })
 
       if (raw.gas) {
         tx.gas = raw.gas
@@ -84,22 +84,72 @@ class WalletEvmUtil {
 
       const tx = await EVMServices.getRawTransactions({
         to: raw.to,
-        data: raw.data,
-        value: raw.value,
         from: raw.from || wallet.account.address,
         chainId: raw.chainId,
       })
 
       if (raw.gas) {
         tx.gas = raw.gas
-      } else {
-        const gas = await EVMServices.estimateGas({ ...tx })
-        tx.gas = BigInt(Bignumber(gas.toString()).multipliedBy(1.05).decimalPlaces(0).toFixed()) // add 5% buffer
+        if (isHex(raw.gas)) {
+          tx.gas = hexToBigInt(raw.gas)
+        }
+      }
+
+      if (raw.nonce) {
+        tx.nonce = raw.nonce
+        if (isHex(raw.nonce)) {
+          tx.nonce = Number(hexToBigInt(raw.nonce).toString())
+        }
+      }
+
+      if (raw.value) {
+        tx.value = raw.value
+        if (isHex(raw.value)) {
+          tx.value = hexToBigInt(raw.value)
+        }
+      }
+
+      if (raw.data) {
+        tx.data = raw.data
+      }
+
+      if (raw.maxFeePerGas) {
+        tx.maxFeePerGas = raw.maxFeePerGas
+        if (isHex(raw.maxFeePerGas)) {
+          tx.maxFeePerGas = hexToBigInt(raw.maxFeePerGas)
+        }
+      }
+
+      if (raw.maxPriorityFeePerGas) {
+        tx.maxPriorityFeePerGas = raw.maxPriorityFeePerGas
+        if (isHex(raw.maxPriorityFeePerGas)) {
+          tx.maxPriorityFeePerGas = hexToBigInt(raw.maxPriorityFeePerGas)
+        }
+      }
+
+      if (raw.maxFeePerBlobGas) {
+        tx.maxFeePerBlobGas = raw.maxFeePerBlobGas
+        if (isHex(raw.maxFeePerBlobGas)) {
+          tx.maxFeePerBlobGas = hexToBigInt(raw.maxFeePerBlobGas)
+        }
+      }
+
+      if (raw.type) {
+        tx.type = TYPE_TRANSACTION[raw.type]
+      }
+
+      if (raw.authorizationList) {
+        tx.authorizationList = raw.authorizationList
+      }
+      if (raw.gasPrice) {
+        tx.gasPrice = raw.gasPrice
+        if (isHex(raw.gasPrice)) {
+          tx.gasPrice = hexToBigInt(raw.gasPrice)
+        }
       }
 
       const signature = await wallet.signTransaction({
         chain: publicClient.chain,
-        account: wallet.account.address,
         ...tx,
       })
 
@@ -200,9 +250,13 @@ class WalletEvmUtil {
           result = await WalletEvmUtil.signTypedData(raw, wallet?.privateKey)
           break
         case 'eth_signTransaction':
-          msgParams.chainId = chainId
-          result = await WalletEvmUtil.signTransaction(msgParams, wallet?.privateKey)
-          // result = '0x' + 'abcd'.repeat(16) // Fake tx hash for demonstration
+          result = await WalletEvmUtil.signTransaction(
+            {
+              ...msgParams,
+              chainId,
+            },
+            wallet?.privateKey
+          )
           break
         case 'eth_sendTransaction':
           result = await WalletEvmUtil.sendTransaction(
