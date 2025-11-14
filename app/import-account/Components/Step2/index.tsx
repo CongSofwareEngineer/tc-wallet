@@ -20,6 +20,7 @@ import { width } from '@/utils/systems'
 
 import styles from '../../styles'
 
+import { Ionicons } from '@expo/vector-icons'
 import stylesCustom from './styles'
 type Props = {
   handleClose: () => void
@@ -119,7 +120,7 @@ const Step2 = ({ handleClose }: Props) => {
                     style={{ flex: 1, alignItems: 'center' }}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-                      <AntDesign name='copy' size={16} color={text.color} />
+                      <Ionicons name='copy-outline' size={16} color={text.color} />
                       <ThemedText>{translate('common.copy')}</ThemedText>
                     </View>
                   </ThemeTouchableOpacity>

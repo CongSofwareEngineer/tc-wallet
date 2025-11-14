@@ -8,7 +8,7 @@ import ThemedText from '@/components/UI/ThemedText'
 import { GAP_DEFAULT } from '@/constants/style'
 import useDecodeTx from '@/hooks/react-query/useDecodeTx'
 import { copyToClipboard } from '@/utils/functions'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, Ionicons } from '@expo/vector-icons'
 import BigNumber from 'bignumber.js'
 import { ScrollView, TouchableOpacity, View } from 'react-native'
 import { hexToNumber } from 'viem'
@@ -58,8 +58,8 @@ const Row = ({ label, value }: { label: string; value: any }) => {
       <ThemedText style={{ textTransform: 'capitalize', fontWeight: '600' }}>{label}:</ThemedText>
       <ThemedText type='small' style={{ opacity: 0.5 }}>
         {valueFormatted}{' '}
-        <AntDesign
-          name='copy'
+        <Ionicons
+          name='copy-outline'
           size={12}
           color='#A0A0A0'
           onPress={() => {

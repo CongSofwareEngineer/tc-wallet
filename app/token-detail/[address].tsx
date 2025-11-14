@@ -16,6 +16,7 @@ import useChains from '@/hooks/useChains'
 import useTheme from '@/hooks/useTheme'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
 import { isTokenNative } from '@/utils/nvm'
+import { Ionicons } from '@expo/vector-icons'
 
 const TokenDetailScreen = () => {
   const { address } = useLocalSearchParams<{ address: string }>()
@@ -88,7 +89,7 @@ const TokenDetailScreen = () => {
               {ellipsisText(isTokenNative(tokenCurrent.token_address) ? zeroAddress : tokenCurrent.token_address, 8, 12)}
             </Text>
             <TouchableOpacity onPress={handleCopy} style={styles.copyButton}>
-              <Feather name='copy' size={16} color={COLORS.green600} />
+              <Ionicons name='copy-outline' size={16} color={COLORS.green600} />
             </TouchableOpacity>
           </View>
         </View>
