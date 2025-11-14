@@ -20,6 +20,7 @@ import MyImage from '@/components/MyImage'
 import { images } from '@/configs/images'
 import { IsIos } from '@/constants/app'
 import { width } from '@/utils/systems'
+import { Ionicons } from '@expo/vector-icons'
 import styles from './styles'
 
 const WalletDetailScreen = () => {
@@ -166,7 +167,7 @@ const WalletDetailScreen = () => {
               <ThemedText style={styles.label}>Address</ThemedText>
               <TouchableOpacity style={styles.valueRow} onPress={() => handleCopy(walletSelected.address, 'Địa chỉ')}>
                 <ThemedText style={styles.addressValue} numberOfLines={1}>
-                  {ellipsisText(walletSelected.address, 4, 6)} <AntDesign name='copy' size={16} color={text.color} />
+                  {ellipsisText(walletSelected.address, 4, 6)} <Ionicons name='copy-outline' size={16} color={text.color} />
                 </ThemedText>
               </TouchableOpacity>
             </View>
@@ -193,7 +194,8 @@ const WalletDetailScreen = () => {
             {showPrivateKey && (
               <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(privateKey, 'Private key')}>
                 <ThemedText style={styles.hiddenText}>
-                  {privateKey} <AntDesign style={{ position: 'relative', top: 4, paddingHorizontal: 2 }} name='copy' size={14} color={text.color} />
+                  {privateKey}{' '}
+                  <Ionicons style={{ position: 'relative', top: 4, paddingHorizontal: 2 }} name='copy-outline' size={14} color={text.color} />
                   {!IsIos && <View style={{ width: '100%' }} />}
                 </ThemedText>
               </TouchableOpacity>
@@ -211,7 +213,7 @@ const WalletDetailScreen = () => {
                 <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(walletSelected.passPhrase, 'Private key')}>
                   <ThemedText style={styles.hiddenText} selectable>
                     {walletSelected.passPhrase}{' '}
-                    <AntDesign style={{ position: 'relative', top: 4, paddingHorizontal: 4 }} name='copy' size={14} color={text.color} />
+                    <Ionicons style={{ position: 'relative', top: 4, paddingHorizontal: 4 }} name='copy-outline' size={14} color={text.color} />
                     {!IsIos && <View style={{ width: '100%' }} />}
                   </ThemedText>
                 </TouchableOpacity>

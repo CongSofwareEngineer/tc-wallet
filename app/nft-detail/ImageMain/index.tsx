@@ -20,8 +20,8 @@ const ImageMain = ({ nft }: Props) => {
   const [showAnimation, setShowAnimation] = useState(false)
 
   const { data: metaData, isLoading } = useNftMetadataEVM(nft)
-  const { data: typeUrlImage } = useTypeUrlImage(metaData?.image)
-  const { data: typeUrlAnimation } = useTypeUrlImage(metaData?.animation_url)
+  const { data: typeUrlImage, isLoading: isLoadingImage } = useTypeUrlImage(metaData?.image)
+  const { data: typeUrlAnimation, isLoading: isLoadingAnimation } = useTypeUrlImage(metaData?.animation_url)
 
   const isHasAnimation = useMemo(() => {
     if (metaData?.animation_url) {
@@ -35,16 +35,14 @@ const ImageMain = ({ nft }: Props) => {
 
   return (
     <View style={styles.container}>
-      {isLoading ? (
+      {isLoading || isLoadingImage || isLoadingAnimation ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <MyLoading />
         </View>
       ) : (
         <>
           {/* Image View */}
-          {!showAnimation && metaData?.image && typeUrlImage === 'Image' && (
-            <MyImage src={detectUrlImage(metaData?.image)} style={styles.image} resizeMode='contain' />
-          )}
+          {!showAnimation && metaData?.image && typeUrlImage === 'Image' && <MyImage src={detectUrlImage(metaData?.image)} style={styles.image} />}
 
           {!showAnimation && metaData?.image && typeUrlImage === 'Video' && (
             <View style={styles.animationContainer}>

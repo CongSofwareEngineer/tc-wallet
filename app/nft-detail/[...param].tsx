@@ -13,6 +13,7 @@ import useChains from '@/hooks/useChains'
 import useTheme from '@/hooks/useTheme'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
 
+import MyLoading from '@/components/MyLoading'
 import ImageMain from './ImageMain'
 import { styles } from './styles'
 import Traits from './Traits'
@@ -39,7 +40,7 @@ const NFTDetailScreen = () => {
       <View style={styles.container}>
         <HeaderScreen title='NFT Detail' />
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ThemedText>Loading...</ThemedText>
+          <MyLoading />
         </View>
       </View>
     )

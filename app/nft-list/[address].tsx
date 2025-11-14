@@ -1,15 +1,16 @@
 import { AntDesign, Ionicons } from '@expo/vector-icons'
-import { Image } from 'expo-image'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useMemo, useState } from 'react'
-import { TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, TextInput, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ThemedText from '@/components/UI/ThemedText'
 import useListNFTs from '@/hooks/react-query/useListNFTs'
 import useMode from '@/hooks/useMode'
 
+import MyImage from '@/components/MyImage'
 import useTheme from '@/hooks/useTheme'
+import { detectUrlImage } from '@/utils/functions'
 import createStyles from './styles'
 
 type ViewMode = 'grid' | 'list'
@@ -20,11 +21,12 @@ const NFTListScreen = () => {
   const { isDark } = useMode()
   const { text } = useTheme()
   const styles = createStyles(isDark)
+  const router = useRouter()
 
   const { data: nfts, isLoading } = useListNFTs(address ? [address] : [])
 
   const [searchQuery, setSearchQuery] = useState('')
-  const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [filter, setFilter] = useState<FilterType>('all')
 
   // Filter and search NFTs
@@ -47,7 +49,7 @@ const NFTListScreen = () => {
     if (filter !== 'all') {
       filtered = filtered.filter((nft) => {
         const metadata = nft.normalized_metadata
-        if (filter === 'image') return metadata?.image || metadata?.image_url
+        if (filter === 'image') return metadata?.image
         if (filter === 'video') return metadata?.animation_url?.includes('video')
         if (filter === 'audio') return metadata?.animation_url?.includes('audio')
         return true
@@ -59,10 +61,10 @@ const NFTListScreen = () => {
 
   const renderGridItem = ({ item }: any) => (
     <TouchableOpacity style={styles.gridItem}>
-      <Image
-        source={{ uri: item.normalized_metadata?.image || item.normalized_metadata?.image_url || item.metadata?.image }}
+      <MyImage
+        src={item.normalized_metadata?.image || item.normalized_metadata?.image_url || item.metadata?.image}
         style={styles.nftImage}
-        contentFit='cover'
+        contentFit='contain'
       />
       <View style={styles.nftInfo}>
         <ThemedText style={styles.nftName} numberOfLines={1}>
@@ -79,32 +81,36 @@ const NFTListScreen = () => {
     </TouchableOpacity>
   )
 
-  const renderListItem = ({ item }: any) => (
-    <TouchableOpacity style={styles.listItem}>
-      <Image
-        source={{ uri: item.normalized_metadata?.image || item.normalized_metadata?.image_url || item.metadata?.image }}
-        style={styles.listNftImage}
-        contentFit='cover'
-      />
-      <View style={styles.listNftInfo}>
-        <View style={styles.listNftTop}>
-          <ThemedText style={styles.nftName} numberOfLines={1}>
-            {item.name || `#${item.token_id}`}
-          </ThemedText>
-          <ThemedText style={styles.nftCollection} numberOfLines={1}>
-            {item.contract_type || 'NFT'}
-          </ThemedText>
-          {/* <View style={styles.badge}>
+  const renderListItem = ({ item }: any) => {
+    const urlImage = item.normalized_metadata?.image || item.normalized_metadata?.image_url || item.metadata?.image
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          router.push(`/nft-detail/${item.token_address}/${item.token_id}`)
+        }}
+        style={styles.listItem}
+      >
+        <MyImage src={detectUrlImage(urlImage)} style={styles.listNftImage} contentFit='contain' />
+        <View style={styles.listNftInfo}>
+          <View style={styles.listNftTop}>
+            <ThemedText style={styles.nftName} numberOfLines={1}>
+              {item.name || `#${item.token_id}`}
+            </ThemedText>
+            <ThemedText style={styles.nftCollection} numberOfLines={1}>
+              {item.contract_type || 'NFT'}
+            </ThemedText>
+            {/* <View style={styles.badge}>
             <ThemedText style={styles.badgeText}>{item.symbol || 'NFT'}</ThemedText>
           </View> */}
+          </View>
+          <View style={styles.listNftBottom}>
+            <ThemedText style={styles.nftId}>Token ID: {item.token_id} </ThemedText>
+            {item.amount && <ThemedText style={styles.nftChain}>x{item.amount}</ThemedText>}
+          </View>
         </View>
-        <View style={styles.listNftBottom}>
-          <ThemedText style={styles.nftId}>Token ID: {item.token_id} </ThemedText>
-          {item.amount && <ThemedText style={styles.nftChain}>x{item.amount}</ThemedText>}
-        </View>
-      </View>
-    </TouchableOpacity>
-  )
+      </TouchableOpacity>
+    )
+  }
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
@@ -115,7 +121,7 @@ const NFTListScreen = () => {
   )
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       {/* Search and Filter Header */}
       <View style={styles.header}>
         <HeaderScreen title='My NFTs' />
@@ -170,7 +176,7 @@ const NFTListScreen = () => {
       </View>
 
       {/* NFT List */}
-      {/* {isLoading ? (
+      {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size='large' color={isDark ? '#60A5FA' : '#3B82F6'} />
           <ThemedText style={styles.emptyText}>Loading NFTs...</ThemedText>
@@ -186,7 +192,7 @@ const NFTListScreen = () => {
           ListEmptyComponent={renderEmpty}
           showsVerticalScrollIndicator={false}
         />
-      )} */}
+      )}
     </View>
   )
 }

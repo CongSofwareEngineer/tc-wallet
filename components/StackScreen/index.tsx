@@ -114,7 +114,7 @@ const StackScreen = () => {
           name='nft-list'
           options={{
             animation: 'fade_from_bottom',
-            presentation: 'formSheet',
+            presentation: 'modal',
 
             sheetAllowedDetents: 'fitToContents',
             sheetElevation: 0,

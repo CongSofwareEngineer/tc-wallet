@@ -14,6 +14,7 @@ import useChains from '@/hooks/useChains'
 import useWallets from '@/hooks/useWallets'
 
 import useTheme from '@/hooks/useTheme'
+import { width } from '@/utils/systems'
 import Collections from './Components/Collections'
 import HeaderHome from './Components/Header'
 import Tokens from './Components/Tokens'
@@ -77,14 +78,14 @@ export default function HomeScreen() {
 
           {/* Balance Section */}
           <View style={[styles.balanceSection, { paddingTop: 16 }]}>
-            <ThemedText type='title' style={[styles.balanceAmount]}>
+            <ThemedText type='title' style={[styles.balanceAmount, { fontSize: width(8), lineHeight: width(10) }]}>
               $
               {Big(totalUSD || 0)
-                .decimalPlaces(6, Big.ROUND_DOWN)
+                .decimalPlaces(4, Big.ROUND_DOWN)
                 .toFormat()}
             </ThemedText>
             {/* <Options /> */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20, marginTop: 12 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20, marginTop: 6 }}>
               {/* <ThemeTouchableOpacity onPress={handleTestApi} style={styles.buyButton}>
                 <Feather name='tablet' size={20} color='#FFFFFF' />
                 <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>handleTestApi</ThemedText>

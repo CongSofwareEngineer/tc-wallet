@@ -8,33 +8,38 @@ type Props = {
 } & Partial<ImageProps>
 const MyImage = ({ src, ...props }: Props) => {
   const [caseImage, setCaseImage] = useState(1)
+
   switch (caseImage) {
     case 1:
       return (
         <Image
-          onError={() => {
+          contentFit='contain'
+          {...props}
+          placeholder={images.gifs.loading}
+          placeholderContentFit='contain'
+          onError={(error) => {
             setCaseImage(2)
           }}
-          placeholder={images.icons.unknown}
-          source={src ?? images.icons.unknown}
-          {...props}
+          source={src}
         />
       )
+
     case 2:
       return (
         <Image
-          onError={() => {
+          contentFit='contain'
+          {...props}
+          placeholder={images.gifs.loading}
+          placeholderContentFit='contain'
+          onError={(error) => {
             setCaseImage(3)
           }}
-          placeholder={images.icons.unknown}
-          source={src ? { uri: src } : images.icons.unknown}
-          {...props}
+          source={{ uri: src }}
         />
       )
-    case 3:
-      return <Image source={images.icons.unknown} {...props} />
+
     default:
-      return <Image source={images.icons.unknown} {...props} />
+      return <Image {...props} source={images.icons.unknown} contentFit='contain' />
   }
 }
 

@@ -8,6 +8,7 @@ import useTheme from '@/hooks/useTheme'
 import { RequestWC } from '@/redux/slices/requestWC'
 import { copyToClipboard } from '@/utils/functions'
 
+import { Ionicons } from '@expo/vector-icons'
 import styles from '../../styles'
 
 const SignTypedData = ({ params }: { params: RequestWC }) => {
@@ -72,7 +73,7 @@ const SignTypedData = ({ params }: { params: RequestWC }) => {
           </View>
           {onCopy && (
             <TouchableOpacity onPress={onCopy} style={sectionStyles.iconButton}>
-              <AntDesign name='copy' size={16} color={primaryColor} />
+              <Ionicons name='copy-outline' size={16} color={primaryColor} />
             </TouchableOpacity>
           )}
           <AntDesign name='down' size={16} color={textSecondary} style={{ transform: [{ rotate: open ? '180deg' : '0deg' }], marginLeft: 8 }} />

@@ -14,6 +14,7 @@ import useMode from '@/hooks/useMode'
 import useWallets from '@/hooks/useWallets'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
 
+import { images } from '@/configs/images'
 import { createStyles } from './styles'
 
 const QRInfoAddressScreen = () => {
@@ -61,10 +62,9 @@ const QRInfoAddressScreen = () => {
           size={250}
           backgroundColor='transparent'
           color={isDark ? '#FFFFFF' : '#000000'}
-          logo={require('@/assets/images/favicon.png')}
+          logo={images.logo}
           logoSize={40}
           logoBackgroundColor='#FFFFFF'
-          logoBorderRadius={20}
         />
       </View>
 
