@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import Modal from 'react-native-modal'
+import ModalBox from 'react-native-modalbox'
 
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { BORDER_RADIUS_DEFAULT, COLORS } from '@/constants/style'
@@ -13,52 +13,41 @@ const MySheet = () => {
   return (
     <>
       {sheet?.isOpen && (
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-          }}
-        />
-      )}
-      <Modal
-        avoidKeyboard
-        backdropColor='transparent'
-        animationIn={'slideInUp'}
-        animationOut={'slideOutDown'}
-        swipeDirection='down'
-        isVisible={sheet?.isOpen || false}
-        onSwipeComplete={(e) => {
-          if (e?.swipingDirection === 'down') {
-            closeSheet()
-          }
-        }}
-        style={{ margin: 0, justifyContent: 'flex-end' }}
-      >
-        <View style={{ flex: 1, height: height(100), justifyContent: 'flex-end' }}>
-          <View style={[styles.container, sheet?.containerContentStyle]}>
-            <View style={{ alignItems: 'center' }}>
-              <ThemeTouchableOpacity type='text' onPress={closeSheet} activeOpacity={0.7}>
-                <View
-                  style={{
-                    height: 4,
-                    backgroundColor: '#e0e0e0',
-                    borderRadius: 2,
-                    width: 40,
-                    marginBottom: 16,
+        <ModalBox
+          backdrop
+          position={'bottom'}
+          onClosed={() => closeSheet()}
+          swipeToClose
+          isOpen={sheet?.isOpen || false}
+          backdropColor='rgba(0,0,0,0.8)'
+          style={{ margin: 0, justifyContent: 'flex-end', backgroundColor: 'transparent' }}
+        >
+          <View style={{ flex: 1, height: height(100), justifyContent: 'flex-end' }}>
+            <View style={[styles.container, sheet?.containerContentStyle]}>
+              <View style={{ alignItems: 'center' }}>
+                <ThemeTouchableOpacity
+                  type='text'
+                  onPress={() => {
+                    closeSheet()
                   }}
-                />
-              </ThemeTouchableOpacity>
+                  activeOpacity={0.7}
+                >
+                  <View
+                    style={{
+                      height: 4,
+                      backgroundColor: '#e0e0e0',
+                      borderRadius: 2,
+                      width: 40,
+                      marginBottom: 16,
+                    }}
+                  />
+                </ThemeTouchableOpacity>
+              </View>
+              {sheet?.children || sheet?.content}
             </View>
-            {sheet?.children || sheet?.content}
           </View>
-        </View>
-      </Modal>
+        </ModalBox>
+      )}
     </>
   )
 }

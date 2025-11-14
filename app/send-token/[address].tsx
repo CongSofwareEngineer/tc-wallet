@@ -149,7 +149,7 @@ const SendTokenScreen = () => {
           </ThemedText>
 
           <ScrollView style={{ maxHeight: 420 }}>
-            {(wallets || []).map((w, index) => (
+            {[...wallets].map((w, index) => (
               <TouchableOpacity
                 key={w.address + index}
                 style={styles.tokenItem}

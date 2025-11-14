@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { StyleProp, ViewStyle } from 'react-native'
-import { ModalProps } from 'react-native-modal'
+import { ModalProps } from 'react-native-modalbox'
 
 export type SheetProps = {
   maskClosable?: boolean
