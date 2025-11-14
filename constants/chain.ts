@@ -41,10 +41,6 @@ export const CHAIN_DEFAULT = [
     iconChain: 'https://icons.llamao.fi/icons/chains/rsz_arbitrum.jpg',
   },
   {
-    ...polygon,
-    iconChain: 'https://icons.llamao.fi/icons/chains/rsz_polygon.jpg',
-  },
-  {
     ...zksync,
     iconChain: 'https://icons.llamao.fi/icons/chains/rsz_zksync%20era.jpg',
   },
