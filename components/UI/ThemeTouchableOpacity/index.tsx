@@ -3,11 +3,23 @@ import { StyleSheet, TouchableOpacity, TouchableOpacityProps, View } from 'react
 
 import MyLoading from '@/components/MyLoading'
 import { COLORS } from '@/constants/style'
+import { LinearGradient } from 'expo-linear-gradient'
 
 type Props = {
   type?: 'default' | 'primary' | 'danger' | 'text' | 'outline'
   loading?: boolean
 } & TouchableOpacityProps
+
+const BgButton = ({ type }: { type?: 'default' | 'primary' | 'danger' | 'text' | 'outline' }) => {
+  return (
+    <LinearGradient
+      style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0 }}
+      colors={['#1c711c', '#2b8417', '#24ba06']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+    />
+  )
+}
 
 const ThemeTouchableOpacity = ({ type = 'default', ...props }: Props) => {
   return (
@@ -17,6 +29,7 @@ const ThemeTouchableOpacity = ({ type = 'default', ...props }: Props) => {
       style={[
         {
           opacity: props.disabled || props.loading ? 0.7 : 1,
+          position: 'relative',
         },
         styles.container,
         styles[type],
@@ -24,6 +37,7 @@ const ThemeTouchableOpacity = ({ type = 'default', ...props }: Props) => {
       ]}
       disabled={props.disabled || props.loading}
     >
+      {type === 'default' && <BgButton />}
       {props.loading ? (
         <View style={styles.loadingWrapper}>
           <MyLoading size={20} />
@@ -52,10 +66,11 @@ const styles = StyleSheet.create({
     margin: 'auto',
   },
   default: {
-    backgroundColor: '#00875A',
+    overflow: 'hidden',
+    // backgroundColor: '#00875A',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#006C48',
+    // borderColor: '#006C48',
   },
 
   primary: {
