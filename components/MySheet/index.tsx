@@ -14,8 +14,9 @@ const MySheet = () => {
     <>
       {sheet?.isOpen && (
         <ModalBox
+          {...sheet}
           backdrop
-          position={'bottom'}
+          position={sheet?.position || 'bottom'}
           onClosed={() => closeSheet()}
           swipeToClose
           isOpen={sheet?.isOpen || false}

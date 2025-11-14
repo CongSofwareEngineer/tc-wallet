@@ -9,7 +9,7 @@ const createStyles = (isDarkMode = false) => {
       backgroundColor: isDarkMode ? COLORS.black : COLORS.white,
     },
     header: {
-      backgroundColor: isDarkMode ? COLORS.black2 : COLORS.white,
+      // backgroundColor: isDarkMode ? COLORS.black2 : COLORS.white,
       paddingHorizontal: 16,
       paddingVertical: 12,
       borderBottomWidth: 1,
@@ -80,7 +80,6 @@ const createStyles = (isDarkMode = false) => {
       backgroundColor: isDarkMode ? COLORS.black3 : COLORS.white,
     },
     countText: {
-      fontSize: 14,
       color: isDarkMode ? COLORS.gray : COLORS.gray2,
       marginTop: 8,
     },
@@ -102,7 +101,6 @@ const createStyles = (isDarkMode = false) => {
     nftImage: {
       width: '100%',
       aspectRatio: 1,
-      backgroundColor: isDarkMode ? COLORS.gray2 : COLORS.gray1,
     },
     nftInfo: {
       padding: 12,
@@ -145,7 +143,7 @@ const createStyles = (isDarkMode = false) => {
       width: 80,
       height: 80,
       borderRadius: 8,
-      backgroundColor: isDarkMode ? COLORS.gray2 : COLORS.gray1,
+      // backgroundColor: isDarkMode ? COLORS.gray2 : COLORS.gray1,
       marginRight: 12,
     },
     listNftInfo: {

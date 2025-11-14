@@ -9,6 +9,7 @@ export type SheetProps = {
   afterClose?: () => any
   onClose?: () => any
   containerContentStyle?: StyleProp<ViewStyle>
+  position?: 'top' | 'center' | 'bottom' | string | undefined
 } & Partial<ModalProps>
 
 const sheetSlice = createSlice({

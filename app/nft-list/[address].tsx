@@ -122,10 +122,10 @@ const NFTListScreen = () => {
 
   return (
     <View style={[styles.container]}>
+      <HeaderScreen title='List NFTs' />
+
       {/* Search and Filter Header */}
       <View style={styles.header}>
-        <HeaderScreen title='My NFTs' />
-
         {/* Search Input */}
         <View style={styles.searchContainer}>
           <Ionicons name='search' size={20} color={isDark ? '#9CA3AF' : '#6B7280'} style={styles.searchIcon} />
@@ -145,7 +145,7 @@ const NFTListScreen = () => {
 
         {/* Filter and View Toggle */}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <ThemedText style={styles.countText}>
+          <ThemedText type='subtitle' style={styles.countText}>
             {filteredNFTs.length} {filteredNFTs.length === 1 ? 'NFT' : 'NFTs'}
           </ThemedText>
           <View style={[{ flex: 1, position: 'relative', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 12 }]}>
