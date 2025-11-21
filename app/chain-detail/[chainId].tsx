@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import styles from './styles'
 
 const ChainDetailScreen = () => {
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { mode } = useMode()
   const { text } = useTheme()
@@ -35,9 +36,15 @@ const ChainDetailScreen = () => {
   })
 
   const handleSave = () => {
-    // Save logic here
-    console.log('Saving chain details:', formData)
-    router.back()
+    try {
+      setIsLoading(true)
+      // Save logic here
+      console.log('Saving chain details:', formData)
+      router.back()
+    } catch (error) {
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -86,6 +93,7 @@ const ChainDetailScreen = () => {
                     onChangeText={(text) => setFormData({ ...formData, chainId: text })}
                     placeholder='Enter chain ID'
                     keyboardType='numeric'
+                    inputMode='numeric'
                   />
                 </View>
               </View>
@@ -108,6 +116,7 @@ const ChainDetailScreen = () => {
                 <ThemedText style={styles.label}>Block Explorer URL</ThemedText>
                 <View style={styles.inputContainer}>
                   <ThemedInput
+                    inputMode='url'
                     style={styles.input}
                     value={formData.blockExplorerUrl}
                     onChangeText={(text) => setFormData({ ...formData, blockExplorerUrl: text })}

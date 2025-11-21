@@ -44,25 +44,7 @@ module.exports = defineConfig([
       "react/self-closing-comp": "warn",
       "unused-imports/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "warn",
-
-      // "padding-line-between-statements": [
-      //   "warn",
-      //   {
-      //     blankLine: "always",
-      //     prev: "*",
-      //     next: "return",
-      //   },
-      //   {
-      //     blankLine: "always",
-      //     prev: ["const", "let", "var"],
-      //     next: "*",
-      //   },
-      //   {
-      //     blankLine: "any",
-      //     prev: ["const", "let", "var"],
-      //     next: ["const", "let", "var"],
-      //   },
-      // ],
+      "import/no-named-as-default": "off",
 
       "prettier/prettier": [
         "warn",
