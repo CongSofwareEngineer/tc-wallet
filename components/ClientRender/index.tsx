@@ -1,5 +1,5 @@
 import { DarkTheme as DarkThemePackage, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native'
-import { ReactNode } from 'react'
+import { ReactNode, lazy } from 'react'
 import { Platform, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -10,9 +10,9 @@ import usePreLoadData from '@/hooks/usePreLoadData'
 import useSubscribeWC from '@/hooks/useSubscribeWC'
 import useTheme from '@/hooks/useTheme'
 
-import MyAlert from '../MyAlert'
-import MyModal from '../MyModal'
-import MySheet from '../MySheet'
+const MyAlert = lazy(() => import('../MyAlert'))
+const MyModal = lazy(() => import('../MyModal'))
+const MySheet = lazy(() => import('../MySheet'))
 
 export const DarkTheme: Theme = {
   ...DarkThemePackage,
