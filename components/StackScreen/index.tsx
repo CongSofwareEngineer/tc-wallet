@@ -114,7 +114,7 @@ const StackScreen = () => {
           name='nft-list'
           options={{
             animation: 'fade_from_bottom',
-            presentation: 'formSheet',
+            presentation: 'modal',
 
             sheetAllowedDetents: 'fitToContents',
             sheetElevation: 0,
@@ -145,7 +145,7 @@ const StackScreen = () => {
 
       {/* <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} /> */}
       <Redirect href={wallets.length === 0 ? '/create-wallet' : '/(tabs)/home'} />
-      {/* <Redirect href={'/moralis'} /> */}
+      {/* <Redirect href={'/exchange/0x0000000000000000000000000000000000000000'} /> */}
     </>
   )
 

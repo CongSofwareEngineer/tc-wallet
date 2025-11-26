@@ -1,17 +1,13 @@
 import BigNumber from 'bignumber.js'
 import { createPublicClient, Hex, http } from 'viem'
 
-import { CHAIN_DEFAULT } from '@/constants/chain'
 import { store } from '@/redux/store'
 import { ChainId } from '@/types/web3'
 
 class Web3Service {
   static getClient(chainId: ChainId) {
     const listChain = store.getState().chains
-    let chain: any = CHAIN_DEFAULT.find((item) => item.id.toFixed() === chainId.toString())
-    if (!chain) {
-      chain = listChain.find((item) => item.id.toFixed() === chainId.toString())
-    }
+    const chain = listChain.find((item) => item.id.toFixed() === chainId.toString())
 
     const publicClient = createPublicClient({
       chain: chain,

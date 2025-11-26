@@ -1,4 +1,4 @@
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, Ionicons } from '@expo/vector-icons'
 import BigNumber from 'bignumber.js'
 import { Image } from 'expo-image'
 import React, { useMemo, useState } from 'react'
@@ -127,7 +127,7 @@ const TxDefault = ({ params }: { params: RequestWC }) => {
                 style={styles.iconButton}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <AntDesign name='copy' size={16} color={secondaryTextColor} />
+                <Ionicons name='copy-outline' size={16} color={secondaryTextColor} />
               </TouchableOpacity>
             )}
             {!!tx.to && (
@@ -143,7 +143,7 @@ const TxDefault = ({ params }: { params: RequestWC }) => {
                 style={styles.iconButton}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <AntDesign name='copy' size={16} color={secondaryTextColor} />
+                <Ionicons name='copy-outline' size={16} color={secondaryTextColor} />
               </TouchableOpacity>
             )}
             {!!tx.value && (
@@ -162,7 +162,7 @@ const TxDefault = ({ params }: { params: RequestWC }) => {
                 style={styles.iconButton}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <AntDesign name='copy' size={16} color={secondaryTextColor} />
+                <Ionicons name='copy-outline' size={16} color={secondaryTextColor} />
               </TouchableOpacity>
             )}
           </View>
@@ -206,7 +206,7 @@ const TxDefault = ({ params }: { params: RequestWC }) => {
               style={styles.iconButton}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <AntDesign name='copy' size={16} color={secondaryTextColor} />
+              <Ionicons name='copy-outline' size={16} color={secondaryTextColor} />
             </TouchableOpacity>
           )
         }

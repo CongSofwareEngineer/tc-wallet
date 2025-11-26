@@ -15,10 +15,12 @@ const getData = async ({ queryKey }: IQueryKey): Promise<keyof typeof TYPE_URL_I
 
     const isLinkDownLoad = contentDisposition.includes('attachment')
     const contentType = response.headers.get('Content-Type') || ''
+    console.log({ contentType, response })
 
     if (response?.status !== 200 || isLinkDownLoad || response.type === 'opaque') {
       return TYPE_URL_IMAGE.Image
     }
+    console.log({ contentType })
 
     switch (true) {
       case contentType.includes('image'):
@@ -37,6 +39,8 @@ const getData = async ({ queryKey }: IQueryKey): Promise<keyof typeof TYPE_URL_I
         return TYPE_URL_IMAGE.IFrame
     }
   } catch (error) {
+    console.log({ erroruseTypeUrlImage: error })
+
     return TYPE_URL_IMAGE.Image
   }
 }

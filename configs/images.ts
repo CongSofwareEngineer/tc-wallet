@@ -8,4 +8,7 @@ export const images = {
   tokens: {
     usdIcon: require('@/assets/images/tokens/usdIcon.png'),
   },
+  gifs: {
+    loading: require('@/assets/images/gifs/loading.gif'),
+  },
 }

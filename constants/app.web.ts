@@ -5,6 +5,8 @@ export const HEIGHT_SCREEN = typeof window !== 'undefined' ? window.innerHeight 
 export const WIDTH_SCREEN = typeof window !== 'undefined' ? window.innerWidth : 768
 
 export const IsIos = false // Always false on web
+export const IsAndroid = false
+export const IsWeb = true
 
 export enum TYPE_URL_IMAGE {
   Image = 'Image',

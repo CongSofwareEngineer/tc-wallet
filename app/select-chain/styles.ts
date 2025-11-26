@@ -1,6 +1,5 @@
+import { BORDER_RADIUS_DEFAULT, COLORS, GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import { StyleSheet } from 'react-native'
-
-import { PADDING_DEFAULT } from '@/constants/style'
 
 export const styles = StyleSheet.create({
   headerAddButton: {
@@ -12,8 +11,45 @@ export const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: COLORS.black,
     paddingBottom: PADDING_DEFAULT.Padding20,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.gray2,
+    borderRadius: BORDER_RADIUS_DEFAULT.Radius12,
+    paddingHorizontal: PADDING_DEFAULT.Padding16,
+    height: 44,
+    marginHorizontal: PADDING_DEFAULT.Padding16,
+    marginTop: GAP_DEFAULT.Gap16,
+    marginBottom: GAP_DEFAULT.Gap16,
+  },
+  searchIcon: {
+    marginRight: GAP_DEFAULT.Gap8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: COLORS.white,
+  },
+  clearButton: {
+    padding: 4,
+  },
+  listContent: {
+    paddingBottom: GAP_DEFAULT.Gap16,
+  },
+  networkIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  networkSymbol: {
+    fontSize: 12,
+    color: COLORS.gray,
+    marginTop: 2,
   },
   header: {
     flexDirection: 'row',

@@ -54,7 +54,6 @@ export const styles = StyleSheet.create({
   balanceAmount: {
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 20,
   },
   buyButton: {
     flexDirection: 'row',

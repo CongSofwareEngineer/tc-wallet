@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons'
+import { Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import { useLocalSearchParams } from 'expo-router'
 import React from 'react'
@@ -13,6 +13,7 @@ import useChains from '@/hooks/useChains'
 import useTheme from '@/hooks/useTheme'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
 
+import MyLoading from '@/components/MyLoading'
 import ImageMain from './ImageMain'
 import { styles } from './styles'
 import Traits from './Traits'
@@ -39,7 +40,7 @@ const NFTDetailScreen = () => {
       <View style={styles.container}>
         <HeaderScreen title='NFT Detail' />
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ThemedText>Loading...</ThemedText>
+          <MyLoading />
         </View>
       </View>
     )
@@ -51,13 +52,6 @@ const NFTDetailScreen = () => {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.imageContainer}>
-          {/* {metadata?.image ? (
-            <MyImage src={detectUrlImage(metadata.image)} style={styles.image} contentFit='cover' />
-          ) : (
-            <View style={[styles.image, { backgroundColor: '#1A1A1A', alignItems: 'center', justifyContent: 'center' }]}>
-              <MaterialIcons name='image' size={48} color={text.color} />
-            </View>
-          )} */}
           <ImageMain nft={nft} />
         </View>
 
@@ -93,8 +87,8 @@ const NFTDetailScreen = () => {
                 <ThemeTouchableOpacity onPress={handleOpenExplorer} type='text'>
                   <ThemedText style={[styles.value, { color: '#00875A' }]}>{ellipsisText(addressNFT, 4, 5)}</ThemedText>
                 </ThemeTouchableOpacity>
-                <ThemeTouchableOpacity onPress={() => copyToClipboard(addressNFT)} type='text'>
-                  <MaterialIcons name='content-copy' size={18} color='#00875A' />
+                <ThemeTouchableOpacity onPress={() => copyToClipboard(addressNFT, true)} type='text'>
+                  <Ionicons name='copy-outline' size={18} color='#00875A' />
                 </ThemeTouchableOpacity>
               </View>
             </View>

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 
-import { COLORS } from '@/constants/style'
+import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 
 export const createStyles = (isDark: boolean) =>
   StyleSheet.create({
@@ -22,7 +22,7 @@ export const createStyles = (isDark: boolean) =>
     },
     content: {
       flex: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: PADDING_DEFAULT.Padding16,
     },
     tabContainer: {
       flexDirection: 'row',

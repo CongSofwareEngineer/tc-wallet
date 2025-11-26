@@ -27,7 +27,7 @@ import { Token } from '@/services/moralis/type'
 import { RawTransactionEVM } from '@/types/web3'
 import { cloneDeep, convertBalanceToWei, copyToClipboard, ellipsisText, getRadomColor } from '@/utils/functions'
 import { isAddress, isTokenNative } from '@/utils/nvm'
-import { height } from '@/utils/systems'
+import { width } from '@/utils/systems'
 import WalletEvmUtil from '@/utils/walletEvm'
 
 import { IsIos } from '@/constants/app'
@@ -149,7 +149,7 @@ const SendTokenScreen = () => {
           </ThemedText>
 
           <ScrollView style={{ maxHeight: 420 }}>
-            {(wallets || []).map((w, index) => (
+            {[...wallets].map((w, index) => (
               <TouchableOpacity
                 key={w.address + index}
                 style={styles.tokenItem}
@@ -175,8 +175,9 @@ const SendTokenScreen = () => {
   const handleScanAddress = () => {
     openSheet({
       containerContentStyle: {
-        height: height(70),
+        height: width(100) + 200,
       },
+      position: 'center',
       content: (
         <QrScan
           type='address'

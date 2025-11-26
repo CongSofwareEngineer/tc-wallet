@@ -8,6 +8,7 @@ import useWallets from '@/hooks/useWallets'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
 import { width } from '@/utils/systems'
 import { AntDesign } from '@expo/vector-icons'
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -23,7 +24,7 @@ const HeaderHome = () => {
       <View style={[styles.containerChain, styles[`containerChain${mode}`]]}>
         <ThemeTouchableOpacity type='text' onPress={() => router.push('/select-chain')}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-            {chainCurrent?.iconChain && <MyImage source={{ uri: chainCurrent?.iconChain }} style={{ width: 20, height: 20, borderRadius: 15 }} />}
+            {chainCurrent?.iconChain && <MyImage src={chainCurrent?.iconChain} style={{ width: 20, height: 20, borderRadius: 15 }} />}
             <ThemedText>{chainCurrent?.name}</ThemedText>
             <AntDesign name='down' size={width(4)} color='#FFFFFF' />
           </View>
@@ -48,7 +49,7 @@ const HeaderHome = () => {
       <View style={styles.container}>
         <ThemeTouchableOpacity type='text' onPress={() => copyToClipboard(wallet?.address || '')}>
           <ThemedText>
-            <AntDesign name='copy' size={14} />
+            <Ionicons name='copy-outline' size={14} />
             {` `}
             {ellipsisText(wallet?.address, 5, 6)}
           </ThemedText>
