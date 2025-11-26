@@ -1,25 +1,23 @@
 import { isAddress as isAddressViem, zeroAddress } from 'viem'
 
 export const isToken = (value: string): boolean => {
-  let address = value
-  if (address.startsWith('0x') && address.length === 42) {
+  if (value.startsWith('0x') && value.length === 42) {
     return true
   }
   return false
 }
 
 export const isTokenNative = (value: string = ''): boolean => {
-  if (value === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' || value === '0x0000000000000000000000000000000000000000') {
+  if (value === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' || value === zeroAddress) {
     return true
   }
   return false
 }
 
 export const isAddress = (value: string): boolean => {
-  let address = value
-  if (isTokenNative(address)) {
-    address = zeroAddress
+  if (isTokenNative(value)) {
+    return true
   }
 
-  return isAddressViem(address)
+  return isAddressViem(value)
 }

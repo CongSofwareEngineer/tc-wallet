@@ -4,6 +4,7 @@ import { store } from '@/redux/store'
 import { RawTransactionEVM } from '@/types/web3'
 
 import { TYPE_TRANSACTION } from '@/constants/walletConncet'
+import BigNumber from 'bignumber.js'
 import Web3Service from '../web3'
 
 class EVMServices extends Web3Service {
@@ -32,16 +33,19 @@ class EVMServices extends Web3Service {
     if (tx.value && isHex(tx.value)) {
       tx.value = hexToBigInt(tx.value)
     }
-
-    if (raw.from) {
+    if (tx.nonce) {
+      if (isHex(tx.nonce)) {
+        tx.nonce = BigNumber(hexToBigInt(tx.nonce).toString()).toNumber()
+      }
+    } else {
       const nonce = await publicClient.getTransactionCount({ address: raw.from as Address, blockTag: 'latest' })
       tx.nonce = nonce
+    }
+
+    if (raw.from) {
       tx.from = raw.from
     } else {
       const walletActive = store.getState().wallet.wallet
-
-      const nonce = await publicClient.getTransactionCount({ address: walletActive!.address as Address, blockTag: 'latest' })
-      tx.nonce = nonce
       tx.from = walletActive!.address as Address
     }
 

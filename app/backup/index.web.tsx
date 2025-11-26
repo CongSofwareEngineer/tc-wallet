@@ -1,9 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
-import { EncodingType, makeDirectoryAsync, StorageAccessFramework } from 'expo-file-system/legacy'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { Animated, Platform, ScrollView, Share, TextInput, TouchableOpacity, View } from 'react-native'
-import RNFS from 'react-native-fs'
+import { Animated, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import KeyboardAvoiding from '@/components/KeyboardAvoiding'
@@ -13,7 +11,6 @@ import { useAlert } from '@/hooks/useAlert'
 import useMode from '@/hooks/useMode'
 import { useAppSelector } from '@/redux/hooks'
 import { encodeData } from '@/utils/crypto'
-import { getDataLocal, saveDataLocal } from '@/utils/storage'
 
 import { getKeyEncode } from '@/utils/secureStorage'
 import { createStyles } from './styles'
@@ -66,76 +63,20 @@ const BackupScreen = () => {
 
       // Tạo file TXT
       const fileName = `tc-wallet-backup_${timestamp}.txt`
-      if (Platform.OS === 'ios') {
-        // iOS: Lưu vào cache rồi share để user chọn nơi lưu
-        const filePath = `${RNFS.TemporaryDirectoryPath}/${fileName}`
 
-        RNFS.writeFile(filePath, backupText, 'utf8')
-          .then(async (success) => {
-            try {
-              const result = await Share.share({
-                url: filePath,
-                title: fileName,
-              })
+      // Trên web, download file trực tiếp
 
-              if (result && result.action === Share.sharedAction) {
-                showSuccess('Backup file saved successfully!')
-                router.back()
-              }
-            } catch (error) {
-              showError('Failed to create backup file. Please try again.')
-            }
-          })
-          .catch((_err) => {
-            showError('Failed to create backup file. Please try again.')
-          })
-        // const fileUri = `${cacheDirectory}${fileName}`
-
-        // // // Ghi file vào cache
-
-        // await writeAsStringAsync(fileUri, backupText, {
-        //   encoding: EncodingType.UTF8,
-        // })
-
-        // const canShare = await isAvailableAsync()
-        // if (!canShare) {
-        //   throw new Error('Sharing is not available on this device')
-        // }
-
-        // // Share file để user chọn nơi lưu (Files, iCloud, etc.)
-        // await shareAsync(fileUri, {
-        //   UTI: 'public.plain-text',
-        //   dialogTitle: 'Save Backup File',
-        // })
-
-        // // File đã được share/saved thành công
-        // showSuccess('Backup file saved successfully!')
-        // router.back()
-      } else {
-        const urlDefault = getDataLocal('default_backup_location') || null
-
-        const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync(urlDefault)
-
-        if (permissions.granted) {
-          // Gets SAF URI from response
-          const uri = permissions.directoryUri
-          saveDataLocal('default_backup_location', uri)
-          if (!urlDefault) {
-            await makeDirectoryAsync(uri)
-          }
-          const fileUri = await StorageAccessFramework.createFileAsync(uri, fileName, 'text/plain')
-
-          // Gets all files inside of selected directory
-          await StorageAccessFramework.writeAsStringAsync(fileUri, backupText, {
-            encoding: EncodingType.UTF8,
-          })
-
-          showSuccess('Backup saved to custom location!')
-          router.back()
-        } else {
-          showError('No location selected. Please try again.')
-        }
-      }
+      const blob = new Blob([backupText], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = fileName
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      showSuccess('Backup file downloaded!')
+      router.back()
     } catch {
       showError('Failed to create backup file. Please try again.')
     } finally {
