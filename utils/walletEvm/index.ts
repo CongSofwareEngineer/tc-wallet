@@ -238,15 +238,6 @@ class WalletEvmUtil {
             types: typeData.types,
             message: typeData.message,
           }
-
-          // Remove EIP712Domain from types to avoid issues with some libraries
-          if (raw.types.EIP712Domain) {
-            delete raw.types.EIP712Domain
-          }
-          if (typeData.primaryType) {
-            raw.primaryType = typeData.primaryType
-          }
-
           result = await WalletEvmUtil.signTypedData(raw, wallet?.privateKey)
           break
         case 'eth_signTransaction':
