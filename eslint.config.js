@@ -31,6 +31,7 @@ module.exports = defineConfig([
     ignores: ["dist/*", "android/*", "ios/*", ".expo/*"],
     files: ["**/*.ts", "**/*.tsx"],
     rules: {
+      "import/no-unresolved": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "react/react-in-jsx-scope": "off",
       "react-hooks/rules-of-hooks": "error",

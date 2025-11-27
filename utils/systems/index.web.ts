@@ -7,3 +7,15 @@ export const height = (ratio = 100) => {
 export const width = (ratio = 100) => {
   return Math.round(WIDTH_SCREEN * (ratio / 100))
 }
+
+export const downloadFile = (fileName: string, value: any) => {
+  const blob = new Blob([value], { type: 'text/plain' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}

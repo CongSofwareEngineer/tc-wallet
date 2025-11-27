@@ -5,7 +5,6 @@ import React, { useState } from 'react'
 import { Animated, Platform, ScrollView, Share, TextInput, TouchableOpacity, View } from 'react-native'
 import RNFS from 'react-native-fs'
 
-import HeaderScreen from '@/components/Header'
 import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import ThemedText from '@/components/UI/ThemedText'
 import { APP_CONFIG } from '@/constants/appConfig'
@@ -15,6 +14,7 @@ import { useAppSelector } from '@/redux/hooks'
 import { encodeData } from '@/utils/crypto'
 import { getDataLocal, saveDataLocal } from '@/utils/storage'
 
+import HeaderScreen from '@/components/Header'
 import { getKeyEncode } from '@/utils/secureStorage'
 import { createStyles } from './styles'
 
