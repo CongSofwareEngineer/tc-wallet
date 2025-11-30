@@ -290,3 +290,5 @@ export const createStyles = (isDark: boolean) =>
   })
 
 export type Styles = ReturnType<typeof createStyles>
+
+export default () => { }

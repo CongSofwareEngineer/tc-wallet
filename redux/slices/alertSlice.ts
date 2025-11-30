@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 export type MyAlert = {
   text?: ReactNode
   duration?: number
+  isEx?: boolean
 }
 const initialState: MyAlert = {}
 

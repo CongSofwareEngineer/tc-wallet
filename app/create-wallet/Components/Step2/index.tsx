@@ -126,7 +126,9 @@ const Step2 = ({ handleClose }: Props) => {
                   </ThemeTouchableOpacity>
                   <ThemeTouchableOpacity onPress={() => setHidden(!hidden)}>
                     <View style={{ flexDirection: 'row', width: 40, flex: 1, alignItems: 'center', justifyContent: 'center', gap: GAP_DEFAULT.Gap8 }}>
-                      <AntDesign name={hidden ? 'eye' : 'eye-invisible'} size={20} color={text.color} />
+                      <ThemedText>
+                        <AntDesign name={hidden ? 'eye' : 'eye-invisible'} size={20} color={text.color} />
+                      </ThemedText>
                     </View>
                   </ThemeTouchableOpacity>
                 </View>

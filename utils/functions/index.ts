@@ -1,5 +1,4 @@
 import * as Clipboard from 'expo-clipboard'
-import { Alert } from 'react-native'
 import { formatUnits, parseUnits } from 'viem'
 
 import { images } from '@/configs/images'
@@ -31,11 +30,7 @@ export const numberWithCommas = (num: number | string | bigint | null | undefine
 }
 
 export const copyToClipboard = async (text: string, isEx = false, duration: number = 1000, type: 'text' | 'url' | 'image' = 'text') => {
-  if (isEx) {
-    Alert.alert('Copied')
-  } else {
-    store.dispatch(openAlert({ text: 'Copied', duration }))
-  }
+  store.dispatch(openAlert({ text: 'Copied', duration }))
 
   if (type === 'text') {
     await Clipboard.setStringAsync(text)

@@ -9,7 +9,7 @@ import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { zeroAddress } from 'viem'
 
 import HeaderScreen from '@/components/Header'
-import { IsIos } from '@/constants/app'
+import { IsAndroid } from '@/constants/app'
 import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
@@ -27,6 +27,7 @@ const TokenDetailScreen = () => {
   const tokenCurrent = useMemo(() => {
     return listTokens?.find((i) => i.token_address.toLowerCase() === address.toLowerCase()) || listTokens?.[0]
   }, [listTokens, address])
+  console.log({ tokenCurrent })
 
   const priceChange = tokenCurrent?.usd_price_24hr_percent_change || 0
   const priceChangeColor = priceChange >= 0 ? '#00D09C' : '#FF4D4D'
@@ -55,9 +56,12 @@ const TokenDetailScreen = () => {
     router.dismiss()
     router.push(`/qr-info-address`)
   }
+  if (!tokenCurrent) {
+    return <></>
+  }
 
   return (
-    <View style={[styles.container, IsIos && { flex: 1 }]}>
+    <View style={[styles.container, !IsAndroid && { flex: 1 }]}>
       <HeaderScreen title='Token Detail' />
       <View
         style={{
@@ -66,7 +70,7 @@ const TokenDetailScreen = () => {
       >
         {/* Token Image & Name */}
         <View style={[styles.header, { marginTop: 16 }]}>
-          <Image source={{ uri: tokenCurrent.logo }} style={styles.tokenImage} />
+          <Image source={{ uri: tokenCurrent?.logo }} style={styles.tokenImage} />
           <View style={{ marginLeft: 16 }}>
             <Text style={styles.tokenName}>{tokenCurrent.name}</Text>
             <View style={styles.verifiedRow}>

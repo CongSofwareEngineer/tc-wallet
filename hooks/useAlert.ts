@@ -10,6 +10,10 @@ export const useAlert = () => {
 
   const showAlert = useCallback(
     (alert: MyAlert) => {
+      if (alert?.isEx && alert.text) {
+        Alert.alert(alert.text as any)
+        return
+      }
       dispatch(openAlert({ duration: 1000, ...alert }))
     },
     [dispatch]

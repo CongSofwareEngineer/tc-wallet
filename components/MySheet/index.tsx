@@ -6,6 +6,7 @@ import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { BORDER_RADIUS_DEFAULT, COLORS } from '@/constants/style'
 import useSheet from '@/hooks/useSheet'
 import { height } from '@/utils/systems'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const MySheet = () => {
   const { sheet, closeSheet } = useSheet()
@@ -23,30 +24,32 @@ const MySheet = () => {
           backdropColor='rgba(0,0,0,0.8)'
           style={{ margin: 0, justifyContent: 'flex-end', backgroundColor: 'transparent' }}
         >
-          <View style={{ flex: 1, height: height(100), justifyContent: 'flex-end' }}>
-            <View style={[styles.container, sheet?.containerContentStyle]}>
-              <View style={{ alignItems: 'center' }}>
-                <ThemeTouchableOpacity
-                  type='text'
-                  onPress={() => {
-                    closeSheet()
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <View
-                    style={{
-                      height: 4,
-                      backgroundColor: '#e0e0e0',
-                      borderRadius: 2,
-                      width: 40,
-                      marginBottom: 16,
+          <SafeAreaView style={{ flex: 1 }}>
+            <View style={{ flex: 1, height: height(100), justifyContent: 'flex-end' }}>
+              <View style={[styles.container, sheet?.containerContentStyle]}>
+                <View style={{ alignItems: 'center' }}>
+                  <ThemeTouchableOpacity
+                    type='text'
+                    onPress={() => {
+                      closeSheet()
                     }}
-                  />
-                </ThemeTouchableOpacity>
+                    activeOpacity={0.7}
+                  >
+                    <View
+                      style={{
+                        height: 4,
+                        backgroundColor: '#e0e0e0',
+                        borderRadius: 2,
+                        width: 40,
+                        marginBottom: 16,
+                      }}
+                    />
+                  </ThemeTouchableOpacity>
+                </View>
+                {sheet?.children || sheet?.content}
               </View>
-              {sheet?.children || sheet?.content}
             </View>
-          </View>
+          </SafeAreaView>
         </ModalBox>
       )}
     </>

@@ -53,6 +53,7 @@ const HeaderScreen = ({ title, urlDefault = '/(tabs)/home', onBackPress, leftSid
 
 const styles = StyleSheet.create({
   container: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
