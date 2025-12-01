@@ -7,12 +7,17 @@ import { useAppSelector } from '@/redux/hooks'
 import { sleep } from '@/utils/functions'
 import { getSecureData } from '@/utils/secureStorage'
 
+import { useMemo } from 'react'
 import useModal from './useModal'
 
 const useAuth = () => {
   const { openModal, closeModal } = useModal()
   const setting = useAppSelector((state) => state.settings)
   const router = useRouter()
+
+  const isSetupAuth = useMemo(() => {
+    return setting.isFaceId || setting.isPasscode
+  }, [setting])
 
   const handleAuth = async (isNewModal = true) => {
     return await new Promise<boolean>(async (resolve, reject) => {
@@ -77,7 +82,7 @@ const useAuth = () => {
     })
   }
 
-  return { handleAuth, handleVerify }
+  return { handleAuth, handleVerify, isSetupAuth }
 }
 
 export default useAuth

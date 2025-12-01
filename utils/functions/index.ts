@@ -30,7 +30,7 @@ export const numberWithCommas = (num: number | string | bigint | null | undefine
 }
 
 export const copyToClipboard = async (text: string, isEx = false, duration: number = 1000, type: 'text' | 'url' | 'image' = 'text') => {
-  store.dispatch(openAlert({ text: 'Copied', duration }))
+  store.dispatch(openAlert({ text: 'Copied', duration, isEx }))
 
   if (type === 'text') {
     await Clipboard.setStringAsync(text)

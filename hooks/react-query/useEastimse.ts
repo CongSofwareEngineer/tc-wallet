@@ -14,7 +14,7 @@ const estimateGasEVM = async ({ queryKey }: IQueryKey) => {
     const transaction = queryKey[1] as RawTransactionEVM
     const chainId = queryKey[2] as ChainId
     const gasPrice = await EVMServices.getGasPrice(chainId, 1.1)
-    const raw = { ...transaction, gasPrice: gasPrice, chainId } as any
+    const raw = { ...transaction, chainId } as any
     const estimatedGas = await EVMServices.estimateGas(raw)
 
     const totalFee = convertWeiToBalance(BigNumber(estimatedGas.toString()).multipliedBy(gasPrice.toString()).toFixed(), 18)
@@ -34,6 +34,7 @@ const estimateGasEVM = async ({ queryKey }: IQueryKey) => {
 
 const useEstimateGas = (transaction?: RawTransactionEVM | null) => {
   const { chainId } = useChainSelected()
+
   const { data, isLoading, refetch } = useQuery({
     queryKey: [KEY_REACT_QUERY.getEstimateGas, transaction, chainId],
     queryFn: estimateGasEVM,

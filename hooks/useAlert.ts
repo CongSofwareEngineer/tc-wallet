@@ -1,8 +1,6 @@
 import { useCallback } from 'react'
-import { Alert } from 'react-native'
 import { useDispatch } from 'react-redux'
 
-import { IsIos } from '@/constants/app'
 import { closeAlert, MyAlert, openAlert } from '@/redux/slices/alertSlice'
 
 export const useAlert = () => {
@@ -10,25 +8,16 @@ export const useAlert = () => {
 
   const showAlert = useCallback(
     (alert: MyAlert) => {
-      if (alert?.isEx && alert.text) {
-        Alert.alert(alert.text as any)
-        return
-      }
       dispatch(openAlert({ duration: 1000, ...alert }))
     },
     [dispatch]
   )
 
   const showSuccess = useCallback(
-    (text: string, duration = 1000) => {
-      if (IsIos) {
-        Alert.alert(text, text)
-        return
-      }
+    (alert: MyAlert) => {
       dispatch(
         openAlert({
-          text,
-          duration,
+          ...alert,
         })
       )
     },

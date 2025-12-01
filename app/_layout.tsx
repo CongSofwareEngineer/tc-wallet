@@ -1,11 +1,5 @@
-//
-import '@/utils/debug/reactotron'
-// import '@/utils/polyfills/buffer'
-// import '@/utils/polyfills/crypto'
-
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
-import { useEffect } from 'react'
 import 'react-native-reanimated'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -13,37 +7,27 @@ import { PersistGate } from 'redux-persist/integration/react'
 import ClientRender from '@/components/ClientRender'
 import ReactQueryProvider from '@/components/ReactQueryProvider'
 import StackScreen from '@/components/StackScreen'
+import { APP_CONFIG } from '@/constants/appConfig'
 import { persistor, store } from '@/redux/store'
-
-SplashScreen.preventAutoHideAsync().catch(() => {
-  console.log('SplashScreen.preventAutoHideAsync')
-
-  /* reloading the app might trigger some race conditions, ignore them */
+import { Platform } from 'react-native'
+if (APP_CONFIG.isDevelopment && Platform.OS !== 'web') {
+  require('@/utils/debug/reactotron')
+}
+// Set the animation options. This is optional.
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
 })
-
 export default function RootLayout() {
-  useEffect(() => {
-    // Delay hiding splash screen to show it longer
-    const hideSplash = async () => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 2000)) // Show splash for 2 seconds
-        await SplashScreen.hideAsync()
-      } catch (e) {
-        console.warn(e)
-      }
-    }
-    hideSplash()
-  }, [])
-
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <ClientRender>
-          <ReactQueryProvider>
+        <ReactQueryProvider>
+          <ClientRender>
             <StackScreen />
-          </ReactQueryProvider>
-          <StatusBar style='auto' />
-        </ClientRender>
+            <StatusBar style='auto' />
+          </ClientRender>
+        </ReactQueryProvider>
       </PersistGate>
     </Provider>
   )

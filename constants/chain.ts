@@ -11,6 +11,9 @@ export const CHAIN_DEFAULT = [
   },
   {
     ...polygon,
+    rpcUrls: {
+      default: { http: ['https://polygon-bor-rpc.publicnode.com'] },
+    },
     iconChain: 'https://icons.llamao.fi/icons/chains/rsz_polygon.jpg',
   },
   {

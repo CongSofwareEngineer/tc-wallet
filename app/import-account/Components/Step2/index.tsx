@@ -146,20 +146,14 @@ const Step2 = ({ handleClose }: Props) => {
         </View>
         {isShow && (
           <>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-              {/* <TouchableOpacity
-                style={{ paddingVertical: 10, paddingRight: 10 }}
-                onPress={() => {
-                  console.log('onValueChange')
+            <ThemeTouchableOpacity type='text' style={{ padding: 0 }} activeOpacity={1} onPress={() => setAgree(!agree)}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
 
-                  setAgree(!agree)
-                }}
-              >
-                <ThemeCheckBox disabled={isCreatingAccount} value={agree} />
-              </TouchableOpacity> */}
-              <ThemeCheckBox value={agree} onValueChange={setAgree} />
-              <ThemedText>I have safely backed up my seed phrase</ThemedText>
-            </View>
+                <ThemeCheckBox value={agree} onValueChange={setAgree} />
+                <ThemedText>I have safely backed up my seed phrase</ThemedText>
+              </View>
+            </ThemeTouchableOpacity>
+
             <ThemeTouchableOpacity
               onPress={handleCreateAccount}
               loading={isCreatingAccount}

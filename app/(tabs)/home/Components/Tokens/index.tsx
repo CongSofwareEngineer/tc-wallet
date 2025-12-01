@@ -1,6 +1,5 @@
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import BigNumber from 'bignumber.js'
-import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { useRef } from 'react'
 import { Animated, TouchableOpacity, View } from 'react-native'
@@ -12,6 +11,7 @@ import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useTheme from '@/hooks/useTheme'
 import { Token } from '@/services/moralis/type'
 
+import MyImage from '@/components/MyImage'
 import { styles } from '../../styles'
 import AnimateFlatList from '../AnimateFlatList'
 
@@ -96,7 +96,7 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
       >
         <View style={[styles.cryptoIcon]}>
           {item.logo || item.thumbnail ? (
-            <Image source={{ uri: item.logo || item.thumbnail }} style={{ width: 36, height: 36 }} />
+            <MyImage src={item.logo || item.thumbnail} style={{ width: 36, height: 36, borderRadius: 18 }} />
           ) : (
             // item.symbol
             <MaterialIcons name='token' size={40} color={text.color} />

@@ -1,6 +1,6 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
-import React, { useState, useTransition } from 'react'
+import React, { useState } from 'react'
 import { ScrollView, TouchableOpacity, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
@@ -13,13 +13,13 @@ import useMode from '@/hooks/useMode'
 import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
-import AllWalletUtils from '@/utils/allWallet'
-import { copyToClipboard } from '@/utils/functions'
+import { copyToClipboard, sleep } from '@/utils/functions'
 import PassPhase from '@/utils/passPhare'
 import { width } from '@/utils/systems'
 
 import styles from '../../styles'
 
+import AllWalletUtils from '@/utils/allWallet'
 import { Ionicons } from '@expo/vector-icons'
 import stylesCustom from './styles'
 type Props = {
@@ -30,6 +30,7 @@ const Step2 = ({ handleClose }: Props) => {
   const [isShow, setIsShow] = useState(false)
   const [hidden, setHidden] = useState(true)
   const [agree, setAgree] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter()
   const { mode } = useMode()
@@ -37,26 +38,31 @@ const Step2 = ({ handleClose }: Props) => {
   const { translate } = useLanguage()
   const { setWallets } = useWallets()
   const { passPhase: passPhaseList, setPassPhrase: setPassPhraseLocal } = usePassPhrase()
-  const [isCreating, startCreating] = useTransition()
-  const [isCreatingAccount, startCreatingAccount] = useTransition()
   // Removed debug log to satisfy lint rules
 
   const handleCreatePassPhrase = async () => {
-    startCreating(async () => {
-      const createdPassPhrase = await PassPhase.getMnemonic(passPhaseList.length, false)
-      setPassPhrase(createdPassPhrase)
-      setIsShow(true)
-    })
+    setLoading(true)
+    await sleep(500)
+
+    const createdPassPhrase = await PassPhase.getMnemonic(passPhaseList.length, false)
+    setPassPhrase(createdPassPhrase)
+    setIsShow(true)
+    setLoading(false)
   }
 
   const handleCreateAccount = async () => {
-    startCreatingAccount(async () => {
-      await setPassPhraseLocal(passPhrase)
-      const wallet = await AllWalletUtils.createWallet(0, 0)
-      setWallets([wallet])
-      router.replace('/home')
-    })
+    setLoading(true)
+    await sleep(500)
+
+    await setPassPhraseLocal(passPhrase)
+    const wallet = await AllWalletUtils.createWallet(0, 0)
+    setWallets([wallet])
+    router.replace('/home')
+    setLoading(false)
   }
+
+  console.log({ loading });
+
 
   const renderPassPhrase = () => {
     if (!passPhrase) return null
@@ -95,8 +101,8 @@ const Step2 = ({ handleClose }: Props) => {
       <View style={[styles.containerContent, styles[`containerContent${mode}`], { maxWidth: width(100) - PADDING_DEFAULT.Padding20 * 2 }]}>
         {/* <View style={{ gap: GAP_DEFAULT.Gap16, width: '100%', maxWidth: width(96), padding: 20, backgroundColor: 'green' }}> */}
         <View style={{ flexDirection: 'row', gap: GAP_DEFAULT.Gap8, alignItems: 'center', marginBottom: 10 }}>
-          <TouchableOpacity disabled={isCreatingAccount} onPress={handleClose}>
-            <AntDesign disabled={isCreatingAccount} name='arrow-left' size={16} color={text.color} />
+          <TouchableOpacity disabled={loading} onPress={handleClose}>
+            <AntDesign disabled={loading} name='arrow-left' size={16} color={text.color} />
           </TouchableOpacity>
 
           <ThemedText>Backup Your Seed Phrase</ThemedText>
@@ -135,7 +141,7 @@ const Step2 = ({ handleClose }: Props) => {
               </>
             ) : (
               <View style={stylesCustom.containerShow}>
-                {isCreating ? (
+                {loading ? (
                   <MyLoading />
                 ) : (
                   <TouchableOpacity onPress={() => handleCreatePassPhrase()}>
@@ -148,23 +154,16 @@ const Step2 = ({ handleClose }: Props) => {
         </View>
         {isShow && (
           <>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-              {/* <TouchableOpacity
-                style={{ paddingVertical: 10, paddingRight: 10 }}
-                onPress={() => {
-                  console.log('onValueChange')
+            <ThemeTouchableOpacity type='text' style={{ padding: 0 }} activeOpacity={1} onPress={() => setAgree(!agree)}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
 
-                  setAgree(!agree)
-                }}
-              >
-                <ThemeCheckBox disabled={isCreatingAccount} value={agree} />
-              </TouchableOpacity> */}
-              <ThemeCheckBox value={agree} onValueChange={setAgree} />
-              <ThemedText>I have safely backed up my seed phrase</ThemedText>
-            </View>
+                <ThemeCheckBox value={agree} />
+                <ThemedText>I have safely backed up my seed phrase</ThemedText>
+              </View>
+            </ThemeTouchableOpacity>
             <ThemeTouchableOpacity
               onPress={handleCreateAccount}
-              loading={isCreatingAccount}
+              loading={loading}
               disabled={!agree}
               style={{ opacity: agree ? 1 : 0.5, alignItems: 'center' }}
             >

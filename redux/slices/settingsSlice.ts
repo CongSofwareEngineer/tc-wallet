@@ -11,7 +11,7 @@ const initialState: Setting = {
   isFaceId: false,
   isPasscode: false,
   isBiometric: false,
-  isNotification: true,
+  isNotification: false,
 }
 
 const settingsSlice = createSlice({

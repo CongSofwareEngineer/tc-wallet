@@ -27,11 +27,12 @@ import { Token } from '@/services/moralis/type'
 import { RawTransactionEVM } from '@/types/web3'
 import { cloneDeep, convertBalanceToWei, copyToClipboard, ellipsisText, getRadomColor } from '@/utils/functions'
 import { isAddress, isTokenNative } from '@/utils/nvm'
-import { width } from '@/utils/systems'
+import { height, width } from '@/utils/systems'
 import WalletEvmUtil from '@/utils/walletEvm'
 
 import { IsIos } from '@/constants/app'
 import InputEnter from './Component/InputEnter'
+import SelectToken from './Component/SelectToken'
 import { createStyles } from './styles'
 
 type FormSendToken = {
@@ -39,6 +40,9 @@ type FormSendToken = {
   amountToken: string
   amountUsd?: string
 }
+type FormErrorSendToken = {
+  errorBalance: string
+} & FormSendToken
 
 const SendTokenScreen = () => {
   const router = useRouter()
@@ -58,7 +62,8 @@ const SendTokenScreen = () => {
     amountUsd: '',
   })
 
-  const [formError, setFormError] = useState<FormSendToken>({
+  const [formError, setFormError] = useState<FormErrorSendToken>({
+    errorBalance: '',
     toAddress: '',
     amountToken: '',
     amountUsd: '',
@@ -103,7 +108,6 @@ const SendTokenScreen = () => {
   const { data: estimatedGas, isLoading: loadingEstimatedGas, refetch: refetchEstimatedGas } = useEstimateGas(rawTransaction)
   const { data: tokenPrice, isLoading: loadingTokenPrice } = useTokenPrice(isNativeToken ? selectedToken?.symbol : selectedToken?.token_address)
   const { data: balanceNative } = useBalanceNative(!isNativeToken)
-
   const isErrorForm = useMemo(() => {
     if (loadingEstimatedGas) {
       return true
@@ -122,6 +126,10 @@ const SendTokenScreen = () => {
     } else {
       if (balanceNative && estimatedGas?.totalFee) {
         if (BigNumber(balanceNative).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
+          // setFormError({
+          //   ...formError,
+          //   errorBalance: 'Not enough balance',
+          // })
           return true
         }
       }
@@ -129,6 +137,9 @@ const SendTokenScreen = () => {
 
     return false
   }, [estimatedGas, loadingEstimatedGas, formError, balanceNative, selectedToken])
+  console.log({ balanceNative, estimatedGas, isErrorForm });
+
+
 
   useEffect(() => {
     if (addressToken && tokens) {
@@ -138,6 +149,20 @@ const SendTokenScreen = () => {
       }
     }
   }, [tokens, addressToken])
+
+  useEffect(() => {
+    if (isErrorForm) {
+      if (balanceNative && estimatedGas?.totalFee) {
+        if (BigNumber(balanceNative).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
+          setFormError({
+            ...formError,
+            errorBalance: 'Not enough balance',
+          })
+        }
+      }
+    }
+  }, [isErrorForm])
+
 
   const handlePickFromMyAccounts = () => {
     openSheet({
@@ -189,6 +214,15 @@ const SendTokenScreen = () => {
     })
   }
 
+  const handleSelectToken = () => {
+    openSheet({
+      containerContentStyle: {
+        height: height(70),
+      },
+      content: <SelectToken addressToken={addressToken} />
+    })
+  }
+
   const handleSend = async () => {
     try {
       setTxHash(null)
@@ -235,10 +269,14 @@ const SendTokenScreen = () => {
   }
 
   const handleMax = () => {
-    const amountToken = BigNumber(selectedToken?.balance_formatted || '0')
-      .minus(estimatedGas?.totalFee || '0')
+    let amountToken = BigNumber(selectedToken?.balance_formatted || '0')
       .decimalPlaces(10, BigNumber.ROUND_DOWN)
       .toFixed()
+
+
+    if (isNativeToken) {
+      amountToken = BigNumber(amountToken).minus(estimatedGas?.totalFee || '0').toFixed()
+    }
 
     if (BigNumber(amountToken).gt(0)) {
       const amountToUSD = BigNumber(amountToken)
@@ -267,7 +305,7 @@ const SendTokenScreen = () => {
 
   const onChangeForm = (param: Partial<FormSendToken>) => {
     const formClone = cloneDeep(form) as FormSendToken
-    const formErrorClone = cloneDeep(formError) as FormSendToken
+    const formErrorClone = cloneDeep(formError) as FormErrorSendToken
 
     const maxBalance = selectedToken?.balance_formatted || '0'
     const maxBalanceByUSD = BigNumber(maxBalance)
@@ -392,17 +430,14 @@ const SendTokenScreen = () => {
               </ThemedText>
             </View>
             <TouchableOpacity
-              onPress={handleMax}
+              onPress={handleSelectToken}
               disabled={isSending || loadingTokenPrice}
               style={{
-                paddingHorizontal: 12,
-                paddingVertical: 4,
-                backgroundColor: colorIcon.colorDefault,
-                borderRadius: 8,
+
                 opacity: isSending || loadingTokenPrice ? 0.5 : 1,
               }}
             >
-              <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 14 }}>MAX</ThemedText>
+              <AntDesign name="swap" size={24} color={text.color} />
             </TouchableOpacity>
           </View>
         </View>
@@ -445,8 +480,19 @@ const SendTokenScreen = () => {
         <View>
           <View style={[styles.inputContainer]}>
             <InputEnter
-              rightIcon={<ThemedText style={styles.amountLabel}>{selectedToken?.symbol || 'TOKEN'}</ThemedText>}
-              leftIcon={<MyImage src={selectedToken?.logo || selectedToken?.thumbnail} style={{ width: 30, height: 30 }} />}
+              rightIcon={
+                <TouchableOpacity
+                  onPress={handleMax}
+                  disabled={isSending || loadingTokenPrice}
+                  style={{
+                    opacity: isSending || loadingTokenPrice ? 0.5 : 1,
+                  }}
+                >
+                  <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 14 }}>MAX</ThemedText>
+                </TouchableOpacity>
+              }
+              // rightIcon={<ThemedText style={styles.amountLabel}>{selectedToken?.symbol || 'TOKEN'}</ThemedText>}
+              leftIcon={<MyImage src={selectedToken?.logo || selectedToken?.thumbnail} style={{ width: 30, height: 30, borderRadius: 15 }} />}
               styleContentInput={{ paddingHorizontal: 0 }}
               disabled={isSending || loadingTokenPrice}
               keyboardType='numeric'
@@ -493,10 +539,15 @@ const SendTokenScreen = () => {
             <ThemedText style={styles.feeLabel}>Fee</ThemedText>
             <ThemedText style={styles.feeValue}>
               {loadingEstimatedGas && 'Calculating...'}
-              {estimatedGas?.totalFee && BigNumber(estimatedGas.totalFee).toFixed(8)}
-              {estimatedGas?.error && getError(estimatedGas.error)} {!loadingEstimatedGas && chainCurrent?.nativeCurrency.symbol}
-              {/* {feeInfo.nativeSymbol} */}
-              {/* {feeInfo.gasFeeUsd !== '—' ? ` (~$${feeInfo.gasFeeUsd})` : ''} */}
+
+              {formError?.errorBalance ? (
+                `${formError?.errorBalance} ${chainCurrent?.nativeCurrency.symbol}`
+              ) : (
+                <>
+                  {estimatedGas?.totalFee && BigNumber(estimatedGas.totalFee).toFixed(8)}
+                  {estimatedGas?.error && getError(estimatedGas.error)} {!loadingEstimatedGas && chainCurrent?.nativeCurrency.symbol}
+                </>
+              )}
             </ThemedText>
           </View>
         </View>

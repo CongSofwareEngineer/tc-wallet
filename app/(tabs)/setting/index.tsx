@@ -28,19 +28,19 @@ const SettingScreen = () => {
   const { translate, setLanguage } = useLanguage()
   const { text, colors } = useTheme()
   const { setMode, isDark } = useMode()
-  const { handleAuth } = useAuth()
+  const { handleAuth, isSetupAuth } = useAuth()
   const { openModal, closeModal } = useModal()
   const router = useRouter()
   const { setWallets } = useWallets()
   const { removeAllPassphrases } = usePassPhrase()
-  const { settings, resetSetting } = useSetting()
+  const { settings, resetSetting, setSetting } = useSetting()
   const { showAlert } = useAlert()
 
   const resetApp = async () => {
     const callback = async () => {
       try {
         let isAuth = true
-        if (settings?.isPasscode) {
+        if (settings?.isPasscode && isSetupAuth) {
           isAuth = await handleAuth(false)
         }
 
@@ -114,7 +114,7 @@ const SettingScreen = () => {
                 <ThemedText>Chế độ tối</ThemedText>
                 <ThemedText opacity={0.7}>Chế độ tối</ThemedText>
               </View>
-              <ThemeSwitch value={isDark} onValueChange={() => setMode(isDark ? MODE.Light : MODE.Dark)} />
+              <ThemeSwitch value={settings.isNotification} onValueChange={() => setSetting({ isNotification: !settings.isNotification })} />
             </View>
           </Items>
 

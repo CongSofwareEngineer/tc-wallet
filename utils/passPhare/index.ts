@@ -51,6 +51,7 @@ class PassPhase {
   static async getMnemonic(indexMnemonic = 0, isSaveLocal = true): Promise<string> {
     const arrMnemonic: ListMnemonic = (await getSecureData(KEY_STORAGE.Mnemonic)) || []
 
+
     if (!arrMnemonic[indexMnemonic]) {
       arrMnemonic[indexMnemonic] = PassPhase.generateMnemonic(12)
       // Newly generated mnemonic stored in secure storage if allowed
@@ -59,6 +60,7 @@ class PassPhase {
         saveSecureData(KEY_STORAGE.Mnemonic, arrMnemonic)
       }
     }
+
 
     return arrMnemonic[indexMnemonic]
   }

@@ -13,6 +13,7 @@ import { IsAndroid } from '@/constants/app'
 import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
+import useSheet from '@/hooks/useSheet'
 import useTheme from '@/hooks/useTheme'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
 import { isTokenNative } from '@/utils/nvm'
@@ -23,6 +24,7 @@ const TokenDetailScreen = () => {
   const { data: listTokens } = useBalanceToken(true)
   const { text } = useTheme()
   const router = useRouter()
+  const { openSheet } = useSheet()
 
   const tokenCurrent = useMemo(() => {
     return listTokens?.find((i) => i.token_address.toLowerCase() === address.toLowerCase()) || listTokens?.[0]
@@ -56,6 +58,7 @@ const TokenDetailScreen = () => {
     router.dismiss()
     router.push(`/qr-info-address`)
   }
+
   if (!tokenCurrent) {
     return <></>
   }

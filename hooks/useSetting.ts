@@ -15,7 +15,14 @@ const useSetting = () => {
 
   const resetSetting = () => {
     removeSecureData(KEY_STORAGE.PasscodeAuth)
-    dispatch(setSettingSlice({} as Setting))
+    dispatch(
+      setSettingSlice({
+        isFaceId: false,
+        isPasscode: false,
+        isBiometric: false,
+        isNotification: false,
+      } as Setting)
+    )
   }
 
   return { setSetting, settings, resetSetting }

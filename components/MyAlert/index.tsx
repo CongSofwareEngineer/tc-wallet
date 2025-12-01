@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { Animated, Dimensions, Modal, View } from 'react-native'
+import { Alert, Animated, Dimensions, Modal, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 
 import useMode from '@/hooks/useMode'
@@ -21,7 +21,7 @@ const MyAlert = () => {
   const translateYAnim = useRef(new Animated.Value(-50)).current
 
   useEffect(() => {
-    if (alert?.text) {
+    if (alert?.text && !alert?.isEx) {
       // Animate in
       Animated.parallel([
         Animated.timing(fadeAnim, {
@@ -57,8 +57,10 @@ const MyAlert = () => {
 
       return () => clearTimeout(timer)
     }
+    if (alert?.isEx && alert.text) {
+      Alert.alert(alert.text as any)
+    }
   }, [alert, dispatch, fadeAnim, translateYAnim])
-  console.log({ alert })
 
   if (!alert?.text) {
     return null

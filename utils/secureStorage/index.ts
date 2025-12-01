@@ -4,6 +4,7 @@ import { MMKV } from 'react-native-mmkv'
 
 import { SECURITY_CONFIG } from '@/constants/appConfig'
 import { KEY_STORAGE } from '@/constants/storage'
+import { stringToHex } from 'viem'
 
 export const checkSupportSecure = async () => {
   try {
@@ -25,7 +26,7 @@ export const generateKey = () => {
     binary += String.fromCharCode(randomBytes[i])
   }
 
-  return btoa(binary).replace(/\+-/g, '@').replace(/\//g, '@').slice(0, 16)
+  return stringToHex(btoa(binary).replace(/\+-/g, '@').replace(/\//g, '@').slice(0, 16))
 }
 
 export const getKeyEncode = async () => {

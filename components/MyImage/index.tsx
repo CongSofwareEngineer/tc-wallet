@@ -1,5 +1,5 @@
 import { Image, ImageProps } from 'expo-image'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { images } from '@/configs/images'
 
@@ -8,6 +8,20 @@ type Props = {
 } & Partial<ImageProps>
 const MyImage = ({ src, ...props }: Props) => {
   const [caseImage, setCaseImage] = useState(1)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Set timeout for 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isLoaded) {
+        if (caseImage < 3) {
+          setCaseImage(caseImage + 1) // Show unknown image after 5 seconds
+        }
+      }
+    }, 5000)
+
+    return () => clearTimeout(timer) // Cleanup timer on unmount
+  }, [isLoaded, caseImage])
 
   switch (caseImage) {
     case 1:
@@ -17,6 +31,7 @@ const MyImage = ({ src, ...props }: Props) => {
           {...props}
           placeholder={images.gifs.loading}
           placeholderContentFit='contain'
+          onLoad={() => setIsLoaded(true)}
           onError={(error) => {
             setCaseImage(2)
           }}
@@ -31,6 +46,7 @@ const MyImage = ({ src, ...props }: Props) => {
           {...props}
           placeholder={images.gifs.loading}
           placeholderContentFit='contain'
+          onLoad={() => setIsLoaded(true)}
           onError={(error) => {
             setCaseImage(3)
           }}
