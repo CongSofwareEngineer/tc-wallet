@@ -16,6 +16,12 @@ class Web3Service {
 
     return publicClient
   }
+  static async estimateFeesPerGas(chainId: ChainId) {
+    const publicClient = this.getClient(chainId)
+    const gasPriceBase = await publicClient.estimateFeesPerGas()
+
+    return gasPriceBase
+  }
 
   static async getGasPrice(chainId: ChainId, multiplier?: number): Promise<bigint> {
     const publicClient = this.getClient(chainId)
