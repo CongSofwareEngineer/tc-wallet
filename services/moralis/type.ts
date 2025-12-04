@@ -7,7 +7,7 @@ export interface NFTResponse {
   cursor: string | null
   result: NFT[]
 }
-export type NFTType = 'ERC721' | 'erc1155'
+export type NFTType = 'ERC721' | 'ERC1155'
 export interface NFT {
   amount: string
   token_id: string

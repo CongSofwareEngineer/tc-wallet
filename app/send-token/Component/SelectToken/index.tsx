@@ -13,8 +13,11 @@ import { Token } from '@/services/moralis/type'
 import { lowercase } from '@/utils/functions'
 import { AntDesign } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-
-const SelectToken = ({ addressToken }: { addressToken?: string }) => {
+type Props = {
+  addressToken?: string
+  callback?: (token: Token) => void
+}
+const SelectToken = ({ addressToken, callback }: Props) => {
   const { isDark } = useMode()
   const router = useRouter()
   const { closeSheet } = useSheet()
@@ -29,6 +32,7 @@ const SelectToken = ({ addressToken }: { addressToken?: string }) => {
   const handleSelectToken = (token: Token) => {
     router.setParams({ address: token.token_address })
     closeSheet()
+    callback?.(token)
   }
 
   return (

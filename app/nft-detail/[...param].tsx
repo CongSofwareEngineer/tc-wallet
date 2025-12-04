@@ -1,6 +1,6 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import React from 'react'
 import { Linking, ScrollView, View } from 'react-native'
 
@@ -22,6 +22,7 @@ const NFTDetailScreen = () => {
   const { param } = useLocalSearchParams<{ param: string[] }>()
   const [addressNFT, tokenId] = param
   const { text } = useTheme()
+  const router = useRouter()
   const { chainCurrent } = useChains()
 
   const { data: nft, isLoading } = useNFTDetail(addressNFT, tokenId)
@@ -33,6 +34,10 @@ const NFTDetailScreen = () => {
     if (!explorer) return
     const explorerUrl = `${explorer}/address/${addressNFT}`
     Linking.openURL(explorerUrl)
+  }
+
+  const handleSendNFT = () => {
+    router.push(`/send-nft/${addressNFT}/${tokenId}`)
   }
 
   if (isLoading || !nft) {
@@ -56,7 +61,7 @@ const NFTDetailScreen = () => {
         </View>
 
         <View style={styles.actions}>
-          <ThemeTouchableOpacity style={[styles.actionButton, { flex: 1, paddingHorizontal: 10 }]} type='default' onPress={() => { }}>
+          <ThemeTouchableOpacity style={[styles.actionButton, { flex: 1, paddingHorizontal: 10 }]} type='default' onPress={handleSendNFT}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'center' }}>
               {/* <Feather name='send' size={20} color='white' /> */}
               <ThemedText numberOfLines={1} style={[styles.actionText, { color: 'white' }]}>

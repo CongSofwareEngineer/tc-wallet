@@ -126,10 +126,7 @@ const SendTokenScreen = () => {
     } else {
       if (balanceNative && estimatedGas?.totalFee) {
         if (BigNumber(balanceNative).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
-          // setFormError({
-          //   ...formError,
-          //   errorBalance: 'Not enough balance',
-          // })
+
           return true
         }
       }
@@ -137,7 +134,6 @@ const SendTokenScreen = () => {
 
     return false
   }, [estimatedGas, loadingEstimatedGas, formError, balanceNative, selectedToken])
-  console.log({ balanceNative, estimatedGas, isErrorForm });
 
 
 
@@ -154,6 +150,8 @@ const SendTokenScreen = () => {
     if (isErrorForm) {
       if (balanceNative && estimatedGas?.totalFee) {
         if (BigNumber(balanceNative).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
+          console.log('setFormError');
+
           setFormError({
             ...formError,
             errorBalance: 'Not enough balance',
@@ -161,7 +159,8 @@ const SendTokenScreen = () => {
         }
       }
     }
-  }, [isErrorForm])
+  }, [isErrorForm, balanceNative, estimatedGas])
+
 
 
   const handlePickFromMyAccounts = () => {
@@ -215,11 +214,24 @@ const SendTokenScreen = () => {
   }
 
   const handleSelectToken = () => {
+    const callback = (token: Token) => {
+      setSelectedToken(token)
+      setForm({
+        ...form,
+        amountToken: '',
+        amountUsd: '',
+      })
+      setFormError({
+        ...formError,
+        amountToken: '',
+        amountUsd: '',
+      })
+    }
     openSheet({
       containerContentStyle: {
         height: height(70),
       },
-      content: <SelectToken addressToken={addressToken} />
+      content: <SelectToken addressToken={addressToken} callback={callback} />
     })
   }
 

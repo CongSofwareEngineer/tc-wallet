@@ -13,7 +13,7 @@ import { NFT } from '@/services/moralis/type'
 import { detectUrlImage } from '@/utils/functions'
 
 type Props = {
-  nft: NFT
+  nft: NFT | undefined
 }
 
 const ImageMain = ({ nft }: Props) => {

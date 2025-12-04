@@ -21,8 +21,8 @@ const useListNFTs = (addressCollection: string[] = []) => {
     initialPageParam: '',
     queryFn: async ({ pageParam }) => {
       const response = await MoralisService.getNFTsByWallet({
-        // address: wallet?.address || '',
-        address: '0x9f276af79b2b5de2946a88b0fe2717318f924d7c',
+        address: wallet?.address || '',
+        // address: '0x9f276af79b2b5de2946a88b0fe2717318f924d7c',
         chainId,
         cursor: pageParam,
         limit: PAGE_SIZE,

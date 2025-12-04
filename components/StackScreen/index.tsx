@@ -62,9 +62,21 @@ const StackScreen = () => {
             animation: 'slide_from_right',
           }}
         />
+        <StackExpo.Screen
+          name='send-nft'
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
 
         <StackExpo.Screen
           name='secure-password'
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <StackExpo.Screen
+          name='nft-detail'
           options={{
             animation: 'slide_from_right',
           }}

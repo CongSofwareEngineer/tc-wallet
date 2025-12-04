@@ -86,7 +86,7 @@ const NFTListScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          router.push(`/nft-detail/${item.token_address}/${item.token_id}`)
+          router.replace(`/nft-detail/${item.token_address}/${item.token_id}`)
         }}
         style={styles.listItem}
       >
