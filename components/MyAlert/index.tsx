@@ -62,7 +62,9 @@ const MyAlert = () => {
     }
   }, [alert, dispatch, fadeAnim, translateYAnim])
 
-  if (!alert?.text) {
+
+
+  if (!alert?.text || alert?.isEx) {
     return null
   }
 

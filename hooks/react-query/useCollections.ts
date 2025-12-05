@@ -43,7 +43,13 @@ const useCollections = () => {
     if (filters?.nfts?.hideSpam) {
       allNFTs = allNFTs.filter((nft) => {
         // Apply your filtering logic here
-        return !nft?.possible_spam
+        if (nft?.verified_collection) {
+          return true
+        }
+        if (nft?.possible_spam) {
+          return false
+        }
+        return true
       })
     }
     return allNFTs

@@ -14,6 +14,7 @@ import useTheme from '@/hooks/useTheme'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
 
 import MyLoading from '@/components/MyLoading'
+import { COLORS } from '@/constants/style'
 import ImageMain from './ImageMain'
 import { styles } from './styles'
 import Traits from './Traits'
@@ -116,7 +117,7 @@ const NFTDetailScreen = () => {
                 <MaterialIcons name='format-list-numbered' size={18} color={text.color} />
                 <ThemedText style={styles.label}>Amount</ThemedText>
               </View>
-              <ThemedText style={styles.value}>{nft.amount}</ThemedText>
+              <ThemedText style={[styles.value, { color: COLORS.green }]}>x{nft.amount}</ThemedText>
             </View>
 
             {nft.rarity_rank && (

@@ -27,7 +27,7 @@ class EVMServices extends Web3Service {
     const tx: TransactionRequest = {
       to: raw.to,
       data: raw.data || '0x',
-      value: raw.value,
+      value: raw.value || 0n,
     }
 
     if (tx.value && isHex(tx.value)) {
@@ -69,15 +69,19 @@ class EVMServices extends Web3Service {
             tx.maxPriorityFeePerGas = hexToBigInt(raw.maxPriorityFeePerGas)
           }
         }
-      } else {
-        const gasPrice = await this.getGasPrice(chainId, raw?.multiplier)
-
-        tx.gasPrice = gasPrice
       }
     }
     if (raw.type) {
       tx.type = TYPE_TRANSACTION[raw.type]
     }
+
+    if (raw.gas) {
+      tx.gas = raw.gas
+      if (isHex(raw.gas)) {
+        tx.gas = hexToBigInt(raw.gas)
+      }
+    }
+
 
     return tx
   }

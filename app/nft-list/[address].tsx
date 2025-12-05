@@ -185,7 +185,7 @@ const NFTListScreen = () => {
         <FlatList
           data={filteredNFTs}
           renderItem={viewMode === 'grid' ? renderGridItem : renderListItem}
-          keyExtractor={(item, index) => `${item.token_address}-${item.token_id}-${index}`}
+          keyExtractor={(item, index) => `${item?.token_address}-${item?.token_id}-${index}`}
           numColumns={viewMode === 'grid' ? 2 : 1}
           key={viewMode} // Force re-render when switching view modes
           contentContainerStyle={[styles.contentContainer, viewMode === 'grid' && styles.gridContainer]}

@@ -222,17 +222,16 @@ const SendNFTScreen = () => {
         to: nftAddress as any,
         data: data,
         chainId: (chainCurrent?.id as any) ?? 1,
-        gas: BigInt(estimatedGas?.estimatedGas || 0),
         isTracking: true,
         callbackBefore: () => setIsSending(true),
         callbackSuccess: (hash?: any) => {
           setIsSending(false)
-          setTxHash((hash as string) || null)
+          setTxHash((hash || null) as string)
           refetchEstimatedGas()
         },
         callbackError: (err?: any) => {
           setIsSending(false)
-          setTxError((err?.message as string) || String(err))
+          setTxError(getError(err))
         },
       }
 
@@ -240,7 +239,7 @@ const SendNFTScreen = () => {
       onChangeForm({ toAddress: '', amount: '1' })
     } catch (err: any) {
       setIsSending(false)
-      setTxError(err?.message || String(err))
+      setTxError(getError(err))
     }
   }
 
@@ -291,14 +290,16 @@ const SendNFTScreen = () => {
         {/* NFT Preview Card */}
         <View style={styles.card}>
 
-          <ThemedText style={styles.sectionLabel}>NFT Preview</ThemedText>
           <View style={styles.nftPreviewContainer}>
             <View style={styles.nftImage}>
               <ImageMain nft={nftData} />
             </View>
             <View style={styles.nftDetails}>
               <ThemedText numberOfLines={1} style={styles.nftName}>{metadata?.name}</ThemedText>
-              <ThemedText style={styles.nftType}>{nftData?.contract_type}</ThemedText>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <ThemedText style={styles.nftType}>{nftData?.contract_type}</ThemedText>
+                <ThemedText style={[styles.nftType, { color: COLORS.green }]}>x{nftData?.amount}</ThemedText>
+              </View>
               <ThemedText style={styles.nftTokenId}>Token ID: {nftData?.token_id}</ThemedText>
               <ThemedText style={styles.nftContract} numberOfLines={1}>
                 {ellipsisText(nftData?.token_address || '', 8, 8)}

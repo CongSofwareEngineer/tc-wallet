@@ -1,4 +1,3 @@
-import Bignumber from 'bignumber.js'
 import { Address, createWalletClient, custom, Hash, Hex, hexToBigInt, isAddress, isHex, publicActions, stringToHex } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 
@@ -42,18 +41,6 @@ class WalletEvmUtil {
         from: raw.from || wallet.account.address,
         chainId,
       })
-
-      if (raw.gas) {
-        tx.gas = raw.gas
-        if (isHex(raw.gas)) {
-          tx.gas = hexToBigInt(raw.gas)
-        }
-      } else {
-        const gas = await EVMServices.estimateGas({ ...tx, chainId })
-
-        tx.gas = BigInt(Bignumber(gas.toString()).multipliedBy(1.05).decimalPlaces(0).toFixed()) // add 5% buffer
-      }
-
       const hash = await wallet.sendTransaction({
         chain: publicClient.chain,
         ...tx,
