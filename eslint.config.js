@@ -46,6 +46,7 @@ module.exports = defineConfig([
       "unused-imports/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "warn",
       "import/no-named-as-default": "off",
+      "@typescript-eslint/no-require-imports": "off",
 
       "prettier/prettier": [
         "warn",

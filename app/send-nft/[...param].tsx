@@ -180,7 +180,7 @@ const SendNFTScreen = () => {
         <QrScan
           type='address'
           onScanned={(e) => {
-            onChangeForm({ toAddress: e })
+            onChangeForm({ toAddress: e as string })
           }}
         />
       ),

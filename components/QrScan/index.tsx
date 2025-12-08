@@ -16,7 +16,7 @@ import WalletKit from '@/utils/walletKit'
 
 type QrScanProps = {
   type?: 'address' | 'form' | 'connect'
-  onScanned?: (data: string) => void
+  onScanned?: <T>(data: T) => void
 }
 
 const QrScan = ({ type = 'connect', onScanned }: QrScanProps) => {
@@ -25,6 +25,32 @@ const QrScan = ({ type = 'connect', onScanned }: QrScanProps) => {
   const [loading, setLoading] = useState(false)
   const [uri, setUri] = useState('')
   const { closeSheet } = useSheet()
+
+  const getAddressByEip681 = (url: string) => {
+    try {
+      const parts = (url || '').split(':')
+      let addressFormat = parts[1] || parts[0]
+
+      if (addressFormat?.startsWith('0x')) {
+        const [, queryString] = url.split('?')
+
+        if (queryString) {
+          const params = new URLSearchParams(queryString)
+
+          // Lấy địa chỉ trong query string (nếu có)
+          const queryAddress = params.get('address')
+          const queryFrom = params.get('from')
+
+          return queryAddress || queryFrom || url.slice(0, 42)
+        }
+        return url.slice(0, 42)
+      }
+
+      return url
+    } catch {
+      return url
+    }
+  }
 
   const handleScan = async (data: string) => {
     if (loading) return
@@ -38,7 +64,6 @@ const QrScan = ({ type = 'connect', onScanned }: QrScanProps) => {
           await sleep(500)
           await kit.pair({ uri: data })
         } catch (error) {
-          console.log({ error })
           setLoading(false)
         }
       }
@@ -49,6 +74,7 @@ const QrScan = ({ type = 'connect', onScanned }: QrScanProps) => {
     let isValid = false
     switch (type) {
       case 'address':
+        data = getAddressByEip681(data)
         isValid = isAddress(data)
 
         break

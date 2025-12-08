@@ -206,7 +206,7 @@ const SendTokenScreen = () => {
         <QrScan
           type='address'
           onScanned={(e) => {
-            onChangeForm({ toAddress: e })
+            onChangeForm({ toAddress: e as string })
           }}
         />
       ),
