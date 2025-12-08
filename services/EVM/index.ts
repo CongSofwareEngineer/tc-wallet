@@ -24,7 +24,6 @@ class EVMServices extends Web3Service {
 
   static async getRawTransactions(raw: RawTransactionEVM): Promise<RawTransactionEVM> {
     const publicClient = this.getClient(raw.chainId!)
-    const chainId = raw.chainId!
     const tx: TransactionRequest = {
       to: raw.to,
       data: raw.data || '0x',
@@ -56,22 +55,29 @@ class EVMServices extends Web3Service {
       if (isHex(raw.gasPrice)) {
         tx.gasPrice = hexToBigInt(raw.gasPrice)
       }
-    } else {
-      if (raw.maxFeePerGas || raw.maxPriorityFeePerGas) {
-        if (raw.maxFeePerGas) {
-          tx.maxFeePerGas = raw.maxFeePerGas
-          if (isHex(raw.maxFeePerGas)) {
-            tx.maxFeePerGas = hexToBigInt(raw.maxFeePerGas)
-          }
-        }
-        if (raw.maxPriorityFeePerGas) {
-          tx.maxPriorityFeePerGas = raw.maxPriorityFeePerGas
-          if (isHex(raw.maxPriorityFeePerGas)) {
-            tx.maxPriorityFeePerGas = hexToBigInt(raw.maxPriorityFeePerGas)
-          }
-        }
+    }
+
+    if (raw.gas) {
+      tx.gas = raw.gas
+      if (isHex(raw.gas)) {
+        tx.gas = hexToBigInt(raw.gas)
       }
     }
+
+    if (raw.maxFeePerGas) {
+      tx.maxFeePerGas = raw.maxFeePerGas
+      if (isHex(raw.maxFeePerGas)) {
+        tx.maxFeePerGas = hexToBigInt(raw.maxFeePerGas)
+      }
+    }
+
+    if (raw.maxPriorityFeePerGas) {
+      tx.maxPriorityFeePerGas = raw.maxPriorityFeePerGas
+      if (isHex(raw.maxPriorityFeePerGas)) {
+        tx.maxPriorityFeePerGas = hexToBigInt(raw.maxPriorityFeePerGas)
+      }
+    }
+
     if (raw.type) {
       tx.type = TYPE_TRANSACTION[raw.type]
     }
@@ -82,7 +88,6 @@ class EVMServices extends Web3Service {
         tx.gas = hexToBigInt(raw.gas)
       }
     }
-
 
     return tx
   }
@@ -173,20 +178,26 @@ class EVMServices extends Web3Service {
 
         return code !== '0x'
       } else {
-        const resultsCall = await Promise.allSettled(arrCall.map((item, index) => provider.readContract({
-          address: item.address,
-          abi: item.abi,
-          functionName: item.functionName,
-          args: item.args,
-          blockTag: 'latest',
-        })))
+        const resultsCall = await Promise.allSettled(
+          arrCall.map((item, index) =>
+            provider.readContract({
+              address: item.address,
+              abi: item.abi,
+              functionName: item.functionName,
+              args: item.args,
+              blockTag: 'latest',
+            })
+          )
+        )
 
-        const results = resultsCall.filter((e) => {
-          if (e.status === 'fulfilled') {
-            return true
-          }
-          return false
-        }).map((e: any) => e.value)
+        const results = resultsCall
+          .filter((e) => {
+            if (e.status === 'fulfilled') {
+              return true
+            }
+            return false
+          })
+          .map((e: any) => e.value)
 
         // is contract (NFT,...)
         if (results[0] || results[1] || results[2]) {
@@ -200,15 +211,12 @@ class EVMServices extends Web3Service {
 
         return code !== '0x'
       }
-
-
     } catch (error) {
       console.log({ errorcheckIsContract: error })
 
       return false
     }
   }
-
 }
 
 export default EVMServices

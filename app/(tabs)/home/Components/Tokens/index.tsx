@@ -151,7 +151,7 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
             // borderColor: '#333',
             borderStyle: 'dashed',
           }}
-          onPress={() => router.push('/token-import')}
+          onPress={() => router.push('/import-token')}
         >
           <AntDesign name='plus-circle' size={24} color={colorIcon.colorDefault} />
           <ThemedText style={{ fontSize: 16, color: colorIcon.colorDefault, fontWeight: '600' }}>Import Custom Token</ThemedText>

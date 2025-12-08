@@ -44,10 +44,7 @@ const ImportTokenScreen = () => {
   const debouncedAddress = useDebounce(formData.address, 500)
 
   // Check if address is a valid contract
-  const { data: isContract, isLoading: isCheckingContract } = useIsContractEVM(
-    debouncedAddress,
-    chainId
-  )
+  const { data: isContract, isLoading: isCheckingContract } = useIsContractEVM(debouncedAddress, chainId)
 
   const validateField = (field: keyof FormData, value: string): string | undefined => {
     switch (field) {
@@ -133,31 +130,27 @@ const ImportTokenScreen = () => {
 
   return (
     <KeyboardAvoiding style={[styles.container, { backgroundColor: background.background }]}>
-      <HeaderScreen title="Import Token" />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
+      <HeaderScreen title='Import Token' />
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps='handled' showsVerticalScrollIndicator={false}>
         <View style={styles.form}>
           <View>
             <ThemedInput
-              label={<ThemedText type="defaultSemiBold">Token Address</ThemedText>}
-              placeholder="0x..."
+              numberOfLines={2}
+              label={<ThemedText type='defaultSemiBold'>Token Address</ThemedText>}
+              placeholder='0x...'
               value={formData.address}
               onChangeText={(value) => handleFieldChange('address', value)}
-              autoCapitalize="none"
+              autoCapitalize='none'
               autoCorrect={false}
               style={styles.input}
-
             />
             {formErrors.address && (
-              <ThemedText type="small" style={styles.errorText}>
+              <ThemedText type='small' style={styles.errorText}>
                 {formErrors.address}
               </ThemedText>
             )}
             {isCheckingContract && formData.address.length === 42 && (
-              <ThemedText type="small" style={{ color: COLORS.gray, marginTop: 4, marginLeft: 4 }}>
+              <ThemedText type='small' style={{ color: COLORS.gray, marginTop: 4, marginLeft: 4 }}>
                 Checking contract...
               </ThemedText>
             )}
@@ -165,17 +158,17 @@ const ImportTokenScreen = () => {
 
           <View>
             <ThemedInput
-              label={<ThemedText type="defaultSemiBold">Decimals</ThemedText>}
-              placeholder="18"
+              label={<ThemedText type='defaultSemiBold'>Decimals</ThemedText>}
+              placeholder='18'
               value={formData.decimal}
               onChangeText={(value) => handleFieldChange('decimal', value)}
-              keyboardType="numeric"
-              inputMode="numeric"
+              keyboardType='numeric'
+              inputMode='numeric'
               maxLength={2}
               style={styles.input}
             />
             {formErrors.decimal && (
-              <ThemedText type="small" style={styles.errorText}>
+              <ThemedText type='small' style={styles.errorText}>
                 {formErrors.decimal}
               </ThemedText>
             )}
@@ -183,17 +176,17 @@ const ImportTokenScreen = () => {
 
           <View>
             <ThemedInput
-              label={<ThemedText type="defaultSemiBold">Symbol</ThemedText>}
-              placeholder="TOKEN"
+              label={<ThemedText type='defaultSemiBold'>Symbol</ThemedText>}
+              placeholder='TOKEN'
               value={formData.symbol}
               onChangeText={(value) => handleFieldChange('symbol', value)}
-              autoCapitalize="characters"
+              autoCapitalize='characters'
               autoCorrect={false}
               maxLength={10}
               style={styles.input}
             />
             {formErrors.symbol && (
-              <ThemedText type="small" style={styles.errorText}>
+              <ThemedText type='small' style={styles.errorText}>
                 {formErrors.symbol}
               </ThemedText>
             )}
@@ -201,14 +194,8 @@ const ImportTokenScreen = () => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <ThemeTouchableOpacity
-            type="default"
-            onPress={handleImport}
-            disabled={!isFormValid}
-            loading={loading}
-            style={styles.button}
-          >
-            <ThemedText type="defaultSemiBold" style={styles.buttonText}>
+          <ThemeTouchableOpacity type='default' onPress={handleImport} disabled={!isFormValid} loading={loading} style={styles.button}>
+            <ThemedText type='defaultSemiBold' style={styles.buttonText}>
               Import Token
             </ThemedText>
           </ThemeTouchableOpacity>
@@ -216,7 +203,7 @@ const ImportTokenScreen = () => {
 
         <View style={styles.infoContainer}>
           <View style={styles.infoBox}>
-            <ThemedText type="small" style={{ color: text.colorPlaceholder }}>
+            <ThemedText type='small' style={{ color: text.colorPlaceholder }}>
               ⚠️ Only import tokens from trusted sources. Importing malicious tokens may result in loss of funds.
             </ThemedText>
           </View>
