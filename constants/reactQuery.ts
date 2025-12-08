@@ -12,4 +12,5 @@ export enum KEY_REACT_QUERY {
   getABIContract = 'getABIContract',
   getDecodeTx = 'getDecodeTx',
   getExchangeToken = 'getExchangeToken',
+  getIsContract = 'getIsContract',
 }

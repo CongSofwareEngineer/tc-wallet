@@ -1,3 +1,5 @@
+import { CHAIN_DEFAULT } from '@/constants/chain'
+import { ChainId } from '@/types/web3'
 import { isAddress as isAddressViem, zeroAddress } from 'viem'
 
 export const isToken = (value: string): boolean => {
@@ -20,4 +22,8 @@ export const isAddress = (value: string): boolean => {
   }
 
   return isAddressViem(value)
+}
+
+export const isChainIdDefault = (chainId: ChainId) => {
+  return CHAIN_DEFAULT.some((chain) => Number(chain.id) === Number(chainId))
 }
