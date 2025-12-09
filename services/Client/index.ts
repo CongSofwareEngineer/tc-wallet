@@ -9,8 +9,8 @@ const ClientServices = {
       })
       const arr = res as unknown as ChainInfo[]
 
-      return arr.filter((chain) => !!chain.rpc && chain.rpc.length > 0)
-    } catch (error) {
+      return arr.filter((chain) => !!chain.rpc && chain.rpc.length > 0 && !!chain.nativeCurrency)
+    } catch {
       return [] as ChainInfo[]
     }
   },

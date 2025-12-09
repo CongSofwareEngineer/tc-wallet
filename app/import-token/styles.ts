@@ -1,51 +1,86 @@
 import { StyleSheet } from 'react-native'
 
-import { BORDER_RADIUS_DEFAULT, COLORS, GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
+import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 
-export const createStyles = (isDark: boolean) =>
-  StyleSheet.create({
+export const getStyles = (isDark: boolean) => {
+  const backgroundColor = isDark ? COLORS.black1 : '#fff'
+  const inputBackground = isDark ? COLORS.black2 : '#f5f5f5'
+  const textColor = isDark ? '#fff' : '#000'
+  const borderColor = isDark ? COLORS.black2 : '#e0e0e0'
+  const placeholderColor = isDark ? '#666' : '#999'
+
+  return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDark ? COLORS.black : COLORS.lightBg,
+      backgroundColor,
     },
-    scrollContent: {
-      flexGrow: 1,
-      padding: PADDING_DEFAULT.Padding20,
+    content: {
+      flex: 1,
+      padding: PADDING_DEFAULT.Padding16,
     },
-    form: {
-      gap: GAP_DEFAULT.Gap20,
-      marginBottom: GAP_DEFAULT.Gap32,
+    inputContainer: {
+      marginBottom: 20,
+    },
+    label: {
+      fontSize: 14,
+      marginBottom: 8,
+      color: textColor,
+      fontWeight: '500',
+    },
+    inputWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: inputBackground,
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      borderWidth: 1,
+      borderColor,
     },
     input: {
+      flex: 1,
+      height: 48,
       fontSize: 16,
+      color: textColor,
+      paddingHorizontal: 12,
     },
-    buttonContainer: {
-      marginBottom: GAP_DEFAULT.Gap24,
+    pasteButton: {
+      padding: 8,
     },
-    button: {
-      paddingVertical: PADDING_DEFAULT.Padding16,
+    iconContainer: {
+      flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
+      gap: 12,
     },
-    buttonText: {
-      color: COLORS.whiteLight,
-      fontSize: 16,
-    },
-    infoContainer: {
-      marginTop: 'auto',
-    },
-    infoBox: {
-      backgroundColor: isDark ? COLORS.black2 : COLORS.lightWarning,
-      padding: PADDING_DEFAULT.Padding16,
-      borderRadius: BORDER_RADIUS_DEFAULT.Radius8,
+    iconPreview: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: inputBackground,
       borderWidth: 1,
-      borderColor: COLORS.yellow2,
+      borderColor,
+    },
+    bottomContainer: {
+      padding: 16,
+      backgroundColor,
+    },
+    importButton: {
+      height: 48,
+      borderRadius: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    importButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    inputError: {
+      borderColor: '#ff4d4d',
     },
     errorText: {
-      color: COLORS.red,
+      color: '#ff4d4d',
+      fontSize: 12,
       marginTop: 4,
-      marginLeft: 4,
     },
   })
-
-export type Styles = ReturnType<typeof createStyles>
+}

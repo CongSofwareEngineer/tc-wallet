@@ -8,6 +8,7 @@ export type IFetch = {
   auth?: string | boolean
   throwError?: boolean
   showError?: boolean
+  isProxy?: boolean
 } & Omit<Partial<RequestInit>, 'body'>
 
 export type ReturnData<T> = {

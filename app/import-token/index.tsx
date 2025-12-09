@@ -1,50 +1,71 @@
-import React, { useState } from 'react'
-import { ScrollView, View } from 'react-native'
+import { Feather } from '@expo/vector-icons'
+import * as Clipboard from 'expo-clipboard'
+import { router } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { erc20Abi } from 'viem'
 
 import HeaderScreen from '@/components/Header'
-import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { COLORS } from '@/constants/style'
-import useIsContractEVM from '@/hooks/react-query/useIsContractEVM'
 import useChainSelected from '@/hooks/useChainSelected'
 import useDebounce from '@/hooks/useDebounce'
 import useMode from '@/hooks/useMode'
 import useTheme from '@/hooks/useTheme'
+import useWallets from '@/hooks/useWallets'
+import EVMServices from '@/services/EVM'
+import { isAddress } from '@/utils/nvm'
 
-import { createStyles } from './styles'
+import useInfoToken from '@/hooks/react-query/useInfoToken'
+import { getStyles } from './styles'
 
 interface FormData {
   address: string
   decimal: string
   symbol: string
+  name: string
 }
 
 interface FormErrors {
   address?: string
   decimal?: string
   symbol?: string
+  name?: string
 }
 
 const ImportTokenScreen = () => {
-  const { background, text } = useTheme()
   const { isDark } = useMode()
+  const { text, colorIcon } = useTheme()
   const { chainId } = useChainSelected()
-  const styles = createStyles(isDark)
+  const { wallet } = useWallets()
+  const styles = getStyles(isDark)
+
   const [formData, setFormData] = useState<FormData>({
     address: '',
     decimal: '',
     symbol: '',
+    name: '',
   })
   const [formErrors, setFormErrors] = useState<FormErrors>({})
   const [loading, setLoading] = useState(false)
 
   // Debounce address to reduce contract check frequency
   const debouncedAddress = useDebounce(formData.address, 500)
+  const { data: infoToken, isLoading: isLoadingInfoToken } = useInfoToken(debouncedAddress, chainId)
 
-  // Check if address is a valid contract
-  const { data: isContract, isLoading: isCheckingContract } = useIsContractEVM(debouncedAddress, chainId)
+  useEffect(() => {
+    if (infoToken?.decimals && infoToken?.symbol && infoToken?.name) {
+      setFormData((prev) => ({
+        ...prev,
+        decimal: infoToken.decimals!.toString(),
+        symbol: infoToken.symbol!,
+        name: infoToken.name!
+      }))
+    }
+  }, [infoToken])
+
 
   const validateField = (field: keyof FormData, value: string): string | undefined => {
     switch (field) {
@@ -58,8 +79,9 @@ const ImportTokenScreen = () => {
         if (value.length !== 42) {
           return 'Invalid address length (must be 42 characters)'
         }
+
         // Check if it's a valid contract (only if address format is valid)
-        if (value.length === 42 && value.startsWith('0x') && isContract === false) {
+        if (value.length === 42 && value.startsWith('0x') && !infoToken?.noToken) {
           return 'Address is not a valid token contract'
         }
         break
@@ -76,9 +98,14 @@ const ImportTokenScreen = () => {
         if (!value.trim()) {
           return 'Symbol is required'
         }
-
         if (value.length > 10) {
           return 'Symbol must be at most 10 characters'
+        }
+        break
+      case 'name':
+        // Name is optional, but if provided, validate length
+        if (value.length > 50) {
+          return 'Name must be at most 50 characters'
         }
         break
     }
@@ -96,8 +123,9 @@ const ImportTokenScreen = () => {
     const errors: FormErrors = {}
     let isValid = true
 
-    Object.keys(formData).forEach((key) => {
-      const field = key as keyof FormData
+    // Only validate required fields
+    const requiredFields: (keyof FormData)[] = ['address', 'decimal', 'symbol']
+    requiredFields.forEach((field) => {
       const error = validateField(field, formData[field])
       if (error) {
         errors[field] = error
@@ -119,6 +147,7 @@ const ImportTokenScreen = () => {
       // TODO: Implement token import logic
       console.log('Importing token:', formData)
       // Add your import logic here
+      router.back()
     } catch (error) {
       console.error('Error importing token:', error)
     } finally {
@@ -126,90 +155,170 @@ const ImportTokenScreen = () => {
     }
   }
 
-  const isFormValid = formData.address.trim() !== '' && formData.decimal.trim() !== '' && formData.symbol.trim() !== ''
+  const handlePaste = async () => {
+    const clipText = await Clipboard.getStringAsync()
+    if (clipText && isAddress(clipText) && wallet) {
+      const client = EVMServices.getClient(chainId)
+      const [decimals, symbol, name, balanceOf, totalSupply] = await client.multicall({
+        contracts: [
+          {
+            address: clipText as `0x${string}`,
+            abi: erc20Abi,
+            functionName: 'decimals',
+            args: [],
+          },
+          {
+            address: clipText as `0x${string}`,
+            abi: erc20Abi,
+            functionName: 'symbol',
+            args: [],
+          },
+          {
+            address: clipText as `0x${string}`,
+            abi: erc20Abi,
+            functionName: 'name',
+            args: [],
+          },
+          {
+            address: clipText as `0x${string}`,
+            abi: erc20Abi,
+            functionName: 'balanceOf',
+            args: [wallet.address as `0x${string}`],
+          },
+          {
+            address: clipText as `0x${string}`,
+            abi: erc20Abi,
+            functionName: 'totalSupply',
+            args: [],
+          },
+        ],
+      })
+      console.log({ decimals, symbol, name, balanceOf, totalSupply })
+
+      // Update form data with fetched values
+      if (decimals && decimals.status === 'success') {
+        handleFieldChange('decimal', (decimals.result as number).toString())
+      }
+      if (symbol && symbol.status === 'success') {
+        handleFieldChange('symbol', symbol.result as string)
+      }
+      if (name && name.status === 'success') {
+        handleFieldChange('name', name.result as string)
+      }
+
+      handleFieldChange('address', clipText)
+    }
+  }
+
+  const isFormValid =
+    formData.address.trim() !== '' &&
+    formData.decimal.trim() !== '' &&
+    formData.symbol.trim() !== '' &&
+    !formErrors.address &&
+    !formErrors.decimal &&
+    !formErrors.symbol
 
   return (
-    <KeyboardAvoiding style={[styles.container, { backgroundColor: background.background }]}>
+    <View style={styles.container}>
       <HeaderScreen title='Import Token' />
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps='handled' showsVerticalScrollIndicator={false}>
-        <View style={styles.form}>
-          <View>
+
+      <ScrollView style={styles.content}>
+        {/* Token Address Input */}
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: text.color }]}>Token Address</Text>
+          <View style={styles.inputWrapper}>
             <ThemedInput
-              numberOfLines={2}
-              label={<ThemedText type='defaultSemiBold'>Token Address</ThemedText>}
-              placeholder='0x...'
+              noBorder
+              style={styles.input}
+              placeholder='Enter token contract address'
               value={formData.address}
               onChangeText={(value) => handleFieldChange('address', value)}
               autoCapitalize='none'
               autoCorrect={false}
-              style={styles.input}
             />
-            {formErrors.address && (
-              <ThemedText type='small' style={styles.errorText}>
-                {formErrors.address}
-              </ThemedText>
-            )}
-            {isCheckingContract && formData.address.length === 42 && (
-              <ThemedText type='small' style={{ color: COLORS.gray, marginTop: 4, marginLeft: 4 }}>
-                Checking contract...
-              </ThemedText>
-            )}
+            <TouchableOpacity style={styles.pasteButton} onPress={handlePaste}>
+              <Feather name='clipboard' size={20} color={colorIcon.colorDefault} />
+            </TouchableOpacity>
           </View>
-
-          <View>
-            <ThemedInput
-              label={<ThemedText type='defaultSemiBold'>Decimals</ThemedText>}
-              placeholder='18'
-              value={formData.decimal}
-              onChangeText={(value) => handleFieldChange('decimal', value)}
-              keyboardType='numeric'
-              inputMode='numeric'
-              maxLength={2}
-              style={styles.input}
-            />
-            {formErrors.decimal && (
-              <ThemedText type='small' style={styles.errorText}>
-                {formErrors.decimal}
-              </ThemedText>
-            )}
-          </View>
-
-          <View>
-            <ThemedInput
-              label={<ThemedText type='defaultSemiBold'>Symbol</ThemedText>}
-              placeholder='TOKEN'
-              value={formData.symbol}
-              onChangeText={(value) => handleFieldChange('symbol', value)}
-              autoCapitalize='characters'
-              autoCorrect={false}
-              maxLength={10}
-              style={styles.input}
-            />
-            {formErrors.symbol && (
-              <ThemedText type='small' style={styles.errorText}>
-                {formErrors.symbol}
-              </ThemedText>
-            )}
-          </View>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <ThemeTouchableOpacity type='default' onPress={handleImport} disabled={!isFormValid} loading={loading} style={styles.button}>
-            <ThemedText type='defaultSemiBold' style={styles.buttonText}>
-              Import Token
+          {formErrors.address && (
+            <ThemedText type='small' style={{ color: COLORS.red, marginTop: 4, marginLeft: 4 }}>
+              {formErrors.address}
             </ThemedText>
-          </ThemeTouchableOpacity>
+          )}
+          {isLoadingInfoToken && formData.address.length === 42 && (
+            <ThemedText type='small' style={{ color: COLORS.gray, marginTop: 4, marginLeft: 4 }}>
+              Checking contract...
+            </ThemedText>
+          )}
         </View>
 
-        <View style={styles.infoContainer}>
-          <View style={styles.infoBox}>
-            <ThemedText type='small' style={{ color: text.colorPlaceholder }}>
-              ⚠️ Only import tokens from trusted sources. Importing malicious tokens may result in loss of funds.
+        {/* Token Symbol Input */}
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: text.color }]}>Token Symbol</Text>
+          <ThemedInput
+            noBorder
+            style={[styles.input, { flex: 1 }]}
+            placeholder='Enter token symbol'
+            value={formData.symbol}
+            onChangeText={(value) => handleFieldChange('symbol', value)}
+            autoCapitalize='characters'
+            autoCorrect={false}
+            maxLength={10}
+          />
+          {formErrors.symbol && (
+            <ThemedText type='small' style={{ color: COLORS.red, marginTop: 4, marginLeft: 4 }}>
+              {formErrors.symbol}
             </ThemedText>
-          </View>
+          )}
         </View>
+
+        {/* Token Name Input */}
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: text.color }]}>Token Name</Text>
+          <ThemedInput
+            noBorder
+            style={styles.input}
+            placeholder='Enter token name'
+            value={formData.name}
+            onChangeText={(value) => handleFieldChange('name', value)}
+            maxLength={50}
+          />
+          {formErrors.name && (
+            <ThemedText type='small' style={{ color: COLORS.red, marginTop: 4, marginLeft: 4 }}>
+              {formErrors.name}
+            </ThemedText>
+          )}
+        </View>
+
+        {/* Token Decimals Input */}
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: text.color }]}>Token Decimals</Text>
+          <ThemedInput
+            noBorder
+            style={styles.input}
+            placeholder='Enter token decimals'
+            value={formData.decimal}
+            onChangeText={(value) => handleFieldChange('decimal', value)}
+            keyboardType='numeric'
+            inputMode='numeric'
+            maxLength={2}
+          />
+          {formErrors.decimal && (
+            <ThemedText type='small' style={{ color: COLORS.red, marginTop: 4, marginLeft: 4 }}>
+              {formErrors.decimal}
+            </ThemedText>
+          )}
+        </View>
+
       </ScrollView>
-    </KeyboardAvoiding>
+
+      {/* Import Button */}
+      <View style={styles.bottomContainer}>
+        <ThemeTouchableOpacity style={styles.importButton} onPress={handleImport} disabled={!isFormValid || loading}>
+          <Text style={styles.importButtonText}>{loading ? 'Importing...' : 'Import Token'}</Text>
+        </ThemeTouchableOpacity>
+      </View>
+    </View>
   )
 }
 

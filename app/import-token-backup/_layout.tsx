@@ -1,5 +1,4 @@
 import React from 'react'
-
 import ImportTokenScreen from '.'
 
 const ImportTokenLayout = () => {
