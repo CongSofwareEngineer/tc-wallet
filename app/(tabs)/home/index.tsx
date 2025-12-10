@@ -10,7 +10,6 @@ import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useWallets from '@/hooks/useWallets'
 
-import useChainList from '@/hooks/react-query/useChainList'
 import useTheme from '@/hooks/useTheme'
 import { width } from '@/utils/systems'
 import Collections from './Components/Collections'
@@ -46,8 +45,6 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   })
 
-  const { data: chainList } = useChainList()
-  console.log({ chainList });
 
 
 
