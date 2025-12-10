@@ -23,6 +23,12 @@ const MyImage = ({ src, ...props }: Props) => {
     return () => clearTimeout(timer) // Cleanup timer on unmount
   }, [isLoaded, caseImage])
 
+  useEffect(() => {
+    if (!src) {
+      setCaseImage(3)
+    }
+  }, [src])
+
   switch (caseImage) {
     case 1:
       return (

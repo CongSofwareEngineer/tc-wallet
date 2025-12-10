@@ -65,7 +65,7 @@ const ThemedInput = ({
   }
 
   return (
-    <View style={[styles.container]}>
+    <View style={[styles.container, { opacity: disabled ? 0.5 : 1, }]}>
       {label && <ThemedText style={styles.label}>{label}</ThemedText>}
       <View
         style={[
@@ -85,10 +85,11 @@ const ThemedInput = ({
           className={stylesCss.input}
           placeholderTextColor={text.colorPlaceholder}
           style={[
-            { opacity: disabled ? 0.5 : 1, width: '100%', backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 },
+            { backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 },
             style,
           ]}
           {...props}
+          editable={!disabled}
           onChangeText={onChangeText}
           secureTextEntry={isPassword}
         />

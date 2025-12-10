@@ -119,7 +119,6 @@ const SendNFTScreen = () => {
   }, [nftAddress, nftId, wallet, form.toAddress, form.amount, isERC1155])
 
   const { data: estimatedGas, isLoading: loadingEstimatedGas, refetch: refetchEstimatedGas } = useEstimateGas(rawTransaction)
-  console.log({ isERC1155, estimatedGas, rawTransaction, nftData });
 
   const isErrorForm = useMemo(() => {
     if (loadingEstimatedGas) {

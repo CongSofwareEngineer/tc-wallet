@@ -1,5 +1,5 @@
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import React, { useMemo, useState } from 'react'
+import { useRouter } from 'expo-router'
+import React, { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
@@ -10,74 +10,100 @@ import { IsIos } from '@/constants/app'
 import { PADDING_DEFAULT } from '@/constants/style'
 import useChains from '@/hooks/useChains'
 
-import { Network } from '@/types/web3'
+import useChainList from '@/hooks/react-query/useChainList'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import styles from './styles'
 
-const ChainDetailScreen = () => {
+const ImportChainScreen = () => {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const { chainList, updateNetworks, addNetwork } = useChains()
-  const { chainId: chainCurrentId } = useLocalSearchParams<{ chainId: string }>()
+  const { chainList, addNetwork } = useChains()
+  const { data: chainListData, isLoading: isLoadingChainList } = useChainList()
 
-  const chainCurrent = useMemo(() => {
-    return chainList.find((chain) => chain.id.toString() === chainCurrentId.toString())
-  }, [chainList, chainCurrentId])
 
   const [formData, setFormData] = useState({
-    networkName: chainCurrent?.name,
-    rpcUrl: chainCurrent?.rpcUrls?.default?.http?.[0],
-    chainId: chainCurrent?.id,
-    symbol: chainCurrent?.nativeCurrency?.symbol,
-    blockExplorerUrl: chainCurrent?.blockExplorers?.default?.url,
+    networkName: '',
+    rpcUrl: '',
+    chainId: '',
+    symbol: '',
+    blockExplorerUrl: '',
   })
 
+  useEffect(() => {
+    if (formData?.chainId) {
+      const chain = chainListData?.find((chain) => chain.id.toString() === formData.chainId.toString())
+      if (chain) {
+        setFormData({
+          ...formData,
+          networkName: chain.name,
+          rpcUrl: chain.rpcUrls?.default?.http?.[0],
+          symbol: chain.nativeCurrency?.symbol,
+          blockExplorerUrl: chain.blockExplorers?.default?.url || '',
+        })
+      }
+    }
+  }, [formData?.chainId, chainListData])
 
-  const handleSave = () => {
+  useEffect(() => {
+    const isExist = chainList.find((chain) => chain.id.toString() === formData.chainId.toString())
+    if (isExist) {
+      Alert.alert('Chain already exists')
+    }
+  }, [chainList, formData])
+
+
+  const handleCreateNetwork = () => {
     try {
       setIsLoading(true)
 
-      if (!chainCurrent) {
-
+      // Validate required fields
+      if (!formData.networkName || !formData.rpcUrl || !formData.chainId || !formData.symbol) {
+        console.error('Missing required fields')
         return
       }
 
-      // Construct the updated network object
-      const updatedNetwork: Network = {
-        ...chainCurrent,
-        name: formData.networkName!,
-        rpcUrls: {
-          ...chainCurrent.rpcUrls,
-          default: {
-            ...chainCurrent.rpcUrls?.default,
-            http: [formData.rpcUrl!],
-          },
-        },
+      // Construct the new network object
+      const newNetwork = {
+        id: Number(formData.chainId),
+        name: formData.networkName,
         nativeCurrency: {
-          ...chainCurrent.nativeCurrency,
-          symbol: formData.symbol!,
+          name: formData.symbol,
+          symbol: formData.symbol,
+          decimals: 18,
         },
-        blockExplorers: {
-          ...chainCurrent.blockExplorers,
+        rpcUrls: {
           default: {
-            ...chainCurrent.blockExplorers?.default,
-            name: chainCurrent.blockExplorers?.default?.name || 'Explorer',
-            url: formData.blockExplorerUrl!,
+            http: [formData.rpcUrl],
+          },
+          public: {
+            http: [formData.rpcUrl],
           },
         },
+        blockExplorers: formData.blockExplorerUrl
+          ? {
+            default: {
+              name: 'Explorer',
+              url: formData.blockExplorerUrl,
+            },
+          }
+          : undefined,
+        iconChain: '', // Default empty icon
+        isCustom: true, // Mark as custom network
       }
 
-      // Update the network using the hook
-      updateNetworks(updatedNetwork)
+      // Add the network using the hook
+      addNetwork(newNetwork)
 
-      console.log('Chain updated successfully:', updatedNetwork)
+      console.log('Chain created successfully:', newNetwork)
       router.back()
     } catch (error) {
-      console.error('Error updating chain:', error)
+      console.error('Error creating chain:', error)
     } finally {
       setIsLoading(false)
     }
   }
+
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -95,7 +121,7 @@ const ChainDetailScreen = () => {
                 <ThemedText style={styles.label}>Chain ID</ThemedText>
                 <View style={styles.inputContainer}>
                   <ThemedInput
-                    disabled
+                    disabled={!isLoadingChainList}
                     style={styles.input}
                     value={Number(formData.chainId).toString()}
                     keyboardType='numeric'
@@ -109,6 +135,7 @@ const ChainDetailScreen = () => {
                 <ThemedText style={styles.label}>Network Name</ThemedText>
                 <View style={styles.inputContainer}>
                   <ThemedInput
+                    disabled={!isLoadingChainList}
                     style={styles.input}
                     value={formData.networkName}
                     onChangeText={(text) => setFormData({ ...formData, networkName: text })}
@@ -122,6 +149,7 @@ const ChainDetailScreen = () => {
                 <ThemedText style={styles.label}>Failover RPC URL</ThemedText>
                 <View style={styles.inputContainer}>
                   <ThemedInput
+                    disabled={!isLoadingChainList}
                     style={styles.input}
                     value={formData.rpcUrl}
                     onChangeText={(text) => setFormData({ ...formData, rpcUrl: text })}
@@ -136,6 +164,7 @@ const ChainDetailScreen = () => {
                 <ThemedText style={styles.label}>Symbol</ThemedText>
                 <View style={styles.inputContainer}>
                   <ThemedInput
+                    disabled={!isLoadingChainList}
                     style={styles.input}
                     value={formData.symbol}
                     onChangeText={(text) => setFormData({ ...formData, symbol: text })}
@@ -149,6 +178,7 @@ const ChainDetailScreen = () => {
                 <ThemedText style={styles.label}>Block Explorer URL</ThemedText>
                 <View style={styles.inputContainer}>
                   <ThemedInput
+                    disabled={!isLoadingChainList}
                     inputMode='url'
                     style={styles.input}
                     value={formData.blockExplorerUrl}
@@ -162,7 +192,7 @@ const ChainDetailScreen = () => {
             {/* Save Button */}
           </ScrollView>
           <View style={{ padding: PADDING_DEFAULT.Padding16 }}>
-            <ThemeTouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <ThemeTouchableOpacity disabled={isLoadingChainList} loading={isLoading} style={styles.saveButton} onPress={handleCreateNetwork}>
               <ThemedText style={styles.saveButtonText}>Save</ThemedText>
             </ThemeTouchableOpacity>
           </View>
@@ -172,4 +202,4 @@ const ChainDetailScreen = () => {
   )
 }
 
-export default ChainDetailScreen
+export default ImportChainScreen

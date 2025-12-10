@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import React, { useState } from 'react'
-import { Linking, ScrollView, TouchableOpacity, View } from 'react-native'
+import { Linking, ScrollView, View } from 'react-native'
 import QRCode from 'react-native-qrcode-svg'
 
 import HeaderScreen from '@/components/Header'
@@ -30,10 +30,9 @@ const QRInfoAddressScreen = () => {
 
   const handleCopyAddress = async () => {
     try {
-      copyToClipboard(wallet?.address || '')
-      showSuccess('Address copied to clipboard!')
+      copyToClipboard(wallet?.address || '', true)
     } catch {
-      showSuccess('Failed to copy address')
+      showSuccess({ text: 'Failed to copy address' })
     }
   }
 
@@ -43,16 +42,7 @@ const QRInfoAddressScreen = () => {
     Linking.openURL(url)
   }
 
-  const handleRequestPayment = () => {
-    // Navigate to request payment screen
-    // TODO: Implement navigation
-  }
 
-  const renderTabButton = (tab: 'scan' | 'receive', title: string) => (
-    <TouchableOpacity style={[styles.tabButton, activeTab === tab && styles.tabButtonActive]} onPress={() => setActiveTab(tab)}>
-      <ThemedText style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>{title}</ThemedText>
-    </TouchableOpacity>
-  )
 
   const renderQRSection = () => (
     <View style={styles.qrSection}>
