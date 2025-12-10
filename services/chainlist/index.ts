@@ -1,21 +1,27 @@
-import { CHAIN_DEFAULT } from "@/constants/chain";
-import { ChainInfo } from "@/types/web3";
-import { ChainFormatters, defineBlock, defineChain, defineTransaction, defineTransactionReceipt, formatTransaction, hexToBigInt, RpcTransaction, serializeTransaction } from "viem";
-import { OpStackBlock, OpStackRpcBlock, OpStackTransaction, OpStackTransactionReceipt } from "viem/chains";
-import BaseAPI from "../baseAPI";
+import { CHAIN_DEFAULT } from '@/constants/chain'
+import { ChainInfo } from '@/types/web3'
+import {
+  ChainFormatters,
+  defineBlock,
+  defineChain,
+  defineTransaction,
+  defineTransactionReceipt,
+  formatTransaction,
+  hexToBigInt,
+  RpcTransaction,
+  serializeTransaction,
+} from 'viem'
+import { OpStackBlock, OpStackRpcBlock, OpStackTransaction, OpStackTransactionReceipt } from 'viem/chains'
+import BaseAPI from '../baseAPI'
 export const formatters = {
   block: /*#__PURE__*/ defineBlock({
     format(args: OpStackRpcBlock): OpStackBlock {
       const transactions = args.transactions?.map((transaction) => {
         if (typeof transaction === 'string') return transaction
-        const formatted = formatTransaction(
-          transaction as RpcTransaction,
-        ) as OpStackTransaction
+        const formatted = formatTransaction(transaction as RpcTransaction) as OpStackTransaction
         if (formatted.typeHex === '0x7e') {
           formatted.isSystemTx = transaction.isSystemTx
-          formatted.mint = transaction.mint
-            ? hexToBigInt(transaction.mint)
-            : undefined
+          formatted.mint = transaction.mint ? hexToBigInt(transaction.mint) : undefined
           formatted.sourceHash = transaction.sourceHash
           formatted.type = 'deposit'
         }
@@ -55,10 +61,9 @@ class ChainListServices extends BaseAPI {
   static baseUrl: string = 'https://chainlist.org/'
 
   static convertChainListToChainViem = (chain: ChainInfo) => {
-
     const chainConvert = defineChain({
       serializers: {
-        transaction: serializeTransaction
+        transaction: serializeTransaction,
       },
       formatters: formatters,
       blockTime: 2_000,
@@ -75,13 +80,11 @@ class ChainListServices extends BaseAPI {
         default: {
           name: chain.explorers?.[0]?.name || 'no',
           url: chain.explorers?.[0]?.url || 'no',
-        }
+        },
       },
-
     })
 
     return chainConvert
-
   }
   static async getAllChains() {
     try {
@@ -109,17 +112,12 @@ class ChainListServices extends BaseAPI {
         const isExitedChainDefault = CHAIN_DEFAULT.find((chainDefault) => chainDefault.id.toString() === chain.chainId.toString())
         return !isExitedChainDefault
       })
-      console.log({ CHAIN_DEFAULT });
-
 
       return arrFinal.map((chain) => this.convertChainListToChainViem(chain))
     } catch (e) {
-      console.log({ error: e });
-
       return []
     }
   }
-
 }
 
 export default ChainListServices

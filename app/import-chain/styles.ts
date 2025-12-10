@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     // marginBottom: 20,
   },
   fieldContainer: {
-    marginBottom: 20,
+    marginBottom: 4,
   },
   label: {
     fontWeight: '600',

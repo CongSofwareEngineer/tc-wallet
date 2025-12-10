@@ -22,6 +22,8 @@ export type ThemedInputProps = {
   noBorder?: boolean
   disabled?: boolean
   styleContentInput?: StyleProp<ViewStyle>
+  error?: ReactNode
+  showError?: boolean
 } & TextInputProps
 
 const ThemedInput = ({
@@ -38,6 +40,8 @@ const ThemedInput = ({
   noBorder,
   disabled,
   styleContentInput,
+  error,
+  showError,
   ...props
 }: ThemedInputProps) => {
   const { background, text } = useTheme()
@@ -65,7 +69,7 @@ const ThemedInput = ({
   }
 
   return (
-    <View style={[styles.container, { opacity: disabled ? 0.5 : 1, }]}>
+    <View style={[styles.container, { opacity: disabled ? 0.5 : 1 }]}>
       {label && <ThemedText style={styles.label}>{label}</ThemedText>}
       <View
         style={[
@@ -84,10 +88,7 @@ const ThemedInput = ({
           ref={ref}
           className={stylesCss.input}
           placeholderTextColor={text.colorPlaceholder}
-          style={[
-            { backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 },
-            style,
-          ]}
+          style={[{ backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 }, style]}
           {...props}
           editable={!disabled}
           onChangeText={onChangeText}
@@ -114,6 +115,11 @@ const ThemedInput = ({
         <ThemedText {...props?.countConfig} style={[styles.count, { width: '100%', textAlign: 'right' }]} className={props?.countConfig?.className}>
           {props?.value?.length ?? 0}
           {props?.maxLength && `/${props?.maxLength}`}
+        </ThemedText>
+      )}
+      {(showError || error) && (
+        <ThemedText type='small' style={[styles.error, { opacity: error ? 1 : 0 }]}>
+          {error || 'error'}
         </ThemedText>
       )}
     </View>

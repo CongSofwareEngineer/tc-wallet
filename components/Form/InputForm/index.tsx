@@ -51,7 +51,7 @@ const InputForm = ({
         render={({ field: { onChange, onBlur, value } }) => (
           <ThemedInput placeholder={placeholder} {...configInput} onBlur={onBlur} onChangeText={(value) => onChange(value)} value={value} />
         )}
-        name={name}
+        name={name || 'noname'}
         rules={{ required: required }}
       />
       {!hiddenError && (

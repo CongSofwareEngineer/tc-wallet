@@ -15,8 +15,6 @@ import MyImage from '@/components/MyImage'
 import useTheme from '@/hooks/useTheme'
 import { styles } from './styles'
 
-type NetworkType = 'Popular' | 'Custom'
-
 const SelectChainScreen = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
@@ -66,7 +64,7 @@ const SelectChainScreen = () => {
       <HeaderScreen
         title='Select Chain'
         rightSide={
-          <ThemeTouchableOpacity type='text' onPress={() => router.push('/chain-detail/new')} style={styles.headerAddButton}>
+          <ThemeTouchableOpacity type='text' onPress={() => router.push('/import-chain')} style={styles.headerAddButton}>
             <Ionicons name='add' size={24} color='#FFFFFF' />
           </ThemeTouchableOpacity>
         }

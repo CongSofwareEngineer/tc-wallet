@@ -44,8 +44,7 @@ export const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
-    fontSize: 12,
-    marginTop: 5,
+    width: '100%',
   },
   success: {
     color: 'green',
