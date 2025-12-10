@@ -14,4 +14,5 @@ export enum KEY_STORAGE {
   PasscodeAuth = 'PasscodeAuth',
   ListTokenImport = 'ListTokenImport',
   BalanceTokenLocal = 'balanceTokenLocal',
+  ListTokenImportLocal = 'ListTokenImportLocal',
 }

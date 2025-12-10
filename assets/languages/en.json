@@ -52,7 +52,7 @@
     "transactionUnderpriced": "Giá giao dịch quá thấp.",
     "transactionTimeout": "Giao dịch đã hết giờ chờ.",
     "userRejected": "Người dùng đã từ chối giao dịch này.",
-    "insufficientFunds": "Số dư không đủ",
+    "insufficientFunds": "Số dư không đủ trả phí",
     "wrongNetwork": "Mạng lưới không hợp lệ. Vui lòng chuyển đến mạng lưới hỗ trợ."
   },
   "placeholder": {

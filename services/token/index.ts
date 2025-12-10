@@ -2,9 +2,12 @@ import { erc20Abi } from 'viem'
 
 import { store } from '@/redux/store'
 import { ChainId } from '@/types/web3'
-import { convertWeiToBalance } from '@/utils/functions'
 import { isChainIdDefault, isTokenNative } from '@/utils/nvm'
 
+import { KEY_STORAGE } from '@/constants/storage'
+import { convertWeiToBalance } from '@/utils/functions'
+import { getDataLocal } from '@/utils/storage'
+import { Token } from '../moralis/type'
 import Web3Service from '../web3'
 
 class TokenService extends Web3Service {
@@ -65,17 +68,16 @@ class TokenService extends Web3Service {
     }
   }
 
-  static async getBalanceToken(addressToken: string, chainId: ChainId) {
+  static async getBalanceToken(addressToken: string, chainId: ChainId, addressUser?: string) {
     try {
       const wallet = store.getState().wallet.wallet
-      const addressUser = wallet?.address
+      addressUser = addressUser || wallet?.address
       const publicClient = this.getClient(chainId)
       if (isTokenNative(addressToken)) {
         const balance = await publicClient.getBalance({ address: addressUser as any, blockTag: 'latest' })
 
-        return convertWeiToBalance(balance)
+        return balance
       } else {
-        const decimals = await this.getTokenDecimals(addressToken, chainId)
         const balance = await publicClient.readContract({
           address: addressToken as any,
           abi: erc20Abi,
@@ -83,19 +85,19 @@ class TokenService extends Web3Service {
           args: [addressUser as any],
         })
 
-        return convertWeiToBalance(balance, decimals)
+        return balance
       }
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  static async getListBalanceToken(addressTokens: string[], chainId: ChainId) {
+  static async getListBalanceToken(addressTokens: string[], chainId: ChainId, addressUser?: string) {
     try {
       const publicClient = this.getClient(chainId)
       const isChainDefault = isChainIdDefault(chainId)
       const wallet = store.getState().wallet.wallet
-      const addressUser = wallet?.address
+      addressUser = addressUser || wallet?.address
 
       if (isChainDefault) {
         const arrCall: any[] = []
@@ -110,17 +112,41 @@ class TokenService extends Web3Service {
         const res = await publicClient.multicall({
           contracts: arrCall as any[],
         })
-        return res.map((item) => convertWeiToBalance(item.result?.toString() as string))
+        return res.map((item) => item.result?.toString() as string)
       } else {
 
         const res = await Promise.all(addressTokens.map((addressToken) => this.getBalanceToken(addressToken, chainId)))
-        return res.map((item) => convertWeiToBalance(item?.toString() as string))
+        return res.map((item) => item?.toString() as string)
       }
 
 
 
     } catch (error) {
       return Promise.reject(error)
+    }
+  }
+
+  static async getListTokenImportLocal(chainId: ChainId, addressUser?: string) {
+    try {
+      const data = getDataLocal(KEY_STORAGE.ListTokenImportLocal)
+      const arrToken: Token[] = data?.[chainId] || []
+      const wallet = store.getState().wallet.wallet
+      addressUser = addressUser || wallet?.address
+
+      if (arrToken.length > 0) {
+        const arrAddressToken = arrToken.map((item) => item.token_address)
+        const balanceToken = await this.getListBalanceToken(arrAddressToken, chainId, addressUser)
+        return arrToken.map((item, index) => {
+          return {
+            ...item,
+            balance: balanceToken[index],
+            balance_formatted: convertWeiToBalance(balanceToken[index], item.decimals),
+          }
+        })
+      }
+      return []
+    } catch (error) {
+      return []
     }
   }
 

@@ -582,7 +582,7 @@ const SendTokenScreen = () => {
           <View style={styles.errorCard}>
             <ThemedText style={[styles.resultTitle, { color: isDark ? '#EF4444' : '#DC2626' }]}>Transaction Failed</ThemedText>
             <ThemedText selectable style={[styles.resultText, { color: isDark ? '#DC2626' : '#7F1D1D' }]}>
-              {txError}
+              {getError(txError)}
             </ThemedText>
           </View>
         )}

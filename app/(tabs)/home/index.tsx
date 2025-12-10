@@ -1,18 +1,16 @@
-import AntDesign from '@expo/vector-icons/AntDesign'
 import Feather from '@expo/vector-icons/Feather'
 import Big from 'bignumber.js'
-import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { useRef, useState } from 'react'
 import { Animated, View } from 'react-native'
 
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
-import { COLORS, GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
+import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
-import useChains from '@/hooks/useChains'
 import useWallets from '@/hooks/useWallets'
 
+import useChainList from '@/hooks/react-query/useChainList'
 import useTheme from '@/hooks/useTheme'
 import { width } from '@/utils/systems'
 import Collections from './Components/Collections'
@@ -28,7 +26,6 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('Tokens')
   const router = useRouter()
   const { background } = useTheme()
-  const { chainCurrent } = useChains()
   const { wallet } = useWallets()
   const { totalUSD } = useBalanceToken()
   const scrollY = useRef(new Animated.Value(0)).current
@@ -49,19 +46,10 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   })
 
-  const renderChainSelected = () => {
-    return (
-      <View>
-        <ThemeTouchableOpacity type='text' onPress={() => router.push('/select-chain')}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
-            {chainCurrent?.iconChain && <Image source={{ uri: chainCurrent?.iconChain }} style={{ width: 30, height: 30, borderRadius: 15 }} />}
-            <ThemedText style={styles.networkFilterText}>{chainCurrent?.name}</ThemedText>
-            <AntDesign name='down' size={16} color='#FFFFFF' />
-          </View>
-        </ThemeTouchableOpacity>
-      </View>
-    )
-  }
+  const { data: chainList } = useChainList()
+  console.log({ chainList });
+
+
 
   return (
     <View style={[styles.container]}>
@@ -86,10 +74,6 @@ export default function HomeScreen() {
             </ThemedText>
             {/* <Options /> */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20, marginTop: 6 }}>
-              {/* <ThemeTouchableOpacity onPress={handleTestApi} style={styles.buyButton}>
-                <Feather name='tablet' size={20} color='#FFFFFF' />
-                <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>handleTestApi</ThemedText>
-              </ThemeTouchableOpacity> */}
               <ThemeTouchableOpacity onPress={() => router.push(`/send-token/${wallet?.address}`)} style={styles.buyButton}>
                 <Feather name='send' size={20} color='#FFFFFF' />
                 <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
@@ -134,8 +118,6 @@ export default function HomeScreen() {
         ) : (
           <Collections headerHeight={headerHeight} scrollY={scrollY} />
         )}
-
-        {/* <MoralisScreen /> */}
       </View>
     </View>
   )

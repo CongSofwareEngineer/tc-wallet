@@ -98,9 +98,7 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
           {item.logo || item.thumbnail ? (
             <MyImage src={item.logo || item.thumbnail} style={{ width: 36, height: 36, borderRadius: 18 }} />
           ) : (
-            // item.symbol
             <MaterialIcons name='token' size={40} color={text.color} />
-            // <AntDesign name='tik-tok' size={40} color='#FFFFFF' />
           )}
         </View>
 
@@ -115,10 +113,15 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
 
         <View style={{ alignItems: 'flex-end' }}>
           <ThemedText style={styles.cryptoBalance}>{BigNumber(item.usd_value).decimalPlaces(4, BigNumber.ROUND_DOWN).toFormat()}$</ThemedText>
-          <ThemedText style={[styles.cryptoChange, { color: item.usd_price_24hr_percent_change >= 0 ? '#00D09C' : '#FF4D4D' }]}>
-            {item.usd_price_24hr_percent_change >= 0 ? '+' : ''}
-            {item.usd_price_24hr_percent_change.toFixed(2)}%
-          </ThemedText>
+          {
+            item?.usd_price_24hr_percent_change && (
+              <ThemedText style={[styles.cryptoChange, { color: item.usd_price_24hr_percent_change >= 0 ? '#00D09C' : '#FF4D4D' }]}>
+                {item.usd_price_24hr_percent_change >= 0 ? '+' : ''}
+                {item.usd_price_24hr_percent_change.toFixed(2)}%
+              </ThemedText>
+            )
+          }
+
         </View>
       </TouchableOpacity>
     </Swipeable>

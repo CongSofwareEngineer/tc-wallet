@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 
-import { BORDER_RADIUS_DEFAULT, COLORS, GAP_DEFAULT } from '@/constants/style'
+import { BORDER_RADIUS_DEFAULT, COLORS, GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import { width } from '@/utils/systems'
 
 export const createStyles = (isDark: boolean) =>
@@ -10,8 +10,8 @@ export const createStyles = (isDark: boolean) =>
       backgroundColor: isDark ? COLORS.black : COLORS.lightBg,
     },
     scrollContent: {
-      paddingHorizontal: 20,
-      paddingTop: 8,
+      paddingHorizontal: PADDING_DEFAULT.Padding16,
+      paddingVertical: PADDING_DEFAULT.Padding16,
       gap: GAP_DEFAULT.Gap12,
     },
     card: {

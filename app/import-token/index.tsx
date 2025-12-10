@@ -1,9 +1,8 @@
 import { Feather } from '@expo/vector-icons'
 import * as Clipboard from 'expo-clipboard'
 import { router } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import { erc20Abi } from 'viem'
 
 import HeaderScreen from '@/components/Header'
 import ThemedInput from '@/components/UI/ThemedInput'
@@ -15,10 +14,14 @@ import useDebounce from '@/hooks/useDebounce'
 import useMode from '@/hooks/useMode'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
-import EVMServices from '@/services/EVM'
-import { isAddress } from '@/utils/nvm'
 
+import KeyboardAvoiding from '@/components/KeyboardAvoiding'
+import { KEY_STORAGE } from '@/constants/storage'
+import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useInfoToken from '@/hooks/react-query/useInfoToken'
+import { Token } from '@/services/moralis/type'
+import { lowercase, sleep } from '@/utils/functions'
+import { getDataLocal, saveDataLocal } from '@/utils/storage'
 import { getStyles } from './styles'
 
 interface FormData {
@@ -54,6 +57,20 @@ const ImportTokenScreen = () => {
   // Debounce address to reduce contract check frequency
   const debouncedAddress = useDebounce(formData.address, 500)
   const { data: infoToken, isLoading: isLoadingInfoToken } = useInfoToken(debouncedAddress, chainId)
+  const { data: balanceToken, refetch: refetchBalanceToken } = useBalanceToken(true)
+
+  const isFormValid = useMemo(() => {
+    const errorForm = formData.address.trim() !== '' &&
+      formData.decimal.trim() !== '' &&
+      formData.symbol.trim() !== '' &&
+      !formErrors.address &&
+      !formErrors.decimal &&
+      !formErrors.symbol &&
+      balanceToken?.find((token) => lowercase(token.token_address) === lowercase(formData.address))
+
+    return errorForm
+  }, [formData, formErrors, balanceToken])
+
 
   useEffect(() => {
     if (infoToken?.decimals && infoToken?.symbol && infoToken?.name) {
@@ -81,7 +98,7 @@ const ImportTokenScreen = () => {
         }
 
         // Check if it's a valid contract (only if address format is valid)
-        if (value.length === 42 && value.startsWith('0x') && !infoToken?.noToken) {
+        if (value.length === 42 && value.startsWith('0x') && infoToken?.noToken) {
           return 'Address is not a valid token contract'
         }
         break
@@ -141,6 +158,28 @@ const ImportTokenScreen = () => {
     if (!validateForm()) {
       return
     }
+    const listTokenImportLocal = getDataLocal(KEY_STORAGE.ListTokenImportLocal)
+    const token: Partial<Token> = {
+      is_imported: true,
+      verified_contract: false,
+      decimals: Number(formData.decimal!),
+      symbol: formData.symbol,
+      name: formData.name,
+      token_address: formData.address,
+      usd_value: 0,
+      usd_price: 0
+    }
+    if (listTokenImportLocal?.[chainId] && Array.isArray(listTokenImportLocal?.[chainId])) {
+      listTokenImportLocal?.[chainId].push(token)
+      saveDataLocal(KEY_STORAGE.ListTokenImportLocal, listTokenImportLocal)
+    } else {
+      saveDataLocal(KEY_STORAGE.ListTokenImportLocal, {
+        ...listTokenImportLocal,
+        [chainId]: [token],
+      })
+    }
+    await sleep(200)
+    await refetchBalanceToken()
 
     setLoading(true)
     try {
@@ -157,79 +196,34 @@ const ImportTokenScreen = () => {
 
   const handlePaste = async () => {
     const clipText = await Clipboard.getStringAsync()
-    if (clipText && isAddress(clipText) && wallet) {
-      const client = EVMServices.getClient(chainId)
-      const [decimals, symbol, name, balanceOf, totalSupply] = await client.multicall({
-        contracts: [
-          {
-            address: clipText as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'decimals',
-            args: [],
-          },
-          {
-            address: clipText as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'symbol',
-            args: [],
-          },
-          {
-            address: clipText as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'name',
-            args: [],
-          },
-          {
-            address: clipText as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'balanceOf',
-            args: [wallet.address as `0x${string}`],
-          },
-          {
-            address: clipText as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'totalSupply',
-            args: [],
-          },
-        ],
-      })
-      console.log({ decimals, symbol, name, balanceOf, totalSupply })
-
-      // Update form data with fetched values
-      if (decimals && decimals.status === 'success') {
-        handleFieldChange('decimal', (decimals.result as number).toString())
+    if (!clipText) {
+      const clipUrl = await Clipboard.getUrlAsync()
+      if (clipUrl) {
+        handleFieldChange('address', clipUrl)
       }
-      if (symbol && symbol.status === 'success') {
-        handleFieldChange('symbol', symbol.result as string)
-      }
-      if (name && name.status === 'success') {
-        handleFieldChange('name', name.result as string)
-      }
-
+    } else {
       handleFieldChange('address', clipText)
+
     }
   }
 
-  const isFormValid =
-    formData.address.trim() !== '' &&
-    formData.decimal.trim() !== '' &&
-    formData.symbol.trim() !== '' &&
-    !formErrors.address &&
-    !formErrors.decimal &&
-    !formErrors.symbol
+
+
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoiding style={styles.container}>
       <HeaderScreen title='Import Token' />
 
       <ScrollView style={styles.content}>
         {/* Token Address Input */}
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: text.color }]}>Token Address</Text>
-          <View style={styles.inputWrapper}>
+          <View style={[styles.inputWrapper, { paddingBottom: 6 }]}>
             <ThemedInput
               noBorder
-              style={styles.input}
+              multiline
+              numberOfLines={2}
+              style={[styles.input, { height: 'auto' }]}
               placeholder='Enter token contract address'
               value={formData.address}
               onChangeText={(value) => handleFieldChange('address', value)}
@@ -256,7 +250,7 @@ const ImportTokenScreen = () => {
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: text.color }]}>Token Symbol</Text>
           <ThemedInput
-            noBorder
+            // noBorder
             style={[styles.input, { flex: 1 }]}
             placeholder='Enter token symbol'
             value={formData.symbol}
@@ -276,7 +270,7 @@ const ImportTokenScreen = () => {
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: text.color }]}>Token Name</Text>
           <ThemedInput
-            noBorder
+            // noBorder
             style={styles.input}
             placeholder='Enter token name'
             value={formData.name}
@@ -294,7 +288,7 @@ const ImportTokenScreen = () => {
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: text.color }]}>Token Decimals</Text>
           <ThemedInput
-            noBorder
+            // noBorder
             style={styles.input}
             placeholder='Enter token decimals'
             value={formData.decimal}
@@ -318,7 +312,7 @@ const ImportTokenScreen = () => {
           <Text style={styles.importButtonText}>{loading ? 'Importing...' : 'Import Token'}</Text>
         </ThemeTouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoiding>
   )
 }
 

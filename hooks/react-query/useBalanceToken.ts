@@ -14,6 +14,7 @@ import useChainSelected from '../useChainSelected'
 import useFilter from '../useFilter'
 import useWallets from '../useWallets'
 
+import TokenService from '@/services/token'
 import useBalanceTokenImport from './useBalanceTokenImport'
 
 const getData = async ({ queryKey }: IQueryKey): Promise<any> => {
@@ -24,18 +25,26 @@ const getData = async ({ queryKey }: IQueryKey): Promise<any> => {
     return dataLocal[`${chainId}_${address}`]
   }
 
-  const data = await MoralisService.getBalancesTokenByAddress({
-    address,
-    chainId,
-    limit: 100,
-  })
+  const [dataMoralis, dataImportLocal] = await Promise.all([
+    MoralisService.getBalancesTokenByAddress({
+      address,
+      chainId,
+      limit: 100,
+    }),
+    TokenService.getListTokenImportLocal(chainId, address),
+  ])
+
 
   saveDataLocal(KEY_STORAGE.BalanceTokenLocal, {
     ...dataLocal,
-    [`${chainId}_${address}`]: data,
+    [`${chainId}_${address}`]: [
+      ...dataMoralis, ...dataImportLocal
+    ],
   })
 
-  return data
+  return [
+    ...dataMoralis, ...dataImportLocal
+  ]
 }
 
 const useBalanceToken = (noFilter = false) => {

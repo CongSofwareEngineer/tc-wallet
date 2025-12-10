@@ -85,7 +85,9 @@ const BackupScreen = () => {
           encoding: EncodingType.UTF8,
         })
 
-        showSuccess('Backup saved to custom location!')
+        showSuccess({
+          text: 'Backup saved to custom location!',
+        })
         router.back()
       } else {
         showError('No location selected. Please try again.')

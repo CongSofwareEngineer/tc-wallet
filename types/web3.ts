@@ -4,9 +4,9 @@ export type Hash = `0x${string}`
 export type ChainId = string | number
 
 export type ChainInfo = {
+  id: number
   name: string
   chain: string
-
   testnet: boolean
   chainId: number
   networkId: number
