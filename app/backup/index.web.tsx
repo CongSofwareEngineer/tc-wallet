@@ -76,7 +76,7 @@ const BackupScreen = () => {
       link.click()
       document.body.removeChild(link)
       URL.revokeObjectURL(url)
-      showSuccess('Backup file downloaded!')
+      showSuccess({ text: 'Backup file downloaded!' })
       router.back()
     } catch {
       showError('Failed to create backup file. Please try again.')

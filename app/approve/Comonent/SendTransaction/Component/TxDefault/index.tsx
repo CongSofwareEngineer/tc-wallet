@@ -119,7 +119,7 @@ const TxDefault = ({ params }: { params: RequestWC }) => {
                 onPress={async () => {
                   try {
                     await copyToClipboard(tx.from)
-                    showSuccess('Copied from address')
+                    showSuccess({ text: 'Copied from address' })
                   } catch {
                     showError('Copy failed')
                   }
@@ -135,7 +135,7 @@ const TxDefault = ({ params }: { params: RequestWC }) => {
                 onPress={async () => {
                   try {
                     await copyToClipboard(tx.to)
-                    showSuccess('Copied to address')
+                    showSuccess({ text: 'Copied to address' })
                   } catch {
                     showError('Copy failed')
                   }
@@ -154,7 +154,7 @@ const TxDefault = ({ params }: { params: RequestWC }) => {
                     //   `${BigNumber(convertWeiToBalance(tx.value)).decimalPlaces(6, BigNumber.ROUND_DOWN).toFormat()} ${chainCurrent?.nativeCurrency?.symbol || 'ETH'}`
                     // )
                     await copyToClipboard(`${tx.value} ${chainCurrent?.nativeCurrency?.symbol || 'ETH'}`)
-                    showSuccess('Copied value')
+                    showSuccess({ text: 'Copied value' })
                   } catch {
                     showError('Copy failed')
                   }
@@ -198,7 +198,7 @@ const TxDefault = ({ params }: { params: RequestWC }) => {
               onPress={async () => {
                 try {
                   await copyToClipboard(tx.data as string)
-                  showSuccess('Copied data to clipboard')
+                  showSuccess({ text: 'Copied data to clipboard' })
                 } catch {
                   showError('Copy failed')
                 }

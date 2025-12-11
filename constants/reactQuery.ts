@@ -15,4 +15,5 @@ export enum KEY_REACT_QUERY {
   getIsContract = 'getIsContract',
   getInfoToken = 'getInfoToken',
   getChainList = 'getChainList',
+  getListTokenByChain = 'getListTokenByChain',
 }

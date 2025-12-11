@@ -78,7 +78,7 @@ const BackupScreen = () => {
             })
 
             if (result && result.action === Share.sharedAction) {
-              showSuccess('Backup file saved successfully!')
+              showSuccess({ text: 'Backup file saved successfully!' })
               router.back()
             }
           } catch (error) {

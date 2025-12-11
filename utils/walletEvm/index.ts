@@ -7,8 +7,10 @@ import { Params } from '@/types/walletConnect'
 import { RawTransactionEVM } from '@/types/web3'
 
 import { TYPE_TRANSACTION } from '@/constants/walletConncet'
+import { setChainSelected } from '@/redux/slices/chainSelected'
+import { addNetwork } from '@/redux/slices/chainSlice'
 import { decodeData } from '../crypto'
-import { lowercase } from '../functions'
+import { lowercase, sleep } from '../functions'
 
 class WalletEvmUtil {
   static getChainIdFromChainRequest(eip: string) {
@@ -190,13 +192,14 @@ class WalletEvmUtil {
     }
   }
 
-  static async approveRequest(id: number, topic: string, params: Params) {
+  static async approveRequest(params: Params) {
     try {
       const chainSelected = store.getState().chainSelected
       let result: any = { code: -32601, message: 'Method not found' }
       let msgParams: any = params.request.params[0]
       let address = params.request.params[1]
       const chainId = this.getChainIdFromChainRequest(params.chainId || chainSelected.toString())
+      console.log({ params });
 
       if (!isAddress(address)) {
         address = params.request.params[0]
@@ -258,7 +261,80 @@ class WalletEvmUtil {
           break
 
         case 'wallet_switchEthereumChain':
+          // EIP-3326: Switch Ethereum Chain
+          // params: [{ chainId: '0x1' }]
+          const switchChainId = msgParams?.chainId
+          if (switchChainId) {
+            const targetChainId = typeof switchChainId === 'string' && switchChainId.startsWith('0x')
+              ? parseInt(switchChainId, 16)
+              : switchChainId
+
+            const chains = store.getState().chains
+            const chainExists = chains.find((c) => c.id.toString() === targetChainId.toString())
+
+            if (chainExists) {
+              // Import the action dynamically to avoid circular dependencies
+              store.dispatch(setChainSelected(targetChainId))
+              result = null // Success returns null
+            } else {
+              // Chain not found - return error code 4902
+              result = { code: 4902, message: 'Unrecognized chain ID. Try adding the chain using wallet_addEthereumChain first.' }
+            }
+          }
+          break
+
         case 'wallet_addEthereumChain':
+          // EIP-3085: Add Ethereum Chain
+          // params: [{ chainId, chainName, nativeCurrency, rpcUrls, blockExplorerUrls?, iconUrls? }]
+          const chainParams = msgParams
+          if (chainParams?.chainId) {
+            const newChainId = typeof chainParams.chainId === 'string' && chainParams.chainId.startsWith('0x')
+              ? parseInt(chainParams.chainId, 16)
+              : chainParams.chainId
+
+            const chains = store.getState().chains
+            const existingChain = chains.find((c) => c.id.toString() === newChainId.toString())
+
+            if (existingChain) {
+              // Chain already exists, just switch to it
+              store.dispatch(setChainSelected(newChainId))
+              result = null
+            } else {
+              // Add new chain
+              const newNetwork = {
+                id: newChainId,
+                name: chainParams.chainName || `Chain ${newChainId}`,
+                nativeCurrency: chainParams.nativeCurrency || {
+                  name: 'Ether',
+                  symbol: 'ETH',
+                  decimals: 18,
+                },
+                rpcUrls: {
+                  default: {
+                    http: Array.isArray(chainParams.rpcUrls) ? chainParams.rpcUrls : [chainParams.rpcUrls?.[0] || ''],
+                  },
+                  public: {
+                    http: Array.isArray(chainParams.rpcUrls) ? chainParams.rpcUrls : [chainParams.rpcUrls?.[0] || ''],
+                  },
+                },
+                blockExplorers: chainParams.blockExplorerUrls ? {
+                  default: {
+                    name: 'Explorer',
+                    url: chainParams.blockExplorerUrls[0],
+                  },
+                } : undefined,
+                iconChain: chainParams.iconUrls?.[0] || '',
+                isCustom: true,
+              }
+
+              store.dispatch(addNetwork(newNetwork))
+              await sleep(500)
+              store.dispatch(setChainSelected(newChainId))
+              result = null
+            }
+          }
+          break
+
         case 'wallet_getPermissions':
         case 'wallet_requestPermissions':
         case 'wallet_registerOnboarding':

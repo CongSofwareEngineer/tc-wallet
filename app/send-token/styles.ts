@@ -1,20 +1,19 @@
 import { StyleSheet } from 'react-native'
 
-import { COLORS, GAP_DEFAULT } from '@/constants/style'
+import { COLORS, GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 
 export const createStyles = (isDark: boolean) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC',
+      backgroundColor: isDark ? COLORS.black : COLORS.lightBg,
     },
     scrollContent: {
-      paddingHorizontal: 20,
-      paddingTop: 8,
+      padding: PADDING_DEFAULT.Padding16,
       gap: GAP_DEFAULT.Gap12,
     },
     card: {
-      backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+      backgroundColor: isDark ? COLORS.grayDark : COLORS.whiteLight,
       borderRadius: 20,
       padding: 20,
       marginBottom: 16,
@@ -32,7 +31,7 @@ export const createStyles = (isDark: boolean) =>
     sectionLabel: {
       fontSize: 14,
       fontWeight: '600',
-      color: isDark ? '#9CA3AF' : '#6B7280',
+      color: isDark ? COLORS.gray : COLORS.gray,
       textTransform: 'uppercase',
       letterSpacing: 0.5,
     },
@@ -47,13 +46,13 @@ export const createStyles = (isDark: boolean) =>
     },
     walletName: {
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#1F2937',
+      color: isDark ? COLORS.whiteLight : COLORS.black3,
     },
     walletAddress: {
-      color: isDark ? '#9CA3AF' : '#6B7280',
+      color: isDark ? COLORS.gray : COLORS.gray,
     },
     sendButton: {
-      backgroundColor: '#3B82F6',
+      backgroundColor: COLORS.blue2,
       paddingHorizontal: 24,
       paddingVertical: 6,
       borderRadius: 12,
@@ -68,29 +67,29 @@ export const createStyles = (isDark: boolean) =>
       transform: [{ scale: 1 }],
     },
     sendButtonDisabled: {
-      backgroundColor: isDark ? '#374151' : '#E5E7EB',
+      backgroundColor: isDark ? COLORS.gray2 : COLORS.gray1,
       shadowOpacity: 0,
       transform: [{ scale: 0.98 }],
     },
     sendButtonText: {
-      color: '#FFFFFF',
+      color: COLORS.whiteLight,
       fontSize: 16,
       fontWeight: '600',
     },
     sendButtonTextDisabled: {
-      color: isDark ? '#6B7280' : '#9CA3AF',
+      color: isDark ? COLORS.gray : COLORS.gray,
     },
     inputContainer: {
       borderBottomWidth: 1,
-      borderBottomColor: isDark ? '#374151' : COLORS.gray1,
+      borderBottomColor: isDark ? COLORS.gray2 : COLORS.gray1,
     },
     inputContainerFocused: {
-      borderColor: '#3B82F6',
-      backgroundColor: isDark ? '#1F2937' : '#F3F4F6',
+      borderColor: COLORS.blue2,
+      backgroundColor: isDark ? COLORS.black3 : COLORS.lightBg,
     },
     input: {
       fontSize: 16,
-      color: isDark ? '#FFFFFF' : '#1F2937',
+      color: isDark ? COLORS.whiteLight : COLORS.black3,
       paddingVertical: 0,
       fontWeight: '500',
       backgroundColor: 'transparent',
@@ -106,7 +105,7 @@ export const createStyles = (isDark: boolean) =>
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: 10,
-      backgroundColor: isDark ? '#374151' : '#E5E7EB',
+      backgroundColor: isDark ? COLORS.gray2 : COLORS.gray1,
       shadowColor: isDark ? '#000' : '#000',
       shadowOffset: {
         width: 0,
@@ -133,17 +132,17 @@ export const createStyles = (isDark: boolean) =>
       height: 32,
       borderRadius: 16,
       borderWidth: 2,
-      borderColor: isDark ? '#374151' : '#E5E7EB',
+      borderColor: isDark ? COLORS.gray2 : COLORS.gray1,
     },
     tokenSelector: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      backgroundColor: isDark ? '#111827' : '#F9FAFB',
+      backgroundColor: isDark ? COLORS.black : COLORS.lightBg,
       borderRadius: 16,
       padding: 16,
       borderWidth: 2,
-      borderColor: isDark ? '#374151' : '#E5E7EB',
+      borderColor: isDark ? COLORS.gray2 : COLORS.gray1,
       shadowColor: isDark ? '#000' : '#000',
       shadowOffset: {
         width: 0,
@@ -163,7 +162,7 @@ export const createStyles = (isDark: boolean) =>
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: isDark ? '#374151' : '#E5E7EB',
+      backgroundColor: isDark ? COLORS.gray2 : COLORS.gray1,
     },
     tokenDetails: {
       flex: 1,
@@ -172,21 +171,21 @@ export const createStyles = (isDark: boolean) =>
     tokenSymbol: {
       fontSize: 16,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#1F2937',
+      color: isDark ? COLORS.whiteLight : COLORS.black3,
     },
     tokenBalance: {
       fontSize: 14,
-      color: isDark ? '#9CA3AF' : '#6B7280',
+      color: isDark ? COLORS.gray : COLORS.gray,
     },
     amountCard: {
-      backgroundColor: isDark ? '#111827' : '#F9FAFB',
+      backgroundColor: isDark ? COLORS.black : COLORS.lightBg,
       borderRadius: 16,
       paddingHorizontal: 20,
       paddingVertical: 10,
       paddingBottom: 0,
       // gap: 16,
       borderWidth: 2,
-      borderColor: isDark ? '#374151' : '#E5E7EB',
+      borderColor: isDark ? COLORS.gray2 : COLORS.gray1,
     },
     amountHeader: {
       flexDirection: 'row',
@@ -196,10 +195,10 @@ export const createStyles = (isDark: boolean) =>
     amountLabel: {
       fontSize: 16,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#1F2937',
+      color: isDark ? COLORS.whiteLight : COLORS.black3,
     },
     maxButton: {
-      backgroundColor: '#3B82F6',
+      backgroundColor: COLORS.blue2,
       paddingHorizontal: 12,
       paddingVertical: 6,
       borderRadius: 8,
@@ -213,16 +212,16 @@ export const createStyles = (isDark: boolean) =>
       elevation: 2,
     },
     maxButtonText: {
-      color: '#FFFFFF',
+      color: COLORS.whiteLight,
       fontSize: 12,
       fontWeight: '600',
     },
     feeCard: {
-      backgroundColor: isDark ? '#FEF3C7' : '#FEF3C7',
+      backgroundColor: isDark ? COLORS.lightWarning : COLORS.lightWarning,
       borderRadius: 12,
       padding: 16,
       borderLeftWidth: 4,
-      borderLeftColor: '#F59E0B',
+      borderLeftColor: COLORS.yellow2,
     },
     feeRow: {
       flexDirection: 'row',
@@ -232,26 +231,26 @@ export const createStyles = (isDark: boolean) =>
     feeLabel: {
       fontSize: 14,
       fontWeight: '500',
-      color: '#92400E',
+      color: COLORS.textBrown,
     },
     feeValue: {
       fontSize: 14,
       fontWeight: '600',
-      color: '#92400E',
+      color: COLORS.textBrown,
     },
     resultCard: {
-      backgroundColor: isDark ? '#065F46' : '#ECFDF5',
+      backgroundColor: isDark ? COLORS.green4 : COLORS.lightSuccess,
       borderRadius: 16,
       padding: 20,
       borderWidth: 1,
-      borderColor: isDark ? '#047857' : '#10B981',
+      borderColor: isDark ? COLORS.green3 : COLORS.green5,
     },
     errorCard: {
-      backgroundColor: isDark ? '#7F1D1D' : '#FEF2F2',
+      backgroundColor: isDark ? COLORS.red1 : COLORS.lightError,
       borderRadius: 16,
       padding: 20,
       borderWidth: 1,
-      borderColor: isDark ? '#DC2626' : '#EF4444',
+      borderColor: isDark ? COLORS.red : COLORS.red,
     },
     resultTitle: {
       fontSize: 16,
@@ -267,7 +266,7 @@ export const createStyles = (isDark: boolean) =>
       alignItems: 'center',
       padding: 16,
       borderBottomWidth: StyleSheet.hairlineWidth,
-      borderColor: isDark ? '#374151' : '#E5E7EB',
+      borderColor: isDark ? COLORS.gray2 : COLORS.gray1,
       gap: 12,
     },
     tokenItemContent: {
@@ -277,15 +276,15 @@ export const createStyles = (isDark: boolean) =>
     tokenItemSymbol: {
       fontSize: 16,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#1F2937',
+      color: isDark ? COLORS.whiteLight : COLORS.black3,
     },
     tokenItemBalance: {
       fontSize: 14,
-      color: isDark ? '#9CA3AF' : '#6B7280',
+      color: isDark ? COLORS.gray : COLORS.gray,
     },
     tokenItemName: {
       fontSize: 14,
-      color: isDark ? '#9CA3AF' : '#6B7280',
+      color: isDark ? COLORS.gray : COLORS.gray,
     },
   })
 

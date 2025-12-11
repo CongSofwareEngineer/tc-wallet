@@ -112,7 +112,7 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
         </View>
 
         <View style={{ alignItems: 'flex-end' }}>
-          <ThemedText style={styles.cryptoBalance}>{BigNumber(item.usd_value).decimalPlaces(4, BigNumber.ROUND_DOWN).toFormat()}$</ThemedText>
+          <ThemedText style={styles.cryptoBalance}>{BigNumber(item?.usd_value || '0').decimalPlaces(4, BigNumber.ROUND_DOWN).toFormat()}$</ThemedText>
           {
             item?.usd_price_24hr_percent_change && (
               <ThemedText style={[styles.cryptoChange, { color: item.usd_price_24hr_percent_change >= 0 ? '#00D09C' : '#FF4D4D' }]}>

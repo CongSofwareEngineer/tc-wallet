@@ -22,6 +22,7 @@ const useErrorWeb3 = () => {
 
       switch (true) {
         case message.includes('insufficient funds for gas * price + value'):
+        case message.includes('insufficient balance for amount'):
         case message.includes('Missing or invalid parameters'):
         case message.includes('total cost (gas * gas fee + value)'):
           return translate('errorWeb3.insufficientFunds')

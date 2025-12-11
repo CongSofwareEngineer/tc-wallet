@@ -7,6 +7,7 @@ export const images = {
   },
   tokens: {
     usdIcon: require('@/assets/images/tokens/usdIcon.png'),
+    ethIcon: 'https://ipfs.pantograph.app/ipfs/QmcqksVTmAxbkcGLBu6PEmh3AFx7tuGPZEvFDwMB3zFHLZ?filename=ETH_icon_NEW.png',
   },
   gifs: {
     loading: require('@/assets/images/gifs/loading.gif'),

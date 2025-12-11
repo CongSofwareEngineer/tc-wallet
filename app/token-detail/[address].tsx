@@ -59,6 +59,11 @@ const TokenDetailScreen = () => {
     router.push(`/qr-info-address`)
   }
 
+  const handleSwap = () => {
+    router.dismiss()
+    router.push(`/swap/${tokenCurrent.token_address}`)
+  }
+
   if (!tokenCurrent) {
     return <></>
   }
@@ -169,7 +174,7 @@ const TokenDetailScreen = () => {
           <TouchableOpacity onPress={handleReceive} style={styles.circleButton}>
             <Feather name='download' size={20} color={COLORS.green600} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.circleButton}>
+          <TouchableOpacity onPress={handleSwap} style={styles.circleButton}>
             <MaterialIcons name='swap-horiz' size={22} color={COLORS.green600} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.circleButton} onPress={handleOpenExplorer}>

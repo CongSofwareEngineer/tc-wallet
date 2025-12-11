@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     marginTop: 10,
-    minWidth: 120,
+    // minWidth: 120,
   },
   swapButton: {
     flexDirection: 'row',

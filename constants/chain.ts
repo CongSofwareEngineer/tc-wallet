@@ -37,7 +37,7 @@ export const CHAIN_DEFAULT = [
     rpcUrls: {
       default: { http: ['https://public-bsc.nownodes.io'] },
     },
-    iconChain: 'https://icons.llamao.fi/icons/chains/rsz_binance.jpg',
+    iconChain: 'https://static.bnbchain.org/home-ui/static/images/favicon.ico',
   },
   {
     ...arbitrum,

@@ -12,6 +12,8 @@ import useWallets from '@/hooks/useWallets'
 
 import useTheme from '@/hooks/useTheme'
 import { width } from '@/utils/systems'
+import { MaterialIcons } from '@expo/vector-icons'
+import { zeroAddress } from 'viem'
 import Collections from './Components/Collections'
 import HeaderHome from './Components/Header'
 import Tokens from './Components/Tokens'
@@ -73,11 +75,15 @@ export default function HomeScreen() {
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20, marginTop: 6 }}>
               <ThemeTouchableOpacity onPress={() => router.push(`/send-token/${wallet?.address}`)} style={styles.buyButton}>
                 <Feather name='send' size={20} color='#FFFFFF' />
-                <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText>
+                {/* <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText> */}
+              </ThemeTouchableOpacity>
+              <ThemeTouchableOpacity onPress={() => router.push(`/swap/${zeroAddress}`)} style={styles.buyButton}>
+                <MaterialIcons name='swap-horiz' size={20} color='#FFFFFF' />
+                {/* <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Send</ThemedText> */}
               </ThemeTouchableOpacity>
               <ThemeTouchableOpacity onPress={() => router.push('/qr-info-address')} style={styles.buyButton}>
                 <Feather name='download' size={20} color='#FFFFFF' />
-                <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Receive</ThemedText>
+                {/* <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8 }}>Receive</ThemedText> */}
               </ThemeTouchableOpacity>
             </View>
           </View>

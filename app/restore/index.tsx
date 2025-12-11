@@ -50,7 +50,7 @@ const RestoreScreen = () => {
 
         setSelectedFile(mockFile)
         setFileContent(result.content)
-        showSuccess(`File selected: ${fileName}`)
+        showSuccess({ text: `File selected: ${fileName}` })
       } else {
         showError(result.error || 'Failed to read file')
       }
@@ -73,7 +73,7 @@ const RestoreScreen = () => {
         await restoreKeyEncode(dataDecode.encryptionKey)
         setWallets(dataDecode.wallets)
         setListPassPhrase(dataDecode.passphrases)
-        showSuccess('Wallet restored successfully!')
+        showSuccess({ text: 'Wallet restored successfully!' })
         router.replace('/home')
       } else {
         showError('Please check your password and try again.')

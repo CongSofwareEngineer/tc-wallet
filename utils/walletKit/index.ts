@@ -188,7 +188,7 @@ class WalletKit {
         return
       }
       if (params?.chainId?.includes('eip155')) {
-        const result = await WalletEvmUtil.approveRequest(id, topic, params)
+        const result = await WalletEvmUtil.approveRequest(params)
 
         // result returned from approveRequest
         await this.respondSessionRequest(id, topic, result)
