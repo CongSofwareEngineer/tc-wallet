@@ -1,17 +1,16 @@
 import ThemedInput from '@/components/UI/ThemedInput'
-import { AntDesign, Ionicons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { FlatList, TouchableOpacity, View } from 'react-native'
+import { FlatList, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
-import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import useChains from '@/hooks/useChains'
 import useChainSelected from '@/hooks/useChainSelected'
 import { ChainId, Network } from '@/types/web3'
 
-import MyImage from '@/components/MyImage'
+import ItemChain from '@/components/ItemChain'
 import useTheme from '@/hooks/useTheme'
 import { styles } from './styles'
 
@@ -28,26 +27,10 @@ const SelectChainScreen = () => {
   }
 
   const renderNetworkItem = ({ item }: { item: Network }) => (
-    <TouchableOpacity
-      style={[styles.networkItem, chainCurrent?.id === item.id && styles.selectedNetworkItem]}
+    <ItemChain
+      item={item}
       onPress={() => handleChangeChain(item.id)}
-    >
-      <View style={styles.networkIconWrap}>
-        {item?.iconChain ? (
-          <MyImage src={item.iconChain} style={styles.networkIcon} />
-        ) : (
-          <ThemedText style={styles.networkIconText}>{item.name[0]}</ThemedText>
-        )}
-      </View>
-      <View style={styles.networkInfo}>
-        <ThemedText numberOfLines={1} style={styles.networkName}>
-          {item.name}
-        </ThemedText>
-      </View>
-      <TouchableOpacity onPress={() => router.push(`/chain-detail/${item.id}`)} style={styles.menuButton}>
-        <AntDesign name='edit' size={20} color={text.color} />
-      </TouchableOpacity>
-    </TouchableOpacity>
+    />
   )
 
   if (!chainCurrent) {

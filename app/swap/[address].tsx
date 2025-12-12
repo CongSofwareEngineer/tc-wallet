@@ -26,6 +26,8 @@ import { Network, RawTransactionEVM } from '@/types/web3'
 import { cloneDeep, convertBalanceToWei } from '@/utils/functions'
 import { isTokenNative } from '@/utils/nvm'
 
+import ItemChain from '@/components/ItemChain'
+import SelectToken from '@/components/SelectToken'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import createStyles from './styles'
@@ -139,69 +141,32 @@ const SwapScreen = () => {
   const handleSelectInputToken = () => {
     openSheet({
       content: (
-        <View>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Select Input Token
-          </ThemedText>
-          <ScrollView style={{ maxHeight: 420 }}>
-            {tokens?.map((token, index) => (
-              <TouchableOpacity
-                key={token.token_address + index}
-                style={styles.tokenItem}
-                onPress={() => {
-                  setInputToken(token)
-                  setForm({ ...form, inputAmount: '', inputAmountUsd: '' })
-                  closeSheet()
-                }}
-              >
-                <MyImage src={token.logo || token.thumbnail} style={styles.tokenIcon} />
-                <View style={styles.tokenInfo}>
-                  <ThemedText style={styles.tokenSymbol}>{token.symbol}</ThemedText>
-                  <ThemedText style={styles.tokenBalance}>
-                    {BigNumber(token.balance_formatted || 0)
-                      .decimalPlaces(6, BigNumber.ROUND_DOWN)
-                      .toFormat()}
-                  </ThemedText>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+        <SelectToken
+          data={tokens}
+          onPress={(token) => {
+            setInputToken(token)
+            setForm({ ...form, inputAmount: '', inputAmountUsd: '' })
+            closeSheet()
+          }}
+        />
       ),
     })
   }
 
   const handleSelectOutputToken = () => {
     openSheet({
+      containerContentStyle: {
+        // height: height(70)
+      },
       content: (
-        <View>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Select Output Token
-          </ThemedText>
-          <ScrollView style={{ maxHeight: 420 }}>
-            {tokens?.map((token, index) => (
-              <TouchableOpacity
-                key={token.token_address + index}
-                style={styles.tokenItem}
-                onPress={() => {
-                  setOutputToken(token)
-                  setForm({ ...form, outputAmount: '', outputAmountUsd: '' })
-                  closeSheet()
-                }}
-              >
-                <MyImage src={token.logo || token.thumbnail} style={styles.tokenIcon} />
-                <View style={styles.tokenInfo}>
-                  <ThemedText style={styles.tokenSymbol}>{token.symbol}</ThemedText>
-                  <ThemedText style={styles.tokenBalance}>
-                    {BigNumber(token.balance_formatted || 0)
-                      .decimalPlaces(6, BigNumber.ROUND_DOWN)
-                      .toFormat()}
-                  </ThemedText>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+        <SelectToken
+          data={tokens}
+          onPress={(token) => {
+            setOutputToken(token)
+            setForm({ ...form, outputAmount: '', outputAmountUsd: '' })
+            closeSheet()
+          }}
+        />
       ),
     })
   }
@@ -215,18 +180,15 @@ const SwapScreen = () => {
           </ThemedText>
           <ScrollView style={{ maxHeight: 420 }}>
             {chainList?.map((chain, index) => (
-              <TouchableOpacity
+              <ItemChain
+                noEdit
                 key={chain.id.toString() + index}
-                style={styles.chainSelector}
+                item={chain}
                 onPress={() => {
                   setOutputChain(chain)
                   closeSheet()
                 }}
-              >
-                {chain.iconChain && <MyImage src={chain.iconChain} style={styles.chainIcon} />}
-                <ThemedText style={styles.chainName}>{chain.name}</ThemedText>
-                <AntDesign name='right' size={16} color={text.color} />
-              </TouchableOpacity>
+              />
             ))}
           </ScrollView>
         </View>

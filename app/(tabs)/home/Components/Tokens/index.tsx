@@ -1,9 +1,7 @@
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'
-import BigNumber from 'bignumber.js'
+import { AntDesign } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import React, { useRef } from 'react'
+import React from 'react'
 import { Animated, TouchableOpacity, View } from 'react-native'
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
 
 import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
@@ -11,8 +9,7 @@ import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useTheme from '@/hooks/useTheme'
 import { Token } from '@/services/moralis/type'
 
-import MyImage from '@/components/MyImage'
-import { styles } from '../../styles'
+import ItemToken from '@/components/ItemToken'
 import AnimateFlatList from '../AnimateFlatList'
 
 type Props = {
@@ -23,7 +20,6 @@ type Props = {
 const Tokens = ({ scrollY, headerHeight }: Props) => {
   const { text, colorIcon } = useTheme()
   const router = useRouter()
-  const currentSwipeable = useRef(false)
 
   const { data, isLoading, refetch, isRefetching } = useBalanceToken()
 
@@ -68,64 +64,11 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
     }
   }
 
-  const renderCryptoItem = ({ item }: { item: Token }) => (
-    <Swipeable
-      onSwipeableOpenStartDrag={() => {
-        currentSwipeable.current = true
-      }}
-      onSwipeableCloseStartDrag={() => {
-        currentSwipeable.current = true
-      }}
-      renderRightActions={() => (
-        <View>
-          <ThemedText>hajazdsfhgjfad</ThemedText>
-        </View>
-      )}
-    >
-      <TouchableOpacity
-        onPress={() => {
-          if (currentSwipeable.current) {
-            currentSwipeable.current = false
-          } else {
-            console.log({ item })
-
-            router.push(`/token-detail/${item.token_address}`)
-          }
-        }}
-        style={styles.cryptoItem}
-      >
-        <View style={[styles.cryptoIcon]}>
-          {item.logo || item.thumbnail ? (
-            <MyImage src={item.logo || item.thumbnail} style={{ width: 36, height: 36, borderRadius: 18 }} />
-          ) : (
-            <MaterialIcons name='token' size={40} color={text.color} />
-          )}
-        </View>
-
-        <View style={styles.cryptoInfo}>
-          <ThemedText style={[styles.cryptoName]} numberOfLines={1} ellipsizeMode='tail'>
-            {item.name}
-          </ThemedText>
-          <ThemedText style={styles.cryptoBalance}>
-            {BigNumber(item.balance_formatted).decimalPlaces(6, BigNumber.ROUND_DOWN).toFormat()} {item.symbol}
-          </ThemedText>
-        </View>
-
-        <View style={{ alignItems: 'flex-end' }}>
-          <ThemedText style={styles.cryptoBalance}>{BigNumber(item?.usd_value || '0').decimalPlaces(4, BigNumber.ROUND_DOWN).toFormat()}$</ThemedText>
-          {
-            item?.usd_price_24hr_percent_change && (
-              <ThemedText style={[styles.cryptoChange, { color: item.usd_price_24hr_percent_change >= 0 ? '#00D09C' : '#FF4D4D' }]}>
-                {item.usd_price_24hr_percent_change >= 0 ? '+' : ''}
-                {item.usd_price_24hr_percent_change.toFixed(2)}%
-              </ThemedText>
-            )
-          }
-
-        </View>
-      </TouchableOpacity>
-    </Swipeable>
-  )
+  const renderCryptoItem = ({ item }: { item: Token }) => {
+    return (
+      <ItemToken item={item} onClick={() => router.push(`/token-detail/${item.token_address}`)} />
+    )
+  }
 
   return (
     <AnimateFlatList
