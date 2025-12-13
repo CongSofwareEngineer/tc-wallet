@@ -15,7 +15,7 @@ import { images } from '@/configs/images'
 import { COLORS } from '@/constants/style'
 import useBalanceNative from '@/hooks/react-query/useBalanceNative'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
-import useEstimateGas from '@/hooks/react-query/useEastimse'
+import useEstimateGas from '@/hooks/react-query/useEstimate'
 import useTokenPrice from '@/hooks/react-query/useTokenPrice'
 import useChains from '@/hooks/useChains'
 import useErrorWeb3 from '@/hooks/useErrorWeb3'
@@ -126,7 +126,6 @@ const SendTokenScreen = () => {
     } else {
       if (balanceNative && estimatedGas?.totalFee) {
         if (BigNumber(balanceNative).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
-
           return true
         }
       }
@@ -134,8 +133,6 @@ const SendTokenScreen = () => {
 
     return false
   }, [estimatedGas, loadingEstimatedGas, formError, balanceNative, selectedToken])
-
-
 
   useEffect(() => {
     if (addressToken && tokens) {
@@ -150,7 +147,7 @@ const SendTokenScreen = () => {
     if (isErrorForm) {
       if (balanceNative && estimatedGas?.totalFee) {
         if (BigNumber(balanceNative).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
-          console.log('setFormError');
+          console.log('setFormError')
 
           setFormError({
             ...formError,
@@ -160,8 +157,6 @@ const SendTokenScreen = () => {
       }
     }
   }, [isErrorForm, balanceNative, estimatedGas])
-
-
 
   const handlePickFromMyAccounts = () => {
     openSheet({
@@ -231,7 +226,7 @@ const SendTokenScreen = () => {
       containerContentStyle: {
         height: height(70),
       },
-      content: <SelectToken addressToken={addressToken} callback={callback} />
+      content: <SelectToken addressToken={addressToken} callback={callback} />,
     })
   }
 
@@ -285,9 +280,10 @@ const SendTokenScreen = () => {
       .decimalPlaces(10, BigNumber.ROUND_DOWN)
       .toFixed()
 
-
     if (isNativeToken) {
-      amountToken = BigNumber(amountToken).minus(estimatedGas?.totalFee || '0').toFixed()
+      amountToken = BigNumber(amountToken)
+        .minus(estimatedGas?.totalFee || '0')
+        .toFixed()
     }
 
     if (BigNumber(amountToken).gt(0)) {
@@ -445,11 +441,10 @@ const SendTokenScreen = () => {
               onPress={handleSelectToken}
               disabled={isSending || loadingTokenPrice}
               style={{
-
                 opacity: isSending || loadingTokenPrice ? 0.5 : 1,
               }}
             >
-              <AntDesign name="swap" size={24} color={text.color} />
+              <AntDesign name='swap' size={24} color={text.color} />
             </TouchableOpacity>
           </View>
         </View>

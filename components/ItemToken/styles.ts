@@ -1,9 +1,10 @@
+import { BORDER_RADIUS_DEFAULT, COLORS, PADDING_DEFAULT } from '@/constants/style'
 import { StyleSheet } from 'react-native'
 
 export const styles = StyleSheet.create({
   cryptoList: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: PADDING_DEFAULT.Padding20,
   },
   cryptoItem: {
     flexDirection: 'row',
@@ -11,29 +12,30 @@ export const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 15,
     marginVertical: 5,
-    backgroundColor: '#1A1A1A',
-    borderRadius: 12,
+    backgroundColor: COLORS.grayDark,
+    borderRadius: BORDER_RADIUS_DEFAULT.Radius12,
+    position: 'relative',
   },
   cryptoIcon: {
     width: 45,
     height: 45,
-    borderRadius: 20,
+    borderRadius: BORDER_RADIUS_DEFAULT.Radius12 + 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: BORDER_RADIUS_DEFAULT.Radius12,
   },
   cryptoInfo: {
     flex: 1,
   },
   cryptoName: {
-    color: '#FFFFFF',
+    color: COLORS.whiteLight,
     fontWeight: '600',
     marginBottom: 2,
     flexShrink: 1,
     maxWidth: '95%',
   },
   cryptoBalance: {
-    color: '#999999',
+    color: COLORS.gray,
     fontWeight: '400',
   },
   cryptoChange: {
@@ -41,5 +43,3 @@ export const styles = StyleSheet.create({
     textAlign: 'right',
   },
 })
-
-export default () => { }

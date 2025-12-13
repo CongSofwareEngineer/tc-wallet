@@ -12,12 +12,12 @@ const getListTokenByChain = async ({ queryKey }: any): Promise<Token[]> => {
   return res
 }
 
-const useListTokenByChainDeBridge = (chainId: ChainId, textSearch: string | string[] = '', noRefetch = false) => {
+const useListTokenByChainDeBridge = (chainId?: ChainId, textSearch: string | string[] = '', noRefetch = false) => {
   const { data, isLoading, isFetching } = useQuery<Token[]>({
     queryKey: [KEY_REACT_QUERY.getListTokenByChain, chainId, textSearch],
     queryFn: getListTokenByChain,
-    initialData: [],
     refetchOnWindowFocus: !noRefetch,
+    enabled: !!chainId,
   })
 
   return {

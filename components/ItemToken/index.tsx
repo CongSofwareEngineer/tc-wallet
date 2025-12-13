@@ -1,5 +1,7 @@
+import { COLORS } from '@/constants/style'
 import useTheme from '@/hooks/useTheme'
 import { Token } from '@/services/moralis/type'
+import { ellipsisText } from '@/utils/functions'
 import { MaterialIcons } from '@expo/vector-icons'
 import BigNumber from 'bignumber.js'
 import React from 'react'
@@ -12,9 +14,11 @@ type Props = {
   item: Token
   onClick?: (token: Token) => any
   swipeableProps?: SwipeableProps
+  showAddress?: boolean
+  isSelected?: boolean
 }
 
-const ItemToken = ({ item, onClick, swipeableProps }: Props) => {
+const ItemToken = ({ item, onClick, swipeableProps, showAddress, isSelected }: Props) => {
   const { text } = useTheme()
   return (
     <Swipeable {...swipeableProps}>
@@ -22,7 +26,7 @@ const ItemToken = ({ item, onClick, swipeableProps }: Props) => {
         onPress={() => {
           onClick && onClick(item)
         }}
-        style={styles.cryptoItem}
+        style={[styles.cryptoItem]}
       >
         <View style={[styles.cryptoIcon]}>
           {item.logo || item.thumbnail ? (
@@ -37,22 +41,37 @@ const ItemToken = ({ item, onClick, swipeableProps }: Props) => {
             {item.name}
           </ThemedText>
           <ThemedText style={styles.cryptoBalance}>
-            {BigNumber(item.balance_formatted).decimalPlaces(6, BigNumber.ROUND_DOWN).toFormat()} {item.symbol}
+            {item.balance_formatted && `${BigNumber(item.balance_formatted).decimalPlaces(6, BigNumber.ROUND_DOWN).toFormat()} `}
+            {item.symbol}
           </ThemedText>
+          {showAddress && (
+            <ThemedText style={styles.cryptoBalance} type='small'>
+              {ellipsisText(item.token_address, 6, 8)}
+            </ThemedText>
+          )}
         </View>
 
         <View style={{ alignItems: 'flex-end' }}>
-          <ThemedText style={styles.cryptoBalance}>{BigNumber(item?.usd_value || '0').decimalPlaces(4, BigNumber.ROUND_DOWN).toFormat()}$</ThemedText>
-          {
-            typeof item?.usd_price_24hr_percent_change === 'number' && (
-              <ThemedText style={[styles.cryptoChange, { color: item.usd_price_24hr_percent_change >= 0 ? '#00D09C' : '#FF4D4D' }]}>
-                {item.usd_price_24hr_percent_change >= 0 ? '+' : ''}
-                {item.usd_price_24hr_percent_change.toFixed(2)}%
-              </ThemedText>
-            )
-          }
-
+          {item?.usd_value > 0 && (
+            <ThemedText style={styles.cryptoBalance}>
+              {BigNumber(item?.usd_value || '0')
+                .decimalPlaces(4, BigNumber.ROUND_DOWN)
+                .toFormat()}
+              $
+            </ThemedText>
+          )}
+          {item?.usd_price_24hr_percent_change !== 0 && (
+            <ThemedText style={[styles.cryptoChange, { color: item.usd_price_24hr_percent_change >= 0 ? '#00D09C' : '#FF4D4D' }]}>
+              {item.usd_price_24hr_percent_change >= 0 ? '+' : ''}
+              {item.usd_price_24hr_percent_change.toFixed(2)}%
+            </ThemedText>
+          )}
         </View>
+        {isSelected && (
+          <View style={{ position: 'absolute', right: 10, top: 10 }}>
+            <MaterialIcons name='check' size={20} color={COLORS.green} />
+          </View>
+        )}
       </TouchableOpacity>
     </Swipeable>
   )

@@ -15,6 +15,7 @@ type Props = {
 
 const MyLoading = ({ size = 50, color, variant = 'md' }: Props) => {
   return <MyImage src={images.gifs.loading} style={{ width: size, height: size }} />
+  // return <ActivityIndicator  color={color} size={size} />
 }
 
 export default MyLoading

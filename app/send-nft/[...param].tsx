@@ -10,7 +10,7 @@ import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import QrScan from '@/components/QrScan'
 import ThemedText from '@/components/UI/ThemedText'
 import { COLORS } from '@/constants/style'
-import useEstimateGas from '@/hooks/react-query/useEastimse'
+import useEstimateGas from '@/hooks/react-query/useEstimate'
 import useChains from '@/hooks/useChains'
 import useErrorWeb3 from '@/hooks/useErrorWeb3'
 import useMode from '@/hooks/useMode'
@@ -29,8 +29,6 @@ import BigNumber from 'bignumber.js'
 import ImageMain from '../nft-detail/ImageMain'
 import InputEnter from '../send-token/Component/InputEnter'
 import { createStyles } from './styles'
-
-
 
 type FormSendNFT = {
   toAddress: string
@@ -288,13 +286,14 @@ const SendNFTScreen = () => {
       >
         {/* NFT Preview Card */}
         <View style={styles.card}>
-
           <View style={styles.nftPreviewContainer}>
             <View style={styles.nftImage}>
               <ImageMain nft={nftData} />
             </View>
             <View style={styles.nftDetails}>
-              <ThemedText numberOfLines={1} style={styles.nftName}>{metadata?.name}</ThemedText>
+              <ThemedText numberOfLines={1} style={styles.nftName}>
+                {metadata?.name}
+              </ThemedText>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <ThemedText style={styles.nftType}>{nftData?.contract_type}</ThemedText>
                 <ThemedText style={[styles.nftType, { color: COLORS.green }]}>x{nftData?.amount}</ThemedText>

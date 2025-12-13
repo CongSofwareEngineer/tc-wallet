@@ -1,6 +1,6 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import BigNumber from 'bignumber.js'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Platform, ScrollView, TouchableOpacity, View } from 'react-native'
 import { encodeFunctionData, erc20Abi } from 'viem'
@@ -13,7 +13,7 @@ import ThemedText from '@/components/UI/ThemedText'
 import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceNative from '@/hooks/react-query/useBalanceNative'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
-import useEstimateGas from '@/hooks/react-query/useEastimse'; // Note: Original file has typo 'useEastimse'
+import useEstimateGas from '@/hooks/react-query/useEstimate'; // Note: Original file has typo 'useEastimse'
 import useTokenPrice from '@/hooks/react-query/useTokenPrice'
 import useChains from '@/hooks/useChains'
 import useErrorWeb3 from '@/hooks/useErrorWeb3'
@@ -29,7 +29,9 @@ import { isTokenNative } from '@/utils/nvm'
 import ItemChain from '@/components/ItemChain'
 import SelectToken from '@/components/SelectToken'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import { height } from '@/utils/systems'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import SelectTokenOut from './Component/SelectTokenOut'
 import createStyles from './styles'
 
 type SwapForm = {
@@ -46,7 +48,6 @@ type SwapFormError = {
 }
 
 const SwapScreen = () => {
-  const router = useRouter()
   const { address: addressToken } = useLocalSearchParams<{ address?: string }>()
   const { isDark } = useMode()
   const { text } = useTheme()
@@ -70,11 +71,10 @@ const SwapScreen = () => {
     errorBalance: '',
   })
 
-  const [inputToken, setInputToken] = useState<Token | null>(tokens?.[0] || null)
-  const [outputToken, setOutputToken] = useState<Token | null>(tokens?.[1] || null)
-  const [outputChain, setOutputChain] = useState<Network | null>(chainCurrent || null)
+  const [inputToken, setInputToken] = useState<Token | undefined>(tokens?.[0] || undefined)
+  const [outputToken, setOutputToken] = useState<Token | undefined>(tokens?.[1] || undefined)
+  const [outputChain, setOutputChain] = useState<Network | undefined>(chainCurrent || undefined)
   const [isSwapping, setIsSwapping] = useState(false)
-
 
   const isInputNativeToken = useMemo(() => {
     return isTokenNative(inputToken?.token_address)
@@ -115,10 +115,8 @@ const SwapScreen = () => {
 
   const { data: estimatedGas, isLoading: loadingEstimatedGas } = useEstimateGas(rawTransaction)
   const { data: balanceNative } = useBalanceNative(!isInputNativeToken)
-
   const { data: inputTokenPrice } = useTokenPrice(isInputNativeToken ? inputToken?.symbol : inputToken?.token_address)
   const { data: outputTokenPrice } = useTokenPrice(isOutputNativeToken ? outputToken?.symbol : outputToken?.token_address)
-
 
   // Calculate exchange rate
   const exchangeRate = useMemo(() => {
@@ -159,13 +157,14 @@ const SwapScreen = () => {
         // height: height(70)
       },
       content: (
-        <SelectToken
-          data={tokens}
+        <SelectTokenOut
+          token={outputToken}
           onPress={(token) => {
             setOutputToken(token)
             setForm({ ...form, outputAmount: '', outputAmountUsd: '' })
             closeSheet()
           }}
+          chainId={outputChain?.id}
         />
       ),
     })
@@ -178,7 +177,7 @@ const SwapScreen = () => {
           <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
             Select Output Chain
           </ThemedText>
-          <ScrollView style={{ maxHeight: 420 }}>
+          <ScrollView style={{ maxHeight: height(70) }}>
             {chainList?.map((chain, index) => (
               <ItemChain
                 noEdit
@@ -311,14 +310,7 @@ const SwapScreen = () => {
       }
     }
 
-    return (
-      inputToken &&
-      outputToken &&
-      form.inputAmount &&
-      BigNumber(form.inputAmount).isGreaterThan(0) &&
-      !formError.inputAmount &&
-      !isSwapping
-    )
+    return inputToken && outputToken && form.inputAmount && BigNumber(form.inputAmount).isGreaterThan(0) && !formError.inputAmount && !isSwapping
   }, [inputToken, outputToken, form.inputAmount, formError, isSwapping, loadingEstimatedGas, estimatedGas, isInputNativeToken, balanceNative])
 
   // Update error balance state
@@ -336,11 +328,11 @@ const SwapScreen = () => {
     }
 
     if (errorBalance !== formError.errorBalance) {
-      setFormError(prev => ({ ...prev, errorBalance }))
+      setFormError((prev) => ({ ...prev, errorBalance }))
     }
   }, [estimatedGas, form.inputAmount, inputToken, isInputNativeToken, balanceNative])
 
-  console.log({ SwapScreen: form });
+  console.log({ SwapScreen: form })
 
   return (
     <KeyboardAvoiding>
@@ -360,7 +352,10 @@ const SwapScreen = () => {
             {inputToken && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <ThemedText style={styles.balanceText}>
-                  Balance: {BigNumber(inputToken.balance_formatted || 0).decimalPlaces(6, BigNumber.ROUND_DOWN).toFormat()}
+                  Balance:{' '}
+                  {BigNumber(inputToken.balance_formatted || 0)
+                    .decimalPlaces(6, BigNumber.ROUND_DOWN)
+                    .toFormat()}
                 </ThemedText>
                 <TouchableOpacity style={styles.maxButton} onPress={handleMaxInput} disabled={isSwapping || !inputToken}>
                   <ThemedText style={styles.maxButtonText}>MAX</ThemedText>
@@ -399,7 +394,7 @@ const SwapScreen = () => {
                 disabled={isSwapping || !inputToken}
                 style={{ fontSize: 28, fontWeight: '700', paddingLeft: 0, paddingRight: 0 }}
                 noBorder
-                styleContentInput={{ paddingVertical: 0, paddingHorizontal: 0, }}
+                styleContentInput={{ paddingVertical: 0, paddingHorizontal: 0 }}
               />
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -408,8 +403,6 @@ const SwapScreen = () => {
                   ? `≈ $${BigNumber(form.inputAmountUsd).decimalPlaces(4, BigNumber.ROUND_DOWN).toFormat()}`
                   : ''}
               </ThemedText>
-
-
             </View>
           </View>
         </View>
@@ -417,7 +410,7 @@ const SwapScreen = () => {
         {/* Swap Direction Button */}
         <View style={styles.swapDirectionContainer}>
           <TouchableOpacity style={styles.swapDirectionButton} onPress={handleSwapDirection} disabled={isSwapping}>
-            <MaterialCommunityIcons name="swap-vertical" size={30} color={COLORS.whiteLight} />
+            <MaterialCommunityIcons name='swap-vertical' size={30} color={COLORS.whiteLight} />
           </TouchableOpacity>
         </View>
 
@@ -428,7 +421,9 @@ const SwapScreen = () => {
             {/* Output Chain Selector */}
             <TouchableOpacity style={styles.chainSelectorSmall} onPress={handleSelectOutputChain} disabled={isSwapping}>
               {outputChain?.iconChain && <MyImage src={outputChain.iconChain} style={styles.chainIcon} />}
-              <ThemedText numberOfLines={1} type='small' style={{ marginLeft: 4 }}>{outputChain?.name}</ThemedText>
+              <ThemedText numberOfLines={1} type='small' style={{ marginLeft: 4 }}>
+                {outputChain?.name}
+              </ThemedText>
               <AntDesign name='down' size={12} color={text.color} style={{ marginLeft: 4 }} />
             </TouchableOpacity>
 
@@ -456,14 +451,12 @@ const SwapScreen = () => {
                 disabled={true}
                 noBorder
                 style={{ fontSize: 28, fontWeight: '700', paddingLeft: 0, paddingRight: 0 }}
-                styleContentInput={{ paddingVertical: 0, paddingHorizontal: 0, }}
+                styleContentInput={{ paddingVertical: 0, paddingHorizontal: 0 }}
               />
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <ThemedText style={styles.usdValue}>
-                {form.outputAmountUsd && BigNumber(form.outputAmountUsd).isGreaterThan(0)
-                  ? `≈ $${BigNumber(form.outputAmountUsd).toFormat(2)}`
-                  : ''}
+                {form.outputAmountUsd && BigNumber(form.outputAmountUsd).isGreaterThan(0) ? `≈ $${BigNumber(form.outputAmountUsd).toFormat(2)}` : ''}
               </ThemedText>
             </View>
           </View>
@@ -498,15 +491,15 @@ const SwapScreen = () => {
             <View style={styles.detailRow}>
               <ThemedText style={styles.detailLabel}>Network Fee</ThemedText>
               <ThemedText style={styles.detailValue}>
-                {loadingEstimatedGas ? 'Calculating...' : (
-                  formError?.errorBalance ? (
-                    <ThemedText style={{ color: COLORS.red, fontSize: 12 }}>{formError.errorBalance}</ThemedText>
-                  ) : (
-                    <>
-                      {estimatedGas?.totalFee && BigNumber(estimatedGas.totalFee).toFixed(8)} {chainCurrent?.nativeCurrency?.symbol}
-                      {estimatedGas?.error && <ThemedText style={{ color: COLORS.red, fontSize: 12 }}> {getError(estimatedGas.error)}</ThemedText>}
-                    </>
-                  )
+                {loadingEstimatedGas ? (
+                  'Calculating...'
+                ) : formError?.errorBalance ? (
+                  <ThemedText style={{ color: COLORS.red, fontSize: 12 }}>{formError.errorBalance}</ThemedText>
+                ) : (
+                  <>
+                    {estimatedGas?.totalFee && BigNumber(estimatedGas.totalFee).toFixed(8)} {chainCurrent?.nativeCurrency?.symbol}
+                    {estimatedGas?.error && <ThemedText style={{ color: COLORS.red, fontSize: 12 }}> {getError(estimatedGas.error)}</ThemedText>}
+                  </>
                 )}
               </ThemedText>
             </View>

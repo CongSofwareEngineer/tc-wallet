@@ -60,7 +60,8 @@ const ImportTokenScreen = () => {
   const { data: balanceToken, refetch: refetchBalanceToken } = useBalanceToken(true)
 
   const isFormValid = useMemo(() => {
-    const errorForm = formData.address.trim() !== '' &&
+    const errorForm =
+      formData.address.trim() !== '' &&
       formData.decimal.trim() !== '' &&
       formData.symbol.trim() !== '' &&
       !formErrors.address &&
@@ -71,18 +72,16 @@ const ImportTokenScreen = () => {
     return errorForm
   }, [formData, formErrors, balanceToken])
 
-
   useEffect(() => {
     if (infoToken?.decimals && infoToken?.symbol && infoToken?.name) {
       setFormData((prev) => ({
         ...prev,
         decimal: infoToken.decimals!.toString(),
         symbol: infoToken.symbol!,
-        name: infoToken.name!
+        name: infoToken.name!,
       }))
     }
   }, [infoToken])
-
 
   const validateField = (field: keyof FormData, value: string): string | undefined => {
     switch (field) {
@@ -167,7 +166,7 @@ const ImportTokenScreen = () => {
       name: formData.name,
       token_address: formData.address,
       usd_value: 0,
-      usd_price: 0
+      usd_price: 0,
     }
     if (listTokenImportLocal?.[chainId] && Array.isArray(listTokenImportLocal?.[chainId])) {
       listTokenImportLocal?.[chainId].push(token)
@@ -203,12 +202,8 @@ const ImportTokenScreen = () => {
       }
     } else {
       handleFieldChange('address', clipText)
-
     }
   }
-
-
-
 
   return (
     <KeyboardAvoiding style={styles.container}>
@@ -229,10 +224,12 @@ const ImportTokenScreen = () => {
               onChangeText={(value) => handleFieldChange('address', value)}
               autoCapitalize='none'
               autoCorrect={false}
+              rightIcon={
+                <TouchableOpacity style={styles.pasteButton} onPress={handlePaste}>
+                  <Feather name='clipboard' size={20} color={colorIcon.colorDefault} />
+                </TouchableOpacity>
+              }
             />
-            <TouchableOpacity style={styles.pasteButton} onPress={handlePaste}>
-              <Feather name='clipboard' size={20} color={colorIcon.colorDefault} />
-            </TouchableOpacity>
           </View>
           {formErrors.address && (
             <ThemedText type='small' style={{ color: COLORS.red, marginTop: 4, marginLeft: 4 }}>
@@ -303,7 +300,6 @@ const ImportTokenScreen = () => {
             </ThemedText>
           )}
         </View>
-
       </ScrollView>
 
       {/* Import Button */}

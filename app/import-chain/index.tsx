@@ -1,19 +1,18 @@
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 
 import HeaderScreen from '@/components/Header'
 import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
-import { IsIos } from '@/constants/app'
 import { PADDING_DEFAULT } from '@/constants/style'
 import useChains from '@/hooks/useChains'
 
+import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import useChainList from '@/hooks/react-query/useChainList'
 import useAlert from '@/hooks/useAlert'
 import { cloneDeep } from '@/utils/functions'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import styles from './styles'
 interface FormData {
   networkName?: string
@@ -119,108 +118,106 @@ const ImportChainScreen = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }} behavior={IsIos ? 'padding' : 'height'}>
-        <View style={styles.container}>
-          {/* Header */}
-          <HeaderScreen title='Create Chain' />
+    <KeyboardAvoiding>
+      <View style={styles.container}>
+        {/* Header */}
+        <HeaderScreen title='Create Chain' />
 
-          {/* Content */}
-          <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-            <View style={styles.content}>
-              {/* Chain ID */}
-              <View style={styles.fieldContainer}>
-                <ThemedText style={styles.label}>Chain ID</ThemedText>
-                <View style={styles.inputContainer}>
-                  <ThemedInput
-                    showError
-                    error={formDataError?.chainId}
-                    disabled={isLoadingChainList}
-                    style={styles.input}
-                    value={formData?.chainId}
-                    keyboardType='numeric'
-                    inputMode='numeric'
-                    onChangeText={(text) => onChangeFormData('chainId', text)}
-                  />
-                </View>
-              </View>
-
-              {/* Network Name */}
-              <View style={styles.fieldContainer}>
-                <ThemedText style={styles.label}>Network Name</ThemedText>
-                <View style={styles.inputContainer}>
-                  <ThemedInput
-                    showError
-                    error={formDataError?.networkName}
-                    disabled={isLoadingChainList}
-                    style={styles.input}
-                    value={formData?.networkName}
-                    onChangeText={(text) => onChangeFormData('networkName', text)}
-                    placeholder='Enter network name'
-                  />
-                </View>
-              </View>
-
-              {/* Failover RPC URL */}
-              <View style={styles.fieldContainer}>
-                <ThemedText style={styles.label}>Failover RPC URL</ThemedText>
-                <View style={styles.inputContainer}>
-                  <ThemedInput
-                    showError
-                    error={formDataError?.rpcUrl}
-                    disabled={isLoadingChainList}
-                    style={styles.input}
-                    value={formData?.rpcUrl}
-                    onChangeText={(text) => onChangeFormData('rpcUrl', text)}
-                    placeholder='Enter RPC URL'
-                  />
-                </View>
-              </View>
-
-              {/* Symbol */}
-              <View style={styles.fieldContainer}>
-                <ThemedText style={styles.label}>Symbol</ThemedText>
-                <View style={styles.inputContainer}>
-                  <ThemedInput
-                    showError
-                    error={formDataError?.symbol}
-                    disabled={isLoadingChainList}
-                    style={styles.input}
-                    value={formData?.symbol}
-                    onChangeText={(text) => onChangeFormData('symbol', text)}
-                    placeholder='Enter symbol'
-                  />
-                </View>
-              </View>
-
-              {/* Block Explorer URL */}
-              <View style={styles.fieldContainer}>
-                <ThemedText style={styles.label}>Block Explorer URL</ThemedText>
-                <View style={styles.inputContainer}>
-                  <ThemedInput
-                    showError
-                    error={formDataError?.blockExplorerUrl}
-                    disabled={isLoadingChainList}
-                    inputMode='url'
-                    style={styles.input}
-                    value={formData?.blockExplorerUrl}
-                    onChangeText={(text) => setFormData({ ...formData, blockExplorerUrl: text })}
-                    placeholder='Enter block explorer URL'
-                  />
-                </View>
+        {/* Content */}
+        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          <View style={styles.content}>
+            {/* Chain ID */}
+            <View style={styles.fieldContainer}>
+              <ThemedText style={styles.label}>Chain ID</ThemedText>
+              <View style={styles.inputContainer}>
+                <ThemedInput
+                  showError
+                  error={formDataError?.chainId}
+                  disabled={isLoadingChainList}
+                  style={styles.input}
+                  value={formData?.chainId}
+                  keyboardType='numeric'
+                  inputMode='numeric'
+                  onChangeText={(text) => onChangeFormData('chainId', text)}
+                />
               </View>
             </View>
 
-            {/* Save Button */}
-          </ScrollView>
-          <View style={{ padding: PADDING_DEFAULT.Padding16 }}>
-            <ThemeTouchableOpacity disabled={isLoadingChainList} loading={isLoading} style={styles.saveButton} onPress={handleCreateNetwork}>
-              <ThemedText style={styles.saveButtonText}>Save</ThemedText>
-            </ThemeTouchableOpacity>
+            {/* Network Name */}
+            <View style={styles.fieldContainer}>
+              <ThemedText style={styles.label}>Network Name</ThemedText>
+              <View style={styles.inputContainer}>
+                <ThemedInput
+                  showError
+                  error={formDataError?.networkName}
+                  disabled={isLoadingChainList}
+                  style={styles.input}
+                  value={formData?.networkName}
+                  onChangeText={(text) => onChangeFormData('networkName', text)}
+                  placeholder='Enter network name'
+                />
+              </View>
+            </View>
+
+            {/* Failover RPC URL */}
+            <View style={styles.fieldContainer}>
+              <ThemedText style={styles.label}>Failover RPC URL</ThemedText>
+              <View style={styles.inputContainer}>
+                <ThemedInput
+                  showError
+                  error={formDataError?.rpcUrl}
+                  disabled={isLoadingChainList}
+                  style={styles.input}
+                  value={formData?.rpcUrl}
+                  onChangeText={(text) => onChangeFormData('rpcUrl', text)}
+                  placeholder='Enter RPC URL'
+                />
+              </View>
+            </View>
+
+            {/* Symbol */}
+            <View style={styles.fieldContainer}>
+              <ThemedText style={styles.label}>Symbol</ThemedText>
+              <View style={styles.inputContainer}>
+                <ThemedInput
+                  showError
+                  error={formDataError?.symbol}
+                  disabled={isLoadingChainList}
+                  style={styles.input}
+                  value={formData?.symbol}
+                  onChangeText={(text) => onChangeFormData('symbol', text)}
+                  placeholder='Enter symbol'
+                />
+              </View>
+            </View>
+
+            {/* Block Explorer URL */}
+            <View style={styles.fieldContainer}>
+              <ThemedText style={styles.label}>Block Explorer URL</ThemedText>
+              <View style={styles.inputContainer}>
+                <ThemedInput
+                  showError
+                  error={formDataError?.blockExplorerUrl}
+                  disabled={isLoadingChainList}
+                  inputMode='url'
+                  style={styles.input}
+                  value={formData?.blockExplorerUrl}
+                  onChangeText={(text) => setFormData({ ...formData, blockExplorerUrl: text })}
+                  placeholder='Enter block explorer URL'
+                />
+              </View>
+            </View>
           </View>
+
+          {/* Save Button */}
+        </ScrollView>
+        <View style={{ padding: PADDING_DEFAULT.Padding16 }}>
+          <ThemeTouchableOpacity disabled={isLoadingChainList} loading={isLoading} style={styles.saveButton} onPress={handleCreateNetwork}>
+            <ThemedText style={styles.saveButtonText}>Save</ThemedText>
+          </ThemeTouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </View>
+    </KeyboardAvoiding>
   )
 }
 

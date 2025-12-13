@@ -1,24 +1,24 @@
-import { images } from "@/configs/images";
-import { BRIDE_API } from "@/constants/debridge";
-import { ChainId } from "@/types/web3";
-import { isTokenNative } from "@/utils/nvm";
-import { zeroAddress } from "viem";
-import BaseAPI from "../baseAPI";
-import { Token } from "../moralis/type";
-import { ITokenByChain } from "./type";
+import { images } from '@/configs/images'
+import { BRIDE_API } from '@/constants/debridge'
+import { ChainId } from '@/types/web3'
+import { isTokenNative } from '@/utils/nvm'
+import { zeroAddress } from 'viem'
+import { arbitrum, base, linea, optimism, zksync } from 'viem/chains'
+import BaseAPI from '../baseAPI'
+import { Token } from '../moralis/type'
+import { ITokenByChain } from './type'
 
 class DeBridgeServices extends BaseAPI {
   static formatChainType(chainType: string): string {
     const CHAIN_SUPPORT = {
-      'polygon': 'matic',
-      'ethereum': 'ether',
-      'avalanche': 'avax',
+      polygon: 'matic',
+      ethereum: 'ether',
+      avalanche: 'avax',
     }
     return CHAIN_SUPPORT[chainType as keyof typeof CHAIN_SUPPORT] || chainType
-
   }
 
-  static convertTokenMoralis(token: ITokenByChain) {
+  static convertTokenMoralis(chainId: ChainId, token: ITokenByChain) {
     const tokenFinal: Partial<Token> = {
       decimals: Number(token.decimals || '18'),
       logo: token.logoURI || images.icons.unknown,
@@ -29,18 +29,26 @@ class DeBridgeServices extends BaseAPI {
       usd_price: Number(token.price || '0'),
       usd_price_24hr_percent_change: Number(token.price_change_percentage_24h || '0'),
       usd_price_24hr_usd_change: Number(token.price_change_percentage_24h || '0'),
-
     }
+    if (
+      chainId?.toString() === arbitrum.id.toString() ||
+      chainId?.toString() === base.id.toString() ||
+      chainId?.toString() === optimism.id.toString() ||
+      chainId?.toString() === zksync.id.toString() ||
+      chainId?.toString() === linea.id.toString()
+    ) {
+      if (isTokenNative(tokenFinal.token_address)) {
+        tokenFinal.logo = tokenFinal.thumbnail = 'https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg'
+      }
+    }
+
     return tokenFinal
   }
-  static async getListTokenByChain(
-    chainId: ChainId,
-    textSearch: string | string[] = ''
-  ): Promise<Token[]> {
+  static async getListTokenByChain(chainId: ChainId, textSearch: string | string[] = ''): Promise<Token[]> {
     let arr: ITokenByChain[] = []
     if (textSearch) {
       const res = await this.get({
-        url: `https://wallet-api.pantograph.app/token-list?chainId=${chainId}&key=${textSearch}`
+        url: `https://wallet-api.pantograph.app/token-list?chainId=${chainId}&key=${textSearch}`,
       })
       arr = Object.values(res ?? []) as ITokenByChain[]
     } else {
@@ -55,9 +63,7 @@ class DeBridgeServices extends BaseAPI {
       const arrTokenDeb = Object.values(listDebridge?.data?.tokens ?? []) as ITokenByChain[]
       const arrTokens = Object.values(listTokens?.data?.data ?? []) as ITokenByChain[]
 
-      arr = Array.from(
-        new Map([...arrTokenDeb, ...arrTokens].map((item) => [item.address, item])).values()
-      )
+      arr = Array.from(new Map([...arrTokenDeb, ...arrTokens].map((item) => [item.address, item])).values())
     }
 
     const listToken = arr.map((token) => {
@@ -71,11 +77,10 @@ class DeBridgeServices extends BaseAPI {
       return token
     })
     const arrFormat = listToken.map((token) => {
-      return this.convertTokenMoralis(token) as unknown as Token
+      return this.convertTokenMoralis(chainId, token) as unknown as Token
     })
     return arrFormat
   }
 }
 
 export default DeBridgeServices
-

@@ -32,7 +32,7 @@ export const getStyles = (isDark: boolean) => {
       alignItems: 'center',
       backgroundColor: inputBackground,
       borderRadius: 8,
-      paddingHorizontal: 12,
+      // paddingHorizontal: 12,
       borderWidth: 1,
       borderColor,
     },
@@ -41,7 +41,7 @@ export const getStyles = (isDark: boolean) => {
       height: 48,
       fontSize: 16,
       color: textColor,
-      paddingHorizontal: 12,
+      // paddingHorizontal: 12,
     },
     pasteButton: {
       padding: 8,
