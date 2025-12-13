@@ -1,6 +1,7 @@
 import SelectToken from '@/components/SelectToken'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useListTokenByChainDeBridge from '@/hooks/react-query/useListTokenByChainDeBridge'
+import useChainSelected from '@/hooks/useChainSelected'
 import { Token } from '@/services/moralis/type'
 import { ChainId } from '@/types/web3'
 import { lowercase } from '@/utils/functions'
@@ -14,16 +15,18 @@ type Props = {
 const DECIMAL = 4
 const PAGE_SIZE = 20
 const SelectTokenOut = ({ token, chainId, onPress }: Props) => {
+  const { chainId: chainIdCurrent } = useChainSelected()
   const { data: listTokenAPI, isLoading: isLoadingListTokenAPI } = useListTokenByChainDeBridge(chainId)
-  const { data: balanceToken, isLoading: isLoadingBalanceToken } = useBalanceToken(false, chainId)
+  const { data: balanceToken, isLoading: isLoadingBalanceToken } = useBalanceToken(false)
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE)
 
   const isLoading = isLoadingListTokenAPI || isLoadingBalanceToken
+  const isCrossChain = chainIdCurrent !== chainId
   const listTokenSwap = useMemo(() => {
     if (!listTokenAPI || !balanceToken) {
       return []
     }
-    let mergedArr = [...listTokenAPI, ...balanceToken]
+    let mergedArr = [...listTokenAPI, ...(isCrossChain ? [] : balanceToken)]
       .reduce<Map<string, Token>>((acc, obj) => {
         acc.set(obj.token_address, obj)
         return acc
@@ -57,7 +60,7 @@ const SelectTokenOut = ({ token, chainId, onPress }: Props) => {
       return balanceB - balanceA
     })
     return arrSort
-  }, [listTokenAPI, balanceToken, token])
+  }, [listTokenAPI, balanceToken, token, isCrossChain])
 
   const paginatedData = useMemo(() => {
     if (isLoading) {

@@ -65,9 +65,7 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
   }
 
   const renderCryptoItem = ({ item }: { item: Token }) => {
-    return (
-      <ItemToken item={item} onClick={() => router.push(`/token-detail/${item.token_address}`)} />
-    )
+    return <ItemToken showAddress item={item} onClick={() => router.push(`/token-detail/${item.token_address}`)} />
   }
 
   return (
