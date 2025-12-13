@@ -21,7 +21,7 @@ export const LIST_TOKEN_DEFAULT = {
   [optimism.id]: ['ETH', 'USDC', 'USDT', 'WBTC', 'WETH'],
   [base.id]: ['ETH', 'USDC', 'USDT'],
   [arbitrum.id]: ['ETH', 'USDC', 'USDT'],
-  [polygon.id]: ['POL', 'USDC', 'USDT'],
+  [polygon.id]: ['POL', 'MATIC', 'WETH', 'USDC', 'USDT'],
   [bsc.id]: ['BNB', 'USDC', 'USDT'],
   [linea.id]: ['ETH', 'USDC', 'USDT'],
 } as Record<ChainId, string[]>

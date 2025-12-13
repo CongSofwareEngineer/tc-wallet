@@ -29,6 +29,7 @@ import { isTokenNative } from '@/utils/nvm'
 import ItemChain from '@/components/ItemChain'
 import SelectToken from '@/components/SelectToken'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import { LIST_TOKEN_DEFAULT } from '@/constants/debridge'
 import { height } from '@/utils/systems'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import SelectTokenOut from './Component/SelectTokenOut'
@@ -83,6 +84,15 @@ const SwapScreen = () => {
   const isOutputNativeToken = useMemo(() => {
     return isTokenNative(outputToken?.token_address)
   }, [outputToken])
+
+  const chainSupportSwap = useMemo(() => {
+    return chainList?.filter((chain) => {
+      if (LIST_TOKEN_DEFAULT[chain.id]) {
+        return true
+      }
+      return false
+    })
+  }, [chainList])
 
   const rawTransaction = useMemo(() => {
     if (inputToken && wallet && form.inputAmount) {
@@ -178,7 +188,7 @@ const SwapScreen = () => {
             Select Output Chain
           </ThemedText>
           <ScrollView style={{ maxHeight: height(70) }}>
-            {chainList?.map((chain, index) => (
+            {chainSupportSwap?.map((chain, index) => (
               <ItemChain
                 noEdit
                 key={chain.id.toString() + index}

@@ -15,7 +15,7 @@ const DECIMAL = 4
 const PAGE_SIZE = 20
 const SelectTokenOut = ({ token, chainId, onPress }: Props) => {
   const { data: listTokenAPI, isLoading: isLoadingListTokenAPI } = useListTokenByChainDeBridge(chainId)
-  const { data: balanceToken, isLoading: isLoadingBalanceToken } = useBalanceToken()
+  const { data: balanceToken, isLoading: isLoadingBalanceToken } = useBalanceToken(false, chainId)
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE)
 
   const isLoading = isLoadingListTokenAPI || isLoadingBalanceToken
@@ -57,7 +57,7 @@ const SelectTokenOut = ({ token, chainId, onPress }: Props) => {
       return balanceB - balanceA
     })
     return arrSort
-  }, [listTokenAPI, balanceToken])
+  }, [listTokenAPI, balanceToken, token])
 
   const paginatedData = useMemo(() => {
     if (isLoading) {

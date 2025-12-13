@@ -34,20 +34,15 @@ const getData = async ({ queryKey }: IQueryKey): Promise<any> => {
     TokenService.getListTokenImportLocal(chainId, address),
   ])
 
-
   saveDataLocal(KEY_STORAGE.BalanceTokenLocal, {
     ...dataLocal,
-    [`${chainId}_${address}`]: [
-      ...dataMoralis, ...dataImportLocal
-    ],
+    [`${chainId}_${address}`]: [...dataMoralis, ...dataImportLocal],
   })
 
-  return [
-    ...dataMoralis, ...dataImportLocal
-  ]
+  return [...dataMoralis, ...dataImportLocal]
 }
 
-const useBalanceToken = (noFilter = false) => {
+const useBalanceToken = (noFilter = false, chainIdDefault?: ChainId) => {
   const { chainId } = useChainSelected()
   const { wallet } = useWallets()
   const { filters } = useFilter()
@@ -55,7 +50,7 @@ const useBalanceToken = (noFilter = false) => {
   const { data: listTokenImport, refetch: refetchTokenImport } = useBalanceTokenImport()
 
   const queries = useQuery({
-    queryKey: [KEY_REACT_QUERY.getBalancesTokenByAddress, wallet?.address || '0x', chainId],
+    queryKey: [KEY_REACT_QUERY.getBalancesTokenByAddress, wallet?.address || '0x', chainIdDefault || chainId],
     queryFn: getData,
     enabled: !!wallet?.address && !!chainId,
     refetchInterval: false,
