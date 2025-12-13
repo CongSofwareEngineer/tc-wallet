@@ -64,7 +64,7 @@ const SelectToken = ({
 
   const renderTokenDefault = () => {
     return (
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: GAP_DEFAULT.Gap8, marginTop: 10 }}>
+      <View style={{ flexDirection: 'row', marginBottom: 10, flexWrap: 'wrap', gap: GAP_DEFAULT.Gap8, marginTop: 10 }}>
         {defaultToken.map((item) => {
           const isSelected = lowercase(item?.token_address) === lowercase(tokenSelected?.token_address)
           return (
@@ -107,9 +107,9 @@ const SelectToken = ({
         showCount={false}
         onChangeText={setSearch}
       />
-      {renderTokenDefault()}
 
       <View style={{ height: height(70), marginTop: 10 }}>
+        {showTokenDefault && renderTokenDefault()}
         <FlatList
           // contentContainerStyle={{ paddingBottom: 50 }}
           data={dataFiltered}

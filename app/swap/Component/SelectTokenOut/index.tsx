@@ -3,6 +3,7 @@ import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useListTokenByChainDeBridge from '@/hooks/react-query/useListTokenByChainDeBridge'
 import { Token } from '@/services/moralis/type'
 import { ChainId } from '@/types/web3'
+import { lowercase } from '@/utils/functions'
 import BigNumber from 'bignumber.js'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 type Props = {
@@ -14,7 +15,7 @@ const DECIMAL = 4
 const PAGE_SIZE = 20
 const SelectTokenOut = ({ token, chainId, onPress }: Props) => {
   const { data: listTokenAPI, isLoading: isLoadingListTokenAPI } = useListTokenByChainDeBridge(chainId)
-  const { data: balanceToken, isLoading: isLoadingBalanceToken } = useBalanceToken(true)
+  const { data: balanceToken, isLoading: isLoadingBalanceToken } = useBalanceToken()
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE)
 
   const isLoading = isLoadingListTokenAPI || isLoadingBalanceToken
@@ -48,6 +49,9 @@ const SelectTokenOut = ({ token, chainId, onPress }: Props) => {
 
       if (usdTokenA > 0 || usdTokenB > 0) {
         return usdTokenB - usdTokenA
+      }
+      if (lowercase(token?.token_address) === lowercase(a?.token_address)) {
+        return -1
       }
 
       return balanceB - balanceA

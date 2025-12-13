@@ -32,7 +32,7 @@ const ItemToken = ({ item, onClick, swipeableProps, showAddress, isSelected }: P
           {item.logo || item.thumbnail ? (
             <MyImage src={item.logo || item.thumbnail} style={{ width: 36, height: 36, borderRadius: 18 }} />
           ) : (
-            <MaterialIcons name='token' size={40} color={text.color} />
+            <MaterialIcons name='token' size={36} color={text.color} />
           )}
         </View>
 

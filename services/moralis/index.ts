@@ -4,6 +4,8 @@ import { CHAIN_MORALIS_SUPPORT } from '@/constants/moralis'
 import { ChainId } from '@/types/web3'
 import MoralisUtils from '@/utils/moralis'
 
+import { isTokenNative } from '@/utils/nvm'
+import { zeroAddress } from 'viem'
 import { Collection, NFT, NFTResponse, Token } from './type'
 
 const fetcher = (params: IFetch) => {
@@ -67,8 +69,13 @@ class MoralisService {
         // url: `/wallets/${params.address}/tokens?chain=${this.getChainType(params.chainId)}&exclude_spam=true&limit=${params.limit || 100}`,
         url: `/wallets/${params.address}/tokens?chain=${this.getChainType(params.chainId)}&limit=${params.limit || 100}`,
       })
-
-      return (res?.data?.result || res.result || []) as Token[]
+      const arr = (res?.data?.result || res.result || []) as Token[]
+      arr.forEach((token, index) => {
+        if (isTokenNative(token.token_address)) {
+          arr[index].token_address = zeroAddress
+        }
+      })
+      return arr
     } catch (error) {
       return []
     }
