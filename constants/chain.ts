@@ -1,4 +1,4 @@
-import { arbitrum, avalanche, base, bsc, linea, mainnet, optimism, optimismSepolia, polygon, zksync } from 'viem/chains'
+import { arbitrum, avalanche, base, bsc, linea, mainnet, optimism, optimismSepolia, polygon, unichain, zksync } from 'viem/chains'
 
 export const CHAIN_DEFAULT = [
   {
@@ -46,5 +46,9 @@ export const CHAIN_DEFAULT = [
   {
     ...zksync,
     iconChain: 'https://icons.llamao.fi/icons/chains/rsz_zksync%20era.jpg',
+  },
+  {
+    ...unichain,
+    iconChain: 'https://icons.llamao.fi/icons/chains/rsz_unichain.jpg',
   },
 ]
