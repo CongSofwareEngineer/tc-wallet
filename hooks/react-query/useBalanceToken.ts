@@ -15,7 +15,6 @@ import useFilter from '../useFilter'
 import useWallets from '../useWallets'
 
 import TokenService from '@/services/token'
-import useBalanceTokenImport from './useBalanceTokenImport'
 
 const getData = async ({ queryKey }: IQueryKey): Promise<any> => {
   let dataLocal = getDataLocal(KEY_STORAGE.BalanceTokenLocal)
@@ -47,8 +46,6 @@ const useBalanceToken = (noFilter = false, chainIdDefault?: ChainId) => {
   const { wallet } = useWallets()
   const { filters } = useFilter()
 
-  const { data: listTokenImport, refetch: refetchTokenImport } = useBalanceTokenImport()
-
   const queries = useQuery({
     queryKey: [KEY_REACT_QUERY.getBalancesTokenByAddress, wallet?.address || '0x', chainIdDefault || chainId],
     queryFn: getData,
@@ -61,7 +58,7 @@ const useBalanceToken = (noFilter = false, chainIdDefault?: ChainId) => {
   })
 
   const dataQuery = useMemo(() => {
-    let arrSort: Token[] = [...(listTokenImport || []), ...(queries?.data || [])]
+    let arrSort: Token[] = [...(queries?.data || [])]
     arrSort = arrSort.sort((a, b) => (b.usd_value || 0) - (a.usd_value || 0))
     arrSort = arrSort.sort((a, b) => (b.is_imported === a.is_imported ? 0 : b.is_imported ? 1 : -1)) // imported to top
 
@@ -82,7 +79,7 @@ const useBalanceToken = (noFilter = false, chainIdDefault?: ChainId) => {
     }
 
     return arrSort
-  }, [queries?.data, filters?.tokens, noFilter, listTokenImport])
+  }, [queries?.data, filters?.tokens, noFilter])
 
   const totalUSD = useMemo(() => {
     if (!dataQuery || dataQuery.length === 0) return 0
@@ -96,7 +93,7 @@ const useBalanceToken = (noFilter = false, chainIdDefault?: ChainId) => {
       saveDataLocal(KEY_STORAGE.BalanceTokenLocal, dataLocal)
     }
     await sleep(100)
-    await Promise.all([refetchTokenImport(), queries.refetch()])
+    await queries.refetch()
   }
 
   return { ...queries, totalUSD, data: dataQuery, refetch }
