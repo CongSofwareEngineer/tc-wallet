@@ -1,4 +1,5 @@
 import { CHAIN_DEFAULT } from '@/constants/chain'
+import { TOKEN_NATIVE_OTHER } from '@/constants/token'
 import { ChainId } from '@/types/web3'
 import { isAddress as isAddressViem, zeroAddress } from 'viem'
 
@@ -9,7 +10,12 @@ export const isToken = (value: string): boolean => {
   return false
 }
 
-export const isTokenNative = (value: string = ''): boolean => {
+export const isTokenNative = (value: string = '', chainId?: ChainId): boolean => {
+  if (chainId && TOKEN_NATIVE_OTHER[chainId]) {
+    if (TOKEN_NATIVE_OTHER[chainId].includes(value)) {
+      return true
+    }
+  }
   if (value === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' || value === zeroAddress) {
     return true
   }
