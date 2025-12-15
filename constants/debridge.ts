@@ -6,6 +6,7 @@ export const ADDRESS_AFFILIATE = '0x9f276af79b2b5de2946a88b0fe2717318f924d7c' as
 export const AFFILIATE_FEE_PERCENT = 0.2
 
 export const REFERRAL_CODE = 12052000
+export const ACCESS_TOKEN = 'd6c45897b8f6'
 
 export const BRIDE_API = {
   DLN_API: 'https://dln.debridge.finance',

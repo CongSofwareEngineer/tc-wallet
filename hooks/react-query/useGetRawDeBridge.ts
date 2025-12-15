@@ -1,5 +1,5 @@
 import fetcher from "@/configs/fetcher"
-import { ADDRESS_AFFILIATE, AFFILIATE_FEE_PERCENT, BRIDE_API, REFERRAL_CODE } from "@/constants/debridge"
+import { ACCESS_TOKEN, ADDRESS_AFFILIATE, AFFILIATE_FEE_PERCENT, BRIDE_API, REFERRAL_CODE } from "@/constants/debridge"
 import { KEY_REACT_QUERY } from "@/constants/reactQuery"
 import { Token } from "@/services/moralis/type"
 import { IQueryKey } from "@/types/reactQuery"
@@ -35,6 +35,7 @@ const getData = async ({ queryKey }: IQueryKey) => {
         affiliateFeePercent: AFFILIATE_FEE_PERCENT,
         affiliateFeeRecipient: ADDRESS_AFFILIATE,
         referralCode: REFERRAL_CODE,
+        accesstoken: ACCESS_TOKEN
       }
     })
 
@@ -63,6 +64,7 @@ const getData = async ({ queryKey }: IQueryKey) => {
         tokenOutRecipient: userAddress,
         affiliateFeeRecipient: ADDRESS_AFFILIATE,
         affiliateFeePercent: AFFILIATE_FEE_PERCENT,
+        accesstoken: ACCESS_TOKEN
       },
       showError: false,
     })
