@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Platform, ScrollView, TouchableOpacity, View } from 'react-native'
-import { encodeFunctionData, erc20Abi } from 'viem'
+import { encodeFunctionData, erc20Abi, zeroAddress } from 'viem'
 
 import HeaderScreen from '@/components/Header'
 import KeyboardAvoiding from '@/components/KeyboardAvoiding'
@@ -27,10 +27,12 @@ import { cloneDeep, convertBalanceToWei } from '@/utils/functions'
 import { isTokenNative } from '@/utils/nvm'
 
 import ItemChain from '@/components/ItemChain'
+import MyLoading from '@/components/MyLoading'
 import SelectToken from '@/components/SelectToken'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { LIST_TOKEN_DEFAULT } from '@/constants/debridge'
 import useGetRawDeBridge from '@/hooks/react-query/useGetRawDeBridge'
+import useListTokenByChainDeBridge from '@/hooks/react-query/useListTokenByChainDeBridge'
 import { height } from '@/utils/systems'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import SelectTokenOut from './Component/SelectTokenOut'
@@ -125,7 +127,8 @@ const SwapScreen = () => {
     return null
   }, [inputToken, wallet, form.inputAmount, isInputNativeToken])
 
-  const { data: balanceNative } = useBalanceNative()
+  const { data: balanceNative, isLoading: loadingBalanceNative } = useBalanceNative()
+  const { data: listTokenByChain, isLoading: loadingListTokenByChain } = useListTokenByChainDeBridge(outputChain?.id)
   const { data: estimatedGas, isLoading: loadingEstimatedGas } = useEstimateGas(rawTransaction)
   const { data: inputTokenPrice } = useTokenPrice(isInputNativeToken ? inputToken?.symbol : inputToken?.token_address)
   const { data: outputTokenPrice } = useTokenPrice(isOutputNativeToken ? outputToken?.symbol : outputToken?.token_address)
@@ -153,6 +156,19 @@ const SwapScreen = () => {
       }
     }
   }, [tokens, addressToken])
+
+
+  useEffect(() => {
+    if (listTokenByChain) {
+      const tokenOut = listTokenByChain.find((t) => (t.token_address || zeroAddress) === zeroAddress)
+      console.log({ tokenOut });
+
+      if (tokenOut) {
+        setOutputToken(tokenOut)
+
+      }
+    }
+  }, [listTokenByChain])
 
 
   // Update error balance state
@@ -447,11 +463,22 @@ const SwapScreen = () => {
             </TouchableOpacity>
 
             {/* Token Selector */}
-            <TouchableOpacity style={styles.tokenSelector} onPress={handleSelectOutputToken} disabled={isSwapping}>
+            <TouchableOpacity disabled={isSwapping || loadingListTokenByChain || loadingBalanceNative} style={styles.tokenSelector} onPress={handleSelectOutputToken} disabled={isSwapping}>
               {outputToken ? (
                 <>
-                  <MyImage src={outputToken.logo || outputToken.thumbnail} style={styles.tokenIcon} />
-                  <ThemedText style={styles.tokenSymbol}>{outputToken.symbol}</ThemedText>
+                  {
+                    loadingListTokenByChain ? (
+                      <View style={{ flex: 1 }}>
+                        <MyLoading size={24} />
+                      </View>
+                    ) : (
+                      <>
+                        <MyImage src={outputToken.logo || outputToken.thumbnail} style={styles.tokenIcon} />
+                        <ThemedText style={styles.tokenSymbol}>{outputToken.symbol}</ThemedText>
+                      </>
+                    )
+                  }
+
                 </>
               ) : (
                 <ThemedText style={styles.tokenSymbol}>Select</ThemedText>
