@@ -16,4 +16,5 @@ export enum KEY_REACT_QUERY {
   getInfoToken = 'getInfoToken',
   getChainList = 'getChainList',
   getListTokenByChain = 'getListTokenByChain',
+  getRawDeBridge = 'getRawDeBridge',
 }

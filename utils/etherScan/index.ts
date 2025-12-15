@@ -1,9 +1,9 @@
 class EtherScanUtils {
+  static indexApi = 0
   static getEtherScanApiKey() {
     const arr = process.env.EXPO_PUBLIC_ETHER_SCAN_API_KEY.split(',') || []
-    const randomIndex = Math.floor(Math.random() * arr.length)
-
-    return arr[randomIndex] || ''
+    this.indexApi = this.indexApi >= arr.length ? 0 : this.indexApi + 1
+    return arr[this.indexApi] || ''
   }
 }
 

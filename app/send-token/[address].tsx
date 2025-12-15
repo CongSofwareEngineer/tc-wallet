@@ -25,11 +25,12 @@ import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
 import { RawTransactionEVM } from '@/types/web3'
-import { cloneDeep, convertBalanceToWei, copyToClipboard, ellipsisText, getRadomColor } from '@/utils/functions'
+import { cloneDeep, convertBalanceToWei, convertWeiToBalance, copyToClipboard, ellipsisText, getRadomColor } from '@/utils/functions'
 import { isAddress, isTokenNative } from '@/utils/nvm'
 import { height, width } from '@/utils/systems'
 import WalletEvmUtil from '@/utils/walletEvm'
 
+import SelectAccount from '@/components/SelectAccount'
 import { IsIos } from '@/constants/app'
 import InputEnter from './Component/InputEnter'
 import SelectToken from './Component/SelectToken'
@@ -75,12 +76,12 @@ const SendTokenScreen = () => {
   const [txError, setTxError] = useState<string | null>(null)
 
   const isNativeToken = useMemo(() => {
-    return isTokenNative(selectedToken?.token_address)
-  }, [selectedToken])
+    return isTokenNative(selectedToken?.token_address, chainCurrent?.id)
+  }, [selectedToken, chainCurrent])
 
   const rawTransaction = useMemo(() => {
     if (selectedToken && wallet) {
-      if (isTokenNative(selectedToken?.token_address)) {
+      if (isTokenNative(selectedToken?.token_address, chainCurrent?.id)) {
         const raw: RawTransactionEVM = {
           from: wallet?.address as `0x${string}`,
           to: wallet.address as `0x${string}`,
@@ -103,11 +104,12 @@ const SendTokenScreen = () => {
       }
     }
     return null
-  }, [selectedToken, wallet])
+  }, [selectedToken, wallet, chainCurrent])
 
   const { data: estimatedGas, isLoading: loadingEstimatedGas, refetch: refetchEstimatedGas } = useEstimateGas(rawTransaction)
   const { data: tokenPrice, isLoading: loadingTokenPrice } = useTokenPrice(isNativeToken ? selectedToken?.symbol : selectedToken?.token_address)
-  const { data: balanceNative } = useBalanceNative(!isNativeToken)
+  const { data: balanceNative } = useBalanceNative()
+
   const isErrorForm = useMemo(() => {
     if (loadingEstimatedGas) {
       return true
@@ -119,13 +121,13 @@ const SendTokenScreen = () => {
       return true
     }
 
-    if (isTokenNative(selectedToken?.token_address) && estimatedGas?.totalFee) {
+    if (isTokenNative(selectedToken?.token_address, chainCurrent?.id) && estimatedGas?.totalFee) {
       if (BigNumber(selectedToken?.balance_formatted || 0).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
         return true
       }
     } else {
       if (balanceNative && estimatedGas?.totalFee) {
-        if (BigNumber(balanceNative).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
+        if (BigNumber(convertWeiToBalance(balanceNative?.toString() || 0)).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
           return true
         }
       }
@@ -144,49 +146,25 @@ const SendTokenScreen = () => {
   }, [tokens, addressToken])
 
   useEffect(() => {
-    if (isErrorForm) {
-      if (balanceNative && estimatedGas?.totalFee) {
-        if (BigNumber(balanceNative).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
-          console.log('setFormError')
-
-          setFormError({
-            ...formError,
-            errorBalance: 'Not enough balance',
-          })
-        }
+    if (balanceNative && estimatedGas?.totalFee) {
+      if (BigNumber(convertWeiToBalance(balanceNative?.toString() || 0)).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
+        setFormError({
+          ...formError,
+          errorBalance: 'Not enough balance',
+        })
       }
     }
   }, [isErrorForm, balanceNative, estimatedGas])
+
 
   const handlePickFromMyAccounts = () => {
     openSheet({
       isOpen: true,
       content: (
-        <View>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
-
-          <ScrollView style={{ maxHeight: 420 }}>
-            {[...wallets].map((w, index) => (
-              <TouchableOpacity
-                key={w.address + index}
-                style={styles.tokenItem}
-                onPress={() => {
-                  onChangeForm({ toAddress: w.address })
-                  closeSheet()
-                }}
-              >
-                <View style={[styles.tokenIcon, { backgroundColor: getRadomColor(w?.address) }]} />
-                <View style={styles.tokenItemContent}>
-                  <ThemedText style={styles.tokenItemSymbol}>{w.name || 'Account'}</ThemedText>
-                  <ThemedText style={styles.tokenItemBalance}>{ellipsisText(w.address, 6, 6)}</ThemedText>
-                </View>
-                {w.isDefault && <ThemedText style={{ color: '#10B981', fontWeight: '600' }}>Default</ThemedText>}
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+        <SelectAccount onPress={(w) => {
+          onChangeForm({ toAddress: w.address })
+          closeSheet()
+        }} />
       ),
     })
   }

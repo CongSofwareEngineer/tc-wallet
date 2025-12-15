@@ -73,7 +73,7 @@ class TokenService extends Web3Service {
       const wallet = store.getState().wallet.wallet
       addressUser = addressUser || wallet?.address
       const publicClient = this.getClient(chainId)
-      if (isTokenNative(addressToken)) {
+      if (isTokenNative(addressToken, chainId)) {
         const balance = await publicClient.getBalance({ address: addressUser as any, blockTag: 'latest' })
 
         return balance

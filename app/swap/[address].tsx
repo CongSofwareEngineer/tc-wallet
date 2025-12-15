@@ -30,6 +30,7 @@ import ItemChain from '@/components/ItemChain'
 import SelectToken from '@/components/SelectToken'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { LIST_TOKEN_DEFAULT } from '@/constants/debridge'
+import useGetRawDeBridge from '@/hooks/react-query/useGetRawDeBridge'
 import { height } from '@/utils/systems'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import SelectTokenOut from './Component/SelectTokenOut'
@@ -76,14 +77,15 @@ const SwapScreen = () => {
   const [outputToken, setOutputToken] = useState<Token | undefined>(tokens?.[1] || undefined)
   const [outputChain, setOutputChain] = useState<Network | undefined>(chainCurrent || undefined)
   const [isSwapping, setIsSwapping] = useState(false)
+  const [slippage, setSlippage] = useState(0.75)
 
   const isInputNativeToken = useMemo(() => {
-    return isTokenNative(inputToken?.token_address)
-  }, [inputToken])
+    return isTokenNative(inputToken?.token_address, chainCurrent?.id)
+  }, [inputToken, chainCurrent])
 
   const isOutputNativeToken = useMemo(() => {
-    return isTokenNative(outputToken?.token_address)
-  }, [outputToken])
+    return isTokenNative(outputToken?.token_address, chainCurrent?.id)
+  }, [outputToken, chainCurrent])
 
   const chainSupportSwap = useMemo(() => {
     return chainList?.filter((chain) => {
@@ -123,11 +125,17 @@ const SwapScreen = () => {
     return null
   }, [inputToken, wallet, form.inputAmount, isInputNativeToken])
 
+  const { data: balanceNative } = useBalanceNative()
   const { data: estimatedGas, isLoading: loadingEstimatedGas } = useEstimateGas(rawTransaction)
-  const { data: balanceNative } = useBalanceNative(!isInputNativeToken)
   const { data: inputTokenPrice } = useTokenPrice(isInputNativeToken ? inputToken?.symbol : inputToken?.token_address)
   const { data: outputTokenPrice } = useTokenPrice(isOutputNativeToken ? outputToken?.symbol : outputToken?.token_address)
-
+  const { data: rawTransactionDeBridge, isLoading: loadingRawTransactionDeBridge, error: errorRawTransactionDeBridge } = useGetRawDeBridge({
+    amountIn: form.inputAmount,
+    slippage: slippage,
+    tokenIn: inputToken,
+    tokenOut: outputToken,
+    chainIdOut: outputChain?.id,
+  })
   // Calculate exchange rate
   const exchangeRate = useMemo(() => {
     if (inputTokenPrice && outputTokenPrice && BigNumber(inputTokenPrice).isGreaterThan(0) && BigNumber(outputTokenPrice).isGreaterThan(0)) {
@@ -146,6 +154,27 @@ const SwapScreen = () => {
     }
   }, [tokens, addressToken])
 
+
+  // Update error balance state
+  useEffect(() => {
+    let errorBalance = ''
+    if (isInputNativeToken && estimatedGas?.totalFee) {
+      const totalNeeded = BigNumber(form.inputAmount || 0).plus(estimatedGas.totalFee)
+      if (BigNumber(inputToken?.balance_formatted || 0).isLessThan(totalNeeded)) {
+        errorBalance = 'Insufficient balance for amount + gas'
+      }
+    } else if (balanceNative && estimatedGas?.totalFee) {
+      if (BigNumber(balanceNative).isLessThan(estimatedGas.totalFee)) {
+        errorBalance = 'Insufficient native balance for gas'
+      }
+    }
+
+    if (errorBalance !== formError.errorBalance) {
+      setFormError((prev) => ({ ...prev, errorBalance }))
+    }
+  }, [estimatedGas, form.inputAmount, inputToken, isInputNativeToken, balanceNative])
+
+
   const handleSelectInputToken = () => {
     openSheet({
       content: (
@@ -163,9 +192,6 @@ const SwapScreen = () => {
 
   const handleSelectOutputToken = () => {
     openSheet({
-      containerContentStyle: {
-        // height: height(70)
-      },
       content: (
         <SelectTokenOut
           token={outputToken}
@@ -224,7 +250,8 @@ const SwapScreen = () => {
     if (!inputToken) return
 
     const maxAmount = BigNumber(inputToken.balance_formatted || '0')
-      .decimalPlaces(10, BigNumber.ROUND_DOWN)
+      .minus(isInputNativeToken ? estimatedGas?.totalFee || 0 : 0)
+      .decimalPlaces(6, BigNumber.ROUND_DOWN)
       .toFixed()
 
     const amountUsd = BigNumber(maxAmount)
@@ -304,6 +331,8 @@ const SwapScreen = () => {
     }, 2000)
   }
 
+
+
   const isFormValid = useMemo(() => {
     if (loadingEstimatedGas) return false
     if (formError.inputAmount || formError.errorBalance) return false
@@ -323,26 +352,6 @@ const SwapScreen = () => {
     return inputToken && outputToken && form.inputAmount && BigNumber(form.inputAmount).isGreaterThan(0) && !formError.inputAmount && !isSwapping
   }, [inputToken, outputToken, form.inputAmount, formError, isSwapping, loadingEstimatedGas, estimatedGas, isInputNativeToken, balanceNative])
 
-  // Update error balance state
-  useEffect(() => {
-    let errorBalance = ''
-    if (isInputNativeToken && estimatedGas?.totalFee) {
-      const totalNeeded = BigNumber(form.inputAmount || 0).plus(estimatedGas.totalFee)
-      if (BigNumber(inputToken?.balance_formatted || 0).isLessThan(totalNeeded)) {
-        errorBalance = 'Insufficient balance for amount + gas'
-      }
-    } else if (balanceNative && estimatedGas?.totalFee) {
-      if (BigNumber(balanceNative).isLessThan(estimatedGas.totalFee)) {
-        errorBalance = 'Insufficient native balance for gas'
-      }
-    }
-
-    if (errorBalance !== formError.errorBalance) {
-      setFormError((prev) => ({ ...prev, errorBalance }))
-    }
-  }, [estimatedGas, form.inputAmount, inputToken, isInputNativeToken, balanceNative])
-
-  console.log({ SwapScreen: form })
 
   return (
     <KeyboardAvoiding>

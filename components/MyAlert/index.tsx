@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { Alert, Animated, Dimensions, Modal, View } from 'react-native'
+import { Animated, Dimensions, Modal, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 
 import useMode from '@/hooks/useMode'
@@ -7,6 +7,7 @@ import useTheme from '@/hooks/useTheme'
 import { useAppSelector } from '@/redux/hooks'
 import { closeAlert } from '@/redux/slices/alertSlice'
 
+import { Alert } from '@/utils/alert'
 import ThemedText from '../UI/ThemedText'
 
 const { width: screenWidth } = Dimensions.get('window')

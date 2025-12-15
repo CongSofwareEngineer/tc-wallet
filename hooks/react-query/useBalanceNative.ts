@@ -10,7 +10,7 @@ import useChains from '../useChains'
 const getData = async ({ queryKey }: { queryKey: any[] }) => {
   const chainId = queryKey[1] as ChainId
 
-  const balance = await TokenService.getTokenBalance(zeroAddress, chainId)
+  const balance = await TokenService.getBalanceToken(zeroAddress, chainId)
   return balance // Mock balance
 }
 const useBalanceNative = (enable = true) => {

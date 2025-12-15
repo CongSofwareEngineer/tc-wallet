@@ -1,16 +1,11 @@
 import { ParamListBase, StackNavigationState } from '@react-navigation/native'
 import { createNativeStackNavigator, NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack'
-import { Navigator as NavigatorExpo, Redirect, Stack as StackExpo, withLayoutContext } from 'expo-router'
+import { Redirect, Stack as StackExpo, withLayoutContext } from 'expo-router'
 import React from 'react'
 
 import useDeepLink from '@/hooks/useDeepLink'
-import useLanguage from '@/hooks/useLanguage'
-import useMode from '@/hooks/useMode'
-import usePassPhrase from '@/hooks/usePassPhrase'
-import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 
-const { Screen: ScreenExpo } = NavigatorExpo
 const { Navigator, Screen } = createNativeStackNavigator()
 
 export const JsStack = withLayoutContext<
@@ -23,11 +18,7 @@ export const JsStack = withLayoutContext<
 const StackScreen = () => {
   useDeepLink()
 
-  const { translate } = useLanguage()
   const { wallets } = useWallets()
-  const { passPhase } = usePassPhrase()
-  const { mode } = useMode()
-  const { text } = useTheme()
 
   return (
     <>

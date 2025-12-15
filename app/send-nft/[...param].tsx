@@ -1,7 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { Image } from 'expo-image'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import React, { useMemo, useState } from 'react'
+import { useLocalSearchParams } from 'expo-router'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Platform, ScrollView, TouchableOpacity, View } from 'react-native'
 import { encodeFunctionData, erc1155Abi, erc721Abi } from 'viem'
 
@@ -18,12 +18,14 @@ import useSheet from '@/hooks/useSheet'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { RawTransactionEVM } from '@/types/web3'
-import { copyToClipboard, ellipsisText, getRadomColor } from '@/utils/functions'
-import { isAddress } from '@/utils/nvm'
+import { convertWeiToBalance, copyToClipboard, ellipsisText, getRadomColor } from '@/utils/functions'
+import { isAddress, isAddressEVM } from '@/utils/nvm'
 import { width } from '@/utils/systems'
 import WalletEvmUtil from '@/utils/walletEvm'
 
+import SelectAccount from '@/components/SelectAccount'
 import { IsIos } from '@/constants/app'
+import useBalanceNative from '@/hooks/react-query/useBalanceNative'
 import useNFTDetail from '@/hooks/react-query/useNFTDetail'
 import BigNumber from 'bignumber.js'
 import ImageMain from '../nft-detail/ImageMain'
@@ -41,16 +43,16 @@ type FormErrorSendNFT = {
 } & FormSendNFT
 
 const SendNFTScreen = () => {
-  const router = useRouter()
   const { param } = useLocalSearchParams<{ param: string[] }>()
   const [nftAddress, nftId] = param
 
   const { isDark } = useMode()
-  const { text, colorIcon } = useTheme()
+  const { colorIcon } = useTheme()
   const styles = createStyles(isDark)
   const { chainCurrent } = useChains()
   const { getError } = useErrorWeb3()
-  const { wallet, wallets, indexWalletActive } = useWallets()
+  const { data: balanceNative } = useBalanceNative()
+  const { wallet, indexWalletActive } = useWallets()
   const { openSheet, closeSheet } = useSheet()
   const { data: nftData, isLoading } = useNFTDetail(nftAddress, nftId)
   const metadata = nftData?.normalized_metadata
@@ -122,47 +124,45 @@ const SendNFTScreen = () => {
     if (loadingEstimatedGas) {
       return true
     }
-    if (formError.toAddress) {
+
+    if (!isAddressEVM(formError.toAddress) || !isAddressEVM(form.toAddress)) {
       return true
     }
-    if (isERC1155 && formError.amount) {
+
+    if (isERC1155 && (!formError.amount || Number(form.amount || '0') <= 0)) {
       return true
     }
+
     if (estimatedGas?.error) {
       return true
     }
+
+    if (BigNumber(convertWeiToBalance(balanceNative?.toString() || 0)).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
+      return true
+    }
+
     return false
-  }, [estimatedGas, loadingEstimatedGas, formError, isERC1155])
+  }, [estimatedGas, loadingEstimatedGas, formError, isERC1155, balanceNative])
+
+  useEffect(() => {
+    if (BigNumber(convertWeiToBalance(balanceNative?.toString() || 0)).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
+      setFormError({
+        ...formError,
+        errorBalance: 'Insufficient balance',
+      })
+    }
+  }, [balanceNative, estimatedGas])
+
+
 
   const handlePickFromMyAccounts = () => {
     openSheet({
       isOpen: true,
       content: (
-        <View>
-          <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Chọn địa chỉ từ ví của tôi
-          </ThemedText>
-
-          <ScrollView style={{ maxHeight: 420 }}>
-            {[...wallets].map((w, index) => (
-              <TouchableOpacity
-                key={w.address + index}
-                style={styles.tokenItem}
-                onPress={() => {
-                  onChangeForm({ toAddress: w.address })
-                  closeSheet()
-                }}
-              >
-                <View style={[styles.tokenIcon, { backgroundColor: getRadomColor(w?.address) }]} />
-                <View style={styles.tokenItemContent}>
-                  <ThemedText style={styles.tokenItemSymbol}>{w.name || 'Account'}</ThemedText>
-                  <ThemedText style={styles.tokenItemBalance}>{ellipsisText(w.address, 6, 6)}</ThemedText>
-                </View>
-                {w.isDefault && <ThemedText style={{ color: '#10B981', fontWeight: '600' }}>Default</ThemedText>}
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+        <SelectAccount onPress={(w) => {
+          onChangeForm({ toAddress: w.address })
+          closeSheet()
+        }} />
       ),
     })
   }
