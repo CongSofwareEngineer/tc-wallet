@@ -27,6 +27,7 @@ import SelectAccount from '@/components/SelectAccount'
 import { IsIos } from '@/constants/app'
 import useBalanceNative from '@/hooks/react-query/useBalanceNative'
 import useNFTDetail from '@/hooks/react-query/useNFTDetail'
+import { Ionicons } from '@expo/vector-icons'
 import BigNumber from 'bignumber.js'
 import ImageMain from '../nft-detail/ImageMain'
 import InputEnter from '../send-token/Component/InputEnter'
@@ -427,7 +428,7 @@ const SendNFTScreen = () => {
             <ThemedText allowFontScaling={false} selectable style={[styles.resultText, { color: isDark ? '#10B981' : '#065F46' }]}>
               {txHash}{' '}
               <TouchableOpacity onPress={() => copyToClipboard(txHash)}>
-                <AntDesign style={{ position: 'relative', top: 4 }} name='copy' size={16} color={isDark ? '#10B981' : '#065F46'} />
+                <Ionicons name='copy-outline' style={{ position: 'relative', top: 4 }} size={16} color={isDark ? '#10B981' : '#065F46'} />
               </TouchableOpacity>
               {!IsIos && <View style={{ width: '100%' }} />}
             </ThemedText>

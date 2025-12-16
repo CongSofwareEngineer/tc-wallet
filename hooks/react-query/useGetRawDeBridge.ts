@@ -4,8 +4,10 @@ import { KEY_REACT_QUERY } from "@/constants/reactQuery"
 import { Token } from "@/services/moralis/type"
 import { IQueryKey } from "@/types/reactQuery"
 import { ChainId } from "@/types/web3"
-import { convertBalanceToWei } from "@/utils/functions"
+import { convertBalanceToWei, lowercase } from "@/utils/functions"
 import { useQuery } from "@tanstack/react-query"
+import BigNumber from "bignumber.js"
+import { useMemo } from "react"
 import useChainSelected from "../useChainSelected"
 import useWallets from "../useWallets"
 
@@ -17,7 +19,27 @@ type Props = {
   chainIdOut?: ChainId,
 }
 
-const getData = async ({ queryKey }: IQueryKey) => {
+type Data = {
+  amountIn: string
+  amountOut: string
+  minAmountOut: string
+  affiliateFee: string
+  protocolFee: string
+  estimatedTransactionFee: {
+    total: string
+    details: {
+      gasLimit: string
+      gasPrice: string
+    }
+    approximateUsdValue: number
+  }
+  tx: {
+    data: `0x${string}`
+    to: `0x${string}`
+    value: string
+  }
+}
+const getData = async ({ queryKey }: IQueryKey): Promise<Data> => {
   const [_, tokenIn, tokenOut, amountIn, slippage, chainIdIn, chainIdOut, userAddress] = queryKey as [string, Token, Token, string, number, ChainId, ChainId, string]
   const isCrossChain = chainIdOut?.toString() !== chainIdIn?.toString()
   if (isCrossChain) {
@@ -45,6 +67,7 @@ const getData = async ({ queryKey }: IQueryKey) => {
       minAmountOut: res?.data?.tokenOut?.minAmount,
       affiliateFee: BigNumber(AFFILIATE_FEE_PERCENT).times(amountIn).div(100).toFixed(),
       protocolFee: '0',
+      estimatedTransactionFee: res?.data?.estimatedTransactionFee,
       tx: res?.data?.tx as {
         data: `0x${string}`
         to: `0x${string}`
@@ -74,6 +97,7 @@ const getData = async ({ queryKey }: IQueryKey) => {
       minAmountOut: res?.data?.tokenOut?.minAmount,
       affiliateFee: BigNumber(AFFILIATE_FEE_PERCENT).times(amountIn).div(100).toFixed(),
       protocolFee: '0',
+      estimatedTransactionFee: res?.data?.estimatedTransactionFee,
       tx: res?.data?.tx as {
         data: `0x${string}`
         to: `0x${string}`
@@ -88,12 +112,17 @@ const useGetRawDeBridge = ({ tokenIn, tokenOut, chainIdOut, amountIn, slippage }
   const { chainId } = useChainSelected()
   const { wallet } = useWallets()
 
+  const isPareToken = useMemo(() => {
+    return lowercase(tokenIn?.token_address) === lowercase(tokenOut?.token_address)
+  }, [tokenIn, tokenOut])
+
   const data = useQuery({
-    queryKey: [KEY_REACT_QUERY.getRawDeBridge, tokenIn, tokenOut, amountIn, slippage, chainId, chainIdOut, wallet?.address],
+    queryKey: [KEY_REACT_QUERY.getRawDeBridge, tokenIn, tokenOut, amountIn?.toString(), slippage, chainId, chainIdOut, wallet?.address],
     queryFn: getData,
-    enabled: !!tokenIn && !!tokenOut && !!amountIn && !!slippage && !!chainId && !!chainIdOut && !!wallet?.address,
+    enabled: !!tokenIn && !!tokenOut && Number(amountIn || '0') > 0 && !!slippage && !!chainId && !!chainIdOut && !!wallet?.address && !isPareToken,
     refetchInterval: 15 * 1000, //15s
   })
+
   return data
 }
 

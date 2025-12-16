@@ -26,12 +26,13 @@ import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
 import { RawTransactionEVM } from '@/types/web3'
 import { cloneDeep, convertBalanceToWei, convertWeiToBalance, copyToClipboard, ellipsisText, getRadomColor } from '@/utils/functions'
-import { isAddress, isTokenNative } from '@/utils/nvm'
+import { isAddressEVM, isTokenNative } from '@/utils/nvm'
 import { height, width } from '@/utils/systems'
 import WalletEvmUtil from '@/utils/walletEvm'
 
 import SelectAccount from '@/components/SelectAccount'
 import { IsIos } from '@/constants/app'
+import { Ionicons } from '@expo/vector-icons'
 import InputEnter from './Component/InputEnter'
 import SelectToken from './Component/SelectToken'
 import { createStyles } from './styles'
@@ -334,7 +335,7 @@ const SendTokenScreen = () => {
     if (typeof param.toAddress !== 'undefined') {
       formErrorClone.toAddress = ''
       formClone.toAddress = param.toAddress
-      if (!isAddress(param.toAddress)) {
+      if (!isAddressEVM(param.toAddress)) {
         formErrorClone.toAddress = 'Địa chỉ không hợp lệ'
       }
     }
@@ -544,7 +545,7 @@ const SendTokenScreen = () => {
             <ThemedText allowFontScaling={false} selectable style={[styles.resultText, { color: isDark ? '#10B981' : '#065F46' }]}>
               {txHash}{' '}
               <TouchableOpacity onPress={() => copyToClipboard(txHash)}>
-                <AntDesign style={{ position: 'relative', top: 4 }} name='copy' size={16} color={isDark ? '#10B981' : '#065F46'} />
+                <Ionicons name='copy-outline' size={16} color={isDark ? '#10B981' : '#065F46'} />
               </TouchableOpacity>
               {!IsIos && <View style={{ width: '100%' }} />}
             </ThemedText>

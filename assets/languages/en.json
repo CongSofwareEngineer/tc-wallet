@@ -14,7 +14,11 @@
     "approve": "Đồng ý",
     "confirm": "Xác nhận",
     "copy": "Sao chép",
-    "save": "Lưu"
+    "save": "Lưu",
+    "from": "From",
+    "to": "To",
+    "balance": "Balance",
+    "max": "MAX"
   },
   "userName": "Tên người dùng",
   "password": "Mật khẩu",
@@ -53,7 +57,10 @@
     "transactionTimeout": "Giao dịch đã hết giờ chờ.",
     "userRejected": "Người dùng đã từ chối giao dịch này.",
     "insufficientFunds": "Số dư không đủ trả phí",
-    "wrongNetwork": "Mạng lưới không hợp lệ. Vui lòng chuyển đến mạng lưới hỗ trợ."
+    "wrongNetwork": "Mạng lưới không hợp lệ. Vui lòng chuyển đến mạng lưới hỗ trợ.",
+    "insufficientBalance": "Insufficient balance",
+    "insufficientBalanceForGas": "Insufficient balance for amount + gas",
+    "insufficientNativeBalanceForGas": "Insufficient native balance for gas"
   },
   "placeholder": {
     "enterUserName": "Nhập tên người dùng",
@@ -94,5 +101,19 @@
   },
   "thayHongToan": {
     "listRegister": "Danh sách đăng ký"
+  },
+  "swap": {
+    "title": "Swap",
+    "selectToken": "Select",
+    "selectOutputChain": "Select Output Chain",
+    "swapDetails": "Swap Details",
+    "exchangeRate": "Exchange Rate",
+    "priceImpact": "Price Impact",
+    "minimumReceived": "Minimum Received",
+    "networkFee": "Network Fee",
+    "swapButton": "Swap",
+    "swapping": "Swapping...",
+    "transactionSuccessful": "Transaction Successful",
+    "transactionFailed": "Transaction Failed"
   }
 }

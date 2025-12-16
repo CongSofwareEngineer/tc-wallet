@@ -4,6 +4,7 @@ import { StyleSheet, TouchableOpacity, TouchableOpacityProps, View } from 'react
 import MyLoading from '@/components/MyLoading'
 import { COLORS } from '@/constants/style'
 import { LinearGradient } from 'expo-linear-gradient'
+import ThemedText from '../ThemedText'
 
 type Props = {
   type?: 'default' | 'primary' | 'danger' | 'text' | 'outline'
@@ -40,7 +41,9 @@ const ThemeTouchableOpacity = ({ type = 'default', ...props }: Props) => {
       {type === 'default' && <BgButton />}
       {props.loading ? (
         <View style={styles.loadingWrapper}>
-          <MyLoading size={20} />
+          <ThemedText>
+            <MyLoading size={20} />
+          </ThemedText>
         </View>
       ) : (
         props.children

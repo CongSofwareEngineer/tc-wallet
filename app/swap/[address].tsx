@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Platform, ScrollView, TouchableOpacity, View } from 'react-native'
-import { encodeFunctionData, erc20Abi, zeroAddress } from 'viem'
+import { zeroAddress } from 'viem'
 
 import HeaderScreen from '@/components/Header'
 import KeyboardAvoiding from '@/components/KeyboardAvoiding'
@@ -13,28 +13,30 @@ import ThemedText from '@/components/UI/ThemedText'
 import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceNative from '@/hooks/react-query/useBalanceNative'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
-import useEstimateGas from '@/hooks/react-query/useEstimate'; // Note: Original file has typo 'useEastimse'
 import useTokenPrice from '@/hooks/react-query/useTokenPrice'
 import useChains from '@/hooks/useChains'
 import useErrorWeb3 from '@/hooks/useErrorWeb3'
+import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import useSheet from '@/hooks/useSheet'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { Token } from '@/services/moralis/type'
 import { Network, RawTransactionEVM } from '@/types/web3'
-import { cloneDeep, convertBalanceToWei } from '@/utils/functions'
+import { cloneDeep, convertWeiToBalance, copyToClipboard } from '@/utils/functions'
 import { isTokenNative } from '@/utils/nvm'
 
 import ItemChain from '@/components/ItemChain'
 import MyLoading from '@/components/MyLoading'
 import SelectToken from '@/components/SelectToken'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import { IsIos } from '@/constants/app'
 import { LIST_TOKEN_DEFAULT } from '@/constants/debridge'
 import useGetRawDeBridge from '@/hooks/react-query/useGetRawDeBridge'
 import useListTokenByChainDeBridge from '@/hooks/react-query/useListTokenByChainDeBridge'
 import { height } from '@/utils/systems'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import WalletEvmUtil from '@/utils/walletEvm'
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import SelectTokenOut from './Component/SelectTokenOut'
 import createStyles from './styles'
 
@@ -59,6 +61,7 @@ const SwapScreen = () => {
   const { chainCurrent, chainList } = useChains()
   const { wallet } = useWallets()
   const { getError } = useErrorWeb3()
+  const { translate } = useLanguage()
   const { data: tokens } = useBalanceToken()
   const { openSheet, closeSheet } = useSheet()
 
@@ -79,7 +82,9 @@ const SwapScreen = () => {
   const [outputToken, setOutputToken] = useState<Token | undefined>(tokens?.[1] || undefined)
   const [outputChain, setOutputChain] = useState<Network | undefined>(chainCurrent || undefined)
   const [isSwapping, setIsSwapping] = useState(false)
-  const [slippage, setSlippage] = useState(0.75)
+  const [slippage] = useState(1)
+  const [txHash, setTxHash] = useState<string | null>(null)
+  const [txError, setTxError] = useState<string | null>(null)
 
   const isInputNativeToken = useMemo(() => {
     return isTokenNative(inputToken?.token_address, chainCurrent?.id)
@@ -98,47 +103,34 @@ const SwapScreen = () => {
     })
   }, [chainList])
 
-  const rawTransaction = useMemo(() => {
-    if (inputToken && wallet && form.inputAmount) {
-      // Mock raw transaction for gas estimation
-      // In a real swap, this would call the DEX aggregator API to get the transaction data
-      const amountStr = convertBalanceToWei(form.inputAmount, inputToken.decimals)
-
-      const raw: RawTransactionEVM = {
-        from: wallet?.address as `0x${string}`,
-        to: wallet.address as `0x${string}`, // Self-transfer as placeholder/mock
-        data: '0x',
-        value: 0n,
-      }
-
-      if (isInputNativeToken) {
-        raw.value = BigInt(amountStr || 0)
-      } else {
-        const decode = encodeFunctionData({
-          abi: erc20Abi,
-          functionName: 'transfer',
-          args: [wallet.address as `0x${string}`, BigInt(amountStr || 0)],
-        })
-        raw.data = decode
-        raw.to = inputToken.token_address as `0x${string}`
-      }
-      return raw
-    }
-    return null
-  }, [inputToken, wallet, form.inputAmount, isInputNativeToken])
-
   const { data: balanceNative, isLoading: loadingBalanceNative } = useBalanceNative()
   const { data: listTokenByChain, isLoading: loadingListTokenByChain } = useListTokenByChainDeBridge(outputChain?.id)
-  const { data: estimatedGas, isLoading: loadingEstimatedGas } = useEstimateGas(rawTransaction)
   const { data: inputTokenPrice } = useTokenPrice(isInputNativeToken ? inputToken?.symbol : inputToken?.token_address)
   const { data: outputTokenPrice } = useTokenPrice(isOutputNativeToken ? outputToken?.symbol : outputToken?.token_address)
-  const { data: rawTransactionDeBridge, isLoading: loadingRawTransactionDeBridge, error: errorRawTransactionDeBridge } = useGetRawDeBridge({
+  const { data: rawTransactionDeBridge, isLoading: loadingRawTransactionDeBridge, error: errorRawTransactionDeBridge, isFetching: isFetchingRawTransactionDeBridge } = useGetRawDeBridge({
     amountIn: form.inputAmount,
     slippage: slippage,
     tokenIn: inputToken,
     tokenOut: outputToken,
     chainIdOut: outputChain?.id,
   })
+
+  const totalFee = useMemo(() => {
+    if (rawTransactionDeBridge?.estimatedTransactionFee?.total) {
+      return convertWeiToBalance(rawTransactionDeBridge?.estimatedTransactionFee?.total)
+    }
+    return '0'
+  }, [rawTransactionDeBridge])
+
+  const maxBalanceSwap = useMemo(() => {
+    if (isInputNativeToken) {
+      return BigNumber(balanceNative || 0).minus(totalFee).toFixed()
+    }
+    return inputToken?.balance_formatted || '0'
+  }, [balanceNative, totalFee, inputToken, isInputNativeToken])
+
+
+
   // Calculate exchange rate
   const exchangeRate = useMemo(() => {
     if (inputTokenPrice && outputTokenPrice && BigNumber(inputTokenPrice).isGreaterThan(0) && BigNumber(outputTokenPrice).isGreaterThan(0)) {
@@ -161,11 +153,8 @@ const SwapScreen = () => {
   useEffect(() => {
     if (listTokenByChain) {
       const tokenOut = listTokenByChain.find((t) => (t.token_address || zeroAddress) === zeroAddress)
-      console.log({ tokenOut });
-
       if (tokenOut) {
         setOutputToken(tokenOut)
-
       }
     }
   }, [listTokenByChain])
@@ -174,21 +163,21 @@ const SwapScreen = () => {
   // Update error balance state
   useEffect(() => {
     let errorBalance = ''
-    if (isInputNativeToken && estimatedGas?.totalFee) {
-      const totalNeeded = BigNumber(form.inputAmount || 0).plus(estimatedGas.totalFee)
+    if (isInputNativeToken && rawTransactionDeBridge?.estimatedTransactionFee?.total) {
+      const totalNeeded = BigNumber(form.inputAmount || 0).plus(rawTransactionDeBridge?.estimatedTransactionFee?.total)
       if (BigNumber(inputToken?.balance_formatted || 0).isLessThan(totalNeeded)) {
-        errorBalance = 'Insufficient balance for amount + gas'
+        errorBalance = translate('errorWeb3.insufficientBalanceForGas')
       }
-    } else if (balanceNative && estimatedGas?.totalFee) {
-      if (BigNumber(balanceNative).isLessThan(estimatedGas.totalFee)) {
-        errorBalance = 'Insufficient native balance for gas'
+    } else if (maxBalanceSwap && rawTransactionDeBridge?.estimatedTransactionFee?.total) {
+      if (BigNumber(maxBalanceSwap).isLessThan(totalFee)) {
+        errorBalance = translate('errorWeb3.insufficientNativeBalanceForGas')
       }
     }
 
     if (errorBalance !== formError.errorBalance) {
       setFormError((prev) => ({ ...prev, errorBalance }))
     }
-  }, [estimatedGas, form.inputAmount, inputToken, isInputNativeToken, balanceNative])
+  }, [totalFee, maxBalanceSwap, form.inputAmount, inputToken, isInputNativeToken, balanceNative])
 
 
   const handleSelectInputToken = () => {
@@ -227,7 +216,7 @@ const SwapScreen = () => {
       content: (
         <View>
           <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
-            Select Output Chain
+            {translate('swap.selectOutputChain')}
           </ThemedText>
           <ScrollView style={{ maxHeight: height(70) }}>
             {chainSupportSwap?.map((chain, index) => (
@@ -265,8 +254,7 @@ const SwapScreen = () => {
   const handleMaxInput = () => {
     if (!inputToken) return
 
-    const maxAmount = BigNumber(inputToken.balance_formatted || '0')
-      .minus(isInputNativeToken ? estimatedGas?.totalFee || 0 : 0)
+    const maxAmount = BigNumber(maxBalanceSwap)
       .decimalPlaces(6, BigNumber.ROUND_DOWN)
       .toFixed()
 
@@ -311,9 +299,9 @@ const SwapScreen = () => {
       formClone.inputAmountUsd = ''
     }
 
-    // Validate balance
-    if (inputToken && BigNumber(value || 0).isGreaterThan(inputToken.balance_formatted || 0)) {
-      formErrorClone.inputAmount = 'Insufficient balance'
+    // Validate balance - check against maxBalanceSwap which accounts for gas fees
+    if (inputToken && BigNumber(value || 0).isGreaterThan(maxBalanceSwap || 0)) {
+      formErrorClone.inputAmount = translate('errorWeb3.insufficientBalance')
     }
 
     // Calculate output amount based on exchange rate
@@ -333,45 +321,66 @@ const SwapScreen = () => {
   }
 
   const handleSwap = async () => {
-    // TODO: Implement actual swap logic with DEX integration
-    setIsSwapping(true)
-    setTimeout(() => {
-      setIsSwapping(false)
-      // Reset form after swap
+    try {
+      setTxHash(null)
+      setTxError(null)
+
+      const rawBase: RawTransactionEVM = {
+        ...rawTransactionDeBridge?.tx,
+        from: wallet?.address as `0x${string}`,
+        value: BigInt(rawTransactionDeBridge?.tx.value || '0'),
+        data: rawTransactionDeBridge?.tx.data || '0x',
+        isTracking: true,
+        callbackBefore: () => setIsSwapping(true),
+        callbackSuccess: (hash?: any) => {
+          setIsSwapping(false)
+          setTxHash((hash as string) || null)
+        },
+        callbackError: (err?: any) => {
+          setIsSwapping(false)
+          setTxError((err?.message as string) || String(err))
+        },
+      }
+
+      await WalletEvmUtil.sendTransaction(rawBase, wallet?.privateKey as any)
+
+      // Reset form after successful swap
       setForm({
         inputAmount: '',
         outputAmount: '',
         inputAmountUsd: '',
         outputAmountUsd: '',
       })
-    }, 2000)
+    } catch (err: any) {
+      setIsSwapping(false)
+      setTxError(err?.message || String(err))
+    }
   }
 
 
 
   const isFormValid = useMemo(() => {
-    if (loadingEstimatedGas) return false
     if (formError.inputAmount || formError.errorBalance) return false
 
-    if (isInputNativeToken && estimatedGas?.totalFee) {
-      if (BigNumber(inputToken?.balance_formatted || 0).isLessThanOrEqualTo(BigNumber(form.inputAmount || 0).plus(estimatedGas?.totalFee || 0))) {
+    if (isInputNativeToken && totalFee) {
+      if (BigNumber(inputToken?.balance_formatted || 0).isLessThanOrEqualTo(BigNumber(form.inputAmount || 0).plus(totalFee || 0))) {
         return false
       }
     } else {
-      if (balanceNative && estimatedGas?.totalFee) {
-        if (BigNumber(balanceNative).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
+      if (maxBalanceSwap && totalFee) {
+        if (BigNumber(maxBalanceSwap).isLessThanOrEqualTo(totalFee || 0)) {
           return false
         }
       }
     }
 
     return inputToken && outputToken && form.inputAmount && BigNumber(form.inputAmount).isGreaterThan(0) && !formError.inputAmount && !isSwapping
-  }, [inputToken, outputToken, form.inputAmount, formError, isSwapping, loadingEstimatedGas, estimatedGas, isInputNativeToken, balanceNative])
+  }, [inputToken, outputToken, form.inputAmount, formError, isSwapping, totalFee, isInputNativeToken, balanceNative])
 
 
   return (
     <KeyboardAvoiding>
-      <HeaderScreen title='Swap' />
+      <HeaderScreen title={translate('swap.title')} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps='handled'
@@ -382,18 +391,18 @@ const SwapScreen = () => {
         {/* Input Token Section */}
         <View style={styles.card}>
           <View style={{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', justifyContent: 'space-between' }}>
-            <ThemedText style={styles.sectionLabel}>From</ThemedText>
+            <ThemedText style={styles.sectionLabel}>{translate('common.from')}</ThemedText>
 
             {inputToken && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <ThemedText style={styles.balanceText}>
-                  Balance:{' '}
+                  {translate('common.balance')}:{' '}
                   {BigNumber(inputToken.balance_formatted || 0)
                     .decimalPlaces(6, BigNumber.ROUND_DOWN)
                     .toFormat()}
                 </ThemedText>
                 <TouchableOpacity style={styles.maxButton} onPress={handleMaxInput} disabled={isSwapping || !inputToken}>
-                  <ThemedText style={styles.maxButtonText}>MAX</ThemedText>
+                  <ThemedText style={styles.maxButtonText}>{translate('common.max')}</ThemedText>
                 </TouchableOpacity>
               </View>
             )}
@@ -412,7 +421,7 @@ const SwapScreen = () => {
                   <ThemedText style={styles.tokenSymbol}>{inputToken.symbol}</ThemedText>
                 </>
               ) : (
-                <ThemedText style={styles.tokenSymbol}>Select</ThemedText>
+                <ThemedText style={styles.tokenSymbol}>{translate('swap.selectToken')}</ThemedText>
               )}
               <AntDesign name='down' size={12} color={text.color} />
             </TouchableOpacity>
@@ -439,6 +448,11 @@ const SwapScreen = () => {
                   : ''}
               </ThemedText>
             </View>
+            {formError.inputAmount && (
+              <ThemedText type='small' style={{ color: COLORS.red, marginTop: 5 }}>
+                {formError.inputAmount}
+              </ThemedText>
+            )}
           </View>
         </View>
 
@@ -451,7 +465,7 @@ const SwapScreen = () => {
 
         {/* Output Token Section */}
         <View style={styles.card}>
-          <ThemedText style={[styles.sectionLabel, { marginBottom: 12 }]}>To</ThemedText>
+          <ThemedText style={[styles.sectionLabel, { marginBottom: 12 }]}>{translate('common.to')}</ThemedText>
           <View style={styles.topRow}>
             {/* Output Chain Selector */}
             <TouchableOpacity style={styles.chainSelectorSmall} onPress={handleSelectOutputChain} disabled={isSwapping}>
@@ -463,7 +477,7 @@ const SwapScreen = () => {
             </TouchableOpacity>
 
             {/* Token Selector */}
-            <TouchableOpacity disabled={isSwapping || loadingListTokenByChain || loadingBalanceNative} style={styles.tokenSelector} onPress={handleSelectOutputToken} disabled={isSwapping}>
+            <TouchableOpacity disabled={isSwapping || loadingListTokenByChain || loadingBalanceNative} style={styles.tokenSelector} onPress={handleSelectOutputToken} >
               {outputToken ? (
                 <>
                   {
@@ -494,7 +508,7 @@ const SwapScreen = () => {
                 placeholder='0.0'
                 value={form.outputAmount}
                 editable={false}
-                disabled={true}
+                disabled
                 noBorder
                 style={{ fontSize: 28, fontWeight: '700', paddingLeft: 0, paddingRight: 0 }}
                 styleContentInput={{ paddingVertical: 0, paddingHorizontal: 0 }}
@@ -512,39 +526,36 @@ const SwapScreen = () => {
         {form.inputAmount && form.outputAmount && (
           <View style={styles.detailsCard}>
             <ThemedText type='defaultSemiBold' style={{ marginBottom: 12 }}>
-              Swap Details
+              {translate('swap.swapDetails')}
             </ThemedText>
 
             <View style={styles.detailRow}>
-              <ThemedText style={styles.detailLabel}>Exchange Rate</ThemedText>
+              <ThemedText style={styles.detailLabel}>{translate('swap.exchangeRate')}</ThemedText>
               <ThemedText style={styles.detailValue}>
                 1 {inputToken?.symbol} ≈ {exchangeRate} {outputToken?.symbol}
               </ThemedText>
             </View>
 
             <View style={styles.detailRow}>
-              <ThemedText style={styles.detailLabel}>Price Impact</ThemedText>
+              <ThemedText style={styles.detailLabel}>{translate('swap.priceImpact')}</ThemedText>
               <ThemedText style={[styles.detailValue, { color: COLORS.green600 }]}>{'<0.01%'}</ThemedText>
             </View>
 
             <View style={styles.detailRow}>
-              <ThemedText style={styles.detailLabel}>Minimum Received</ThemedText>
+              <ThemedText style={styles.detailLabel}>{translate('swap.minimumReceived')}</ThemedText>
               <ThemedText style={styles.detailValue}>
                 {BigNumber(form.outputAmount).multipliedBy(0.995).decimalPlaces(6).toFixed()} {outputToken?.symbol}
               </ThemedText>
             </View>
 
             <View style={styles.detailRow}>
-              <ThemedText style={styles.detailLabel}>Network Fee</ThemedText>
+              <ThemedText style={styles.detailLabel}>{translate('swap.networkFee')}</ThemedText>
               <ThemedText style={styles.detailValue}>
-                {loadingEstimatedGas ? (
-                  'Calculating...'
-                ) : formError?.errorBalance ? (
+                {formError?.errorBalance ? (
                   <ThemedText style={{ color: COLORS.red, fontSize: 12 }}>{formError.errorBalance}</ThemedText>
                 ) : (
                   <>
-                    {estimatedGas?.totalFee && BigNumber(estimatedGas.totalFee).toFixed(8)} {chainCurrent?.nativeCurrency?.symbol}
-                    {estimatedGas?.error && <ThemedText style={{ color: COLORS.red, fontSize: 12 }}> {getError(estimatedGas.error)}</ThemedText>}
+                    {totalFee && BigNumber(totalFee).toFixed(8)} {chainCurrent?.nativeCurrency?.symbol}
                   </>
                 )}
               </ThemedText>
@@ -557,11 +568,35 @@ const SwapScreen = () => {
           style={[styles.swapButton, !isFormValid && styles.swapButtonDisabled, { marginBottom: PADDING_DEFAULT.Padding16 }]}
           onPress={handleSwap}
           disabled={!isFormValid}
+          loading={isSwapping || loadingRawTransactionDeBridge || isFetchingRawTransactionDeBridge}
         >
           <ThemedText style={[styles.swapButtonText, !isFormValid && styles.swapButtonTextDisabled]}>
-            {isSwapping ? 'Swapping...' : 'Swap'}
+            {isSwapping ? translate('swap.swapping') : translate('swap.swapButton')}
           </ThemedText>
         </ThemeTouchableOpacity>
+
+        {/* Transaction Result */}
+        {!!txHash && (
+          <View style={styles.resultCard}>
+            <ThemedText style={[styles.resultTitle, { color: isDark ? COLORS.green400 : COLORS.green700 }]}>{translate('swap.transactionSuccessful')}</ThemedText>
+            <ThemedText allowFontScaling={false} selectable style={[styles.resultText, { color: isDark ? COLORS.green400 : COLORS.green800 }]}>
+              {txHash}{' '}
+              <TouchableOpacity onPress={() => copyToClipboard(txHash)}>
+                <Ionicons name='copy-outline' size={16} color={isDark ? COLORS.green400 : COLORS.green800} />
+              </TouchableOpacity>
+              {!IsIos && <View style={{ width: '100%' }} />}
+            </ThemedText>
+          </View>
+        )}
+
+        {!!txError && (
+          <View style={styles.errorCard}>
+            <ThemedText style={[styles.resultTitle, { color: isDark ? COLORS.red400 : COLORS.red600 }]}>{translate('swap.transactionFailed')}</ThemedText>
+            <ThemedText selectable style={[styles.resultText, { color: isDark ? COLORS.red600 : COLORS.red900 }]}>
+              {getError(txError)}
+            </ThemedText>
+          </View>
+        )}
       </ScrollView>
     </KeyboardAvoiding>
   )

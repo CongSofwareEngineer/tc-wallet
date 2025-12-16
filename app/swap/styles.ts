@@ -177,6 +177,33 @@ const createStyles = (isDark: boolean) =>
       opacity: 0.6,
       textAlign: 'right',
     },
+    resultCard: {
+      // COLORS.green400 with opacity
+      backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)',
+      borderRadius: BORDER_RADIUS_DEFAULT.Radius12,
+      padding: PADDING_DEFAULT.Padding16,
+      marginBottom: GAP_DEFAULT.Gap16,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.2)',
+    },
+    resultTitle: {
+      fontSize: width(4),
+      fontWeight: '700',
+      marginBottom: 8,
+    },
+    resultText: {
+      fontSize: width(3),
+      lineHeight: 20,
+    },
+    errorCard: {
+      // COLORS.red400 with opacity
+      backgroundColor: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)',
+      borderRadius: BORDER_RADIUS_DEFAULT.Radius12,
+      padding: PADDING_DEFAULT.Padding16,
+      marginBottom: GAP_DEFAULT.Gap16,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.2)',
+    },
   })
 
 export default createStyles
