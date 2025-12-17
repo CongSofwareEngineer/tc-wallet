@@ -1,7 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { useRouter } from 'expo-router'
 import React from 'react'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, TouchableOpacity, View } from 'react-native'
 
 import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
@@ -20,6 +20,7 @@ import useWallets from '@/hooks/useWallets'
 import { LANGUAGE_SUPPORT } from '@/types/language'
 import WalletKit from '@/utils/walletKit'
 
+import { FontAwesome } from '@expo/vector-icons'
 import Items from './Components/Item'
 import Security from './Components/Security'
 import styles from './styles'
@@ -105,10 +106,10 @@ const SettingScreen = () => {
 
           {/* // Language */}
           <Items>
-            <ThemeTouchableOpacity onPress={() => router.push('/select-language' as any)}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => router.push('/select-language' as any)}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 4 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <AntDesign name={'earth' as any} size={20} color={text.color} style={{ marginRight: 10 }} />
+                  <FontAwesome name="language" size={20} color={text.color} style={{ marginRight: 10 }} />
                   <ThemedText type='defaultSemiBold'>{translate('common.language')}</ThemedText>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -118,7 +119,7 @@ const SettingScreen = () => {
                   <AntDesign name='right' size={16} color={colors.gray} />
                 </View>
               </View>
-            </ThemeTouchableOpacity>
+            </TouchableOpacity>
           </Items>
 
           {/* // Notification */}

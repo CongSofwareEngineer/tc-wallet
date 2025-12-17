@@ -10,6 +10,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: PADDING_DEFAULT.Padding16,
     gap: GAP_DEFAULT.Gap16,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   containerContentlight: {
     backgroundColor: BACKGROUND.light.background,
@@ -18,20 +21,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   item: {
-    flexDirection: 'row',
+    width: '45%',
+    aspectRatio: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: PADDING_DEFAULT.Padding12,
     borderRadius: BORDER_RADIUS[2],
     borderWidth: 1,
-  },
-  itemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: GAP_DEFAULT.Gap12,
   },
+  itemContent: {
+    alignItems: 'center',
+    gap: GAP_DEFAULT.Gap8,
+  },
   flag: {
-    fontSize: 24,
+    fontSize: 40,
+  },
+  checkIcon: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
   },
 })
 

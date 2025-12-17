@@ -19,6 +19,8 @@ const SelectLanguageScreen = () => {
   const { colors, text } = useTheme()
   const { translate, lang, setLanguage } = useLanguage()
   const router = useRouter()
+  console.log({ lang });
+
 
   const languages = [
     {
@@ -44,6 +46,7 @@ const SelectLanguageScreen = () => {
       <View style={[styles.containerContent, styles[`containerContent${mode}`]]}>
         {languages.map((item) => (
           <ThemeTouchableOpacity
+            type='outline'
             key={item.code}
             style={[
               styles.item,
@@ -58,7 +61,7 @@ const SelectLanguageScreen = () => {
               <ThemedText style={styles.flag}>{item.flag}</ThemedText>
               <ThemedText type='defaultSemiBold'>{item.name}</ThemedText>
             </View>
-            {lang === item.code && <AntDesign name='check' size={20} color={COLORS.green3} />}
+            {lang === item.code && <AntDesign name='check' size={20} color={COLORS.green3} style={styles.checkIcon} />}
           </ThemeTouchableOpacity>
         ))}
       </View>
