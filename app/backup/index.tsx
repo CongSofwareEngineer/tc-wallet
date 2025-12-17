@@ -8,6 +8,7 @@ import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import ThemedText from '@/components/UI/ThemedText'
 import { APP_CONFIG } from '@/constants/appConfig'
 import { useAlert } from '@/hooks/useAlert'
+import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import { useAppSelector } from '@/redux/hooks'
 import { encodeData } from '@/utils/crypto'
@@ -23,6 +24,7 @@ const BackupScreen = () => {
   const router = useRouter()
   const { showSuccess, showError } = useAlert()
   const { isDark } = useMode()
+  const { translate } = useLanguage()
   const styles = createStyles(isDark)
 
   const wallets = useAppSelector((state) => state.wallet)
@@ -86,14 +88,14 @@ const BackupScreen = () => {
         })
 
         showSuccess({
-          text: 'Backup saved to custom location!',
+          text: translate('backupPage.successMessage'),
         })
         router.back()
       } else {
-        showError('No location selected. Please try again.')
+        showError(translate('backupPage.noLocationError'))
       }
     } catch {
-      showError('Failed to create backup file. Please try again.')
+      showError(translate('backupPage.errorMessage'))
     } finally {
       setIsLoading(false)
     }
@@ -104,21 +106,27 @@ const BackupScreen = () => {
     let feedback = []
 
     if (pwd.length >= 8) score++
-    else feedback.push('At least 8 characters')
+    else feedback.push(translate('backupPage.feedback.minChar'))
 
     if (/[a-z]/.test(pwd)) score++
-    else feedback.push('Lowercase letter')
+    else feedback.push(translate('backupPage.feedback.lowercase'))
 
     if (/[A-Z]/.test(pwd)) score++
-    else feedback.push('Uppercase letter')
+    else feedback.push(translate('backupPage.feedback.uppercase'))
 
     if (/[0-9]/.test(pwd)) score++
-    else feedback.push('Number')
+    else feedback.push(translate('backupPage.feedback.number'))
 
     if (/[^A-Za-z0-9]/.test(pwd)) score++
-    else feedback.push('Special character')
+    else feedback.push(translate('backupPage.feedback.special'))
 
-    const levels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong']
+    const levels = [
+      translate('backupPage.strengthLevel.veryWeak'),
+      translate('backupPage.strengthLevel.weak'),
+      translate('backupPage.strengthLevel.fair'),
+      translate('backupPage.strengthLevel.good'),
+      translate('backupPage.strengthLevel.strong'),
+    ]
     const colors = ['#b14608', '#FF8800', '#f19429', '#FFBB00', '#a3f204', '#44AA00', '#44AA00']
 
     return {
@@ -163,7 +171,7 @@ const BackupScreen = () => {
 
   return (
     <KeyboardAvoiding>
-      <HeaderScreen title='Backup Wallet' />
+      <HeaderScreen title={translate('backupPage.title')} />
 
       <ScrollView
         style={{ flex: 1 }}
@@ -174,28 +182,32 @@ const BackupScreen = () => {
         bounces={false}
       >
         <View style={styles.headerSection}>
-          <ThemedText style={styles.subtitle}>
-            Secure your wallet data with a password-protected backup text file. Choose Downloads, custom location, or share to save.
-          </ThemedText>
+          <ThemedText style={styles.subtitle}>{translate('backupPage.subtitle')}</ThemedText>
         </View>
 
         <View style={styles.warningSection}>
-          <ThemedText style={styles.warningTitle}>⚠️ Important Security Notice</ThemedText>
-          <ThemedText style={styles.warningText}>
-            • Store your backup file in a secure location{'\n'}• Never share your backup password{'\n'}• Keep multiple copies in different secure
-            locations{'\n'}• This backup contains sensitive wallet information
-          </ThemedText>
+          <ThemedText style={styles.warningTitle}>{translate('backupPage.warningTitle')}</ThemedText>
+          <ThemedText style={styles.warningText}>{translate('backupPage.warningText')}</ThemedText>
         </View>
 
         <View style={styles.formSection}>
           <View style={styles.inputContainer}>
             <ThemedText type='subtitle' style={styles.label}>
-              Backup Password
+              {translate('backupPage.passwordLabel')}
             </ThemedText>
-            {renderPasswordInput(password, setPassword, 'Enter strong password', showPassword, () => setShowPassword(!showPassword), 'password')}
+            {renderPasswordInput(
+              password,
+              setPassword,
+              translate('backupPage.passwordPlaceholder'),
+              showPassword,
+              () => setShowPassword(!showPassword),
+              'password'
+            )}
             {password && (
               <View style={styles.strengthContainer}>
-                <ThemedText style={[styles.strengthText, { color: passwordStrength.color }]}>Strength: {passwordStrength.level}</ThemedText>
+                <ThemedText style={[styles.strengthText, { color: passwordStrength.color }]}>
+                  {translate('backupPage.strength')}: {passwordStrength.level}
+                </ThemedText>
                 <View style={styles.strengthBarContainer}>
                   <View style={[styles.strengthBar, { backgroundColor: passwordStrength.color, flex: passwordStrength.score }]} />
                   <View style={{ flex: 5 - passwordStrength.score }} />
@@ -206,24 +218,26 @@ const BackupScreen = () => {
 
           <View style={styles.inputContainer}>
             <ThemedText type='subtitle' style={styles.label}>
-              Confirm Password
+              {translate('backupPage.confirmLabel')}
             </ThemedText>
             {renderPasswordInput(
               confirmPassword,
               setConfirmPassword,
-              'Confirm your password',
+              translate('backupPage.confirmPlaceholder'),
               showConfirmPassword,
               () => setShowConfirmPassword(!showConfirmPassword),
               'confirm'
             )}
-            {confirmPassword && confirmPassword !== password && <ThemedText style={styles.errorText}>Passwords do not match</ThemedText>}
+            {confirmPassword && confirmPassword !== password && (
+              <ThemedText style={styles.errorText}>{translate('backupPage.passwordMismatch')}</ThemedText>
+            )}
           </View>
         </View>
 
         <View style={styles.buttonContainer}>
           {isLoading && (
             <View style={styles.progressContainer}>
-              <ThemedText style={styles.progressText}>Creating backup...</ThemedText>
+              <ThemedText style={styles.progressText}>{translate('backupPage.buttonCreating')}</ThemedText>
               <View style={styles.progressBar}>
                 <Animated.View style={styles.progressFill} />
               </View>
@@ -236,7 +250,7 @@ const BackupScreen = () => {
             disabled={!isValidForm || isLoading}
           >
             <ThemedText style={[styles.backupButtonText, (!isValidForm || isLoading) && styles.backupButtonTextDisabled]}>
-              {isLoading ? 'Creating Backup...' : 'Create Backup'}
+              {isLoading ? translate('backupPage.buttonCreating') : translate('backupPage.buttonCreate')}
             </ThemedText>
           </TouchableOpacity>
         </View>

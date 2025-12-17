@@ -11,6 +11,7 @@ import ThemeSwitch from '@/components/UI/ThemeSwitch'
 import { KEY_STORAGE } from '@/constants/storage'
 import useAlert from '@/hooks/useAlert'
 import useAuth from '@/hooks/useAuth'
+import useLanguage from '@/hooks/useLanguage'
 import useModal from '@/hooks/useModal'
 import useMode from '@/hooks/useMode'
 import useSetting from '@/hooks/useSetting'
@@ -31,6 +32,7 @@ const Security = () => {
   const dispatch = useDispatch()
   const { closeModal, openModal } = useModal()
   const { setSetting } = useSetting()
+  const { translate } = useLanguage()
   const setting = useAppSelector((state) => state.settings)
 
   const handleChangePasscode = () => {
@@ -47,7 +49,7 @@ const Security = () => {
     }
     if (setting.isPasscode) {
       openModal({
-        content: <ModalWarning onConfirm={callbackDisable} message='Bạn có chắc chắn muốn tắt mật khẩu?' />,
+        content: <ModalWarning onConfirm={callbackDisable} message={translate('setting.security.modal.disableAuth')} />,
       })
     } else {
       router.push('/secure-password')
@@ -66,7 +68,7 @@ const Security = () => {
       } catch (error) { }
     }
     openModal({
-      content: <ModalWarning onConfirm={callbackDisable} message='Bạn có chắc chắn muốn đặt mật khẩu?' />,
+      content: <ModalWarning onConfirm={callbackDisable} message={translate('setting.security.modal.enablePasscode')} />,
     })
   }
 
@@ -81,7 +83,7 @@ const Security = () => {
     }
     if (setting.isFaceId) {
       openModal({
-        content: <ModalWarning onConfirm={callbackDisable} message='Bạn có chắc chắn muốn tắt mật khẩu?' />,
+        content: <ModalWarning onConfirm={callbackDisable} message={translate('setting.security.modal.disableAuth')} />,
       })
     } else {
       const isSupport = await LocalAuthentication.hasHardwareAsync()
@@ -97,16 +99,16 @@ const Security = () => {
           requireConfirmation: true,
         })
         if (dataFaceId?.error) {
-          showAlert({ text: 'Hệ thống ko hộ trợ' })
+          showAlert({ text: translate('setting.security.error.notSupported') })
         }
         if (dataFaceId.success) {
           setSetting({ isFaceId: true })
-          showAlert({ text: 'Xác thực thành công' })
+          showAlert({ text: translate('setting.security.success') })
         }
 
         console.log({ isEnrolled, dataFaceId })
       } else {
-        showAlert({ text: 'Hệ thống ko hộ trợ' })
+        showAlert({ text: translate('setting.security.error.notSupported') })
       }
     }
   }
@@ -115,12 +117,12 @@ const Security = () => {
     <Items>
       <View style={styles.containerTitle}>
         <AntDesign name='security-scan' size={20} color={text.color} style={{ marginRight: 10 }} />
-        <ThemedText type='defaultSemiBold'>Bảo mật</ThemedText>
+        <ThemedText type='defaultSemiBold'>{translate('setting.security.title')}</ThemedText>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <View style={{ flex: 1 }}>
-          <ThemedText>Khoá sinh trắc học</ThemedText>
-          <ThemedText opacity={0.7}>Vân tay/Face ID bảo vệ dữ liệu</ThemedText>
+          <ThemedText>{translate('setting.security.biometric.title')}</ThemedText>
+          <ThemedText opacity={0.7}>{translate('setting.security.biometric.desc')}</ThemedText>
         </View>
         <TouchableHighlight onPress={handleChangeFaceId}>
           <View style={{ position: 'relative' }}>
@@ -131,8 +133,8 @@ const Security = () => {
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <View style={{ flex: 1 }}>
-          <ThemedText>Mật khẩu </ThemedText>
-          <ThemedText opacity={0.7}>Sử dụng mật khẩu bảo vệ dữ liệu</ThemedText>
+          <ThemedText>{translate('setting.security.passcode.title')} </ThemedText>
+          <ThemedText opacity={0.7}>{translate('setting.security.passcode.desc')}</ThemedText>
         </View>
         <TouchableHighlight onPress={handleChangePasscode}>
           <View style={{ position: 'relative' }}>
@@ -144,8 +146,8 @@ const Security = () => {
       {setting?.isPasscode && (
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
           <View style={{ flex: 1 }}>
-            <ThemedText>Đặt lại Mật khẩu </ThemedText>
-            <ThemedText opacity={0.7}>Sử dụng mật khẩu bảo vệ dữ liệu</ThemedText>
+            <ThemedText>{translate('setting.security.resetPasscode.title')} </ThemedText>
+            <ThemedText opacity={0.7}>{translate('setting.security.resetPasscode.desc')}</ThemedText>
           </View>
           <TouchableHighlight onPress={handleEditPasscode}>
             <AntDesign name='edit' size={20} color={text.color} />

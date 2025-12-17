@@ -6,6 +6,7 @@ import { Animated, TouchableOpacity, View } from 'react-native'
 import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
+import useLanguage from '@/hooks/useLanguage'
 import useTheme from '@/hooks/useTheme'
 import { Token } from '@/services/moralis/type'
 
@@ -19,6 +20,7 @@ type Props = {
 
 const Tokens = ({ scrollY, headerHeight }: Props) => {
   const { text, colorIcon } = useTheme()
+  const { translate } = useLanguage()
   const router = useRouter()
 
   const { data, isLoading, refetch, isRefetching } = useBalanceToken()
@@ -28,7 +30,7 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
       return (
         <View style={{ padding: 20, alignItems: 'center', justifyContent: 'center', gap: 10 }}>
           <MyLoading />
-          <ThemedText>Loading...</ThemedText>
+          <ThemedText>{translate('common.loading')}</ThemedText>
         </View>
       )
     } else {
@@ -43,7 +45,7 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
               alignItems: 'center',
             }}
           >
-            <ThemedText>Tokens ({data?.length})</ThemedText>
+            <ThemedText>{translate('home.tokens.title')} ({data?.length})</ThemedText>
           </View>
           <View
             style={{
@@ -98,7 +100,7 @@ const Tokens = ({ scrollY, headerHeight }: Props) => {
           onPress={() => router.push('/import-token')}
         >
           <AntDesign name='plus-circle' size={24} color={colorIcon.colorDefault} />
-          <ThemedText style={{ fontSize: 16, color: colorIcon.colorDefault, fontWeight: '600' }}>Import Custom Token</ThemedText>
+          <ThemedText style={{ fontSize: 16, color: colorIcon.colorDefault, fontWeight: '600' }}>{translate('home.tokens.importCustom')}</ThemedText>
         </TouchableOpacity>
       }
       listHeaderComponent={renderHeaderList()}

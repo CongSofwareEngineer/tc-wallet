@@ -11,6 +11,7 @@ import useChainSelected from '@/hooks/useChainSelected'
 import { ChainId, Network } from '@/types/web3'
 
 import ItemChain from '@/components/ItemChain'
+import useLanguage from '@/hooks/useLanguage'
 import useTheme from '@/hooks/useTheme'
 import { styles } from './styles'
 
@@ -18,6 +19,7 @@ const SelectChainScreen = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
   const { text } = useTheme()
+  const { translate } = useLanguage()
   const { setChainId } = useChainSelected()
   const { chainsDefault, chainsCustom, chainCurrent } = useChains()
 
@@ -45,7 +47,7 @@ const SelectChainScreen = () => {
   return (
     <View style={styles.container}>
       <HeaderScreen
-        title='Select Chain'
+        title={translate('selectChain.title')}
         rightSide={
           <ThemeTouchableOpacity type='text' onPress={() => router.push('/import-chain')} style={styles.headerAddButton}>
             <Ionicons name='add' size={24} color='#FFFFFF' />
@@ -60,7 +62,7 @@ const SelectChainScreen = () => {
           rightIcon={searchQuery.length > 0 ? <Ionicons name='close-circle' size={20} color={'#8a8e90ff'} /> : undefined}
           onPressRightIcon={() => setSearchQuery('')}
           style={styles.searchInput}
-          placeholder='Search chain name or chain ID...'
+          placeholder={translate('selectChain.searchPlaceholder')}
           placeholderTextColor={'#8a8e90ff'}
           value={searchQuery}
           onChangeText={setSearchQuery}

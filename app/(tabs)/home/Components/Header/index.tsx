@@ -3,6 +3,7 @@ import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { BORDER_RADIUS_DEFAULT, COLORS, GAP_DEFAULT, MODE } from '@/constants/style'
 import useChains from '@/hooks/useChains'
+import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import useWallets from '@/hooks/useWallets'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
@@ -18,6 +19,7 @@ const HeaderHome = () => {
   const { wallet, indexWalletActive } = useWallets()
   const { chainCurrent } = useChains()
   const { mode } = useMode()
+  const { translate } = useLanguage()
 
   const renderChainSelected = () => {
     return (
@@ -38,7 +40,7 @@ const HeaderHome = () => {
       <View style={styles.container}>
         <ThemeTouchableOpacity type='text' onPress={() => router.push('/wallet')}>
           <ThemedText type='subtitle'>
-            {wallet?.name || `Account ${indexWalletActive}`}
+            {wallet?.name || `${translate('home.header.account')} ${indexWalletActive + 1}`}
             {` `} <AntDesign name='down' size={14} color='#FFFFFF' />
           </ThemedText>
         </ThemeTouchableOpacity>

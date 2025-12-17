@@ -10,6 +10,7 @@ import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { COLORS, GAP_DEFAULT } from '@/constants/style'
 import { useAlert } from '@/hooks/useAlert'
 import useChains from '@/hooks/useChains'
+import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import useWallets from '@/hooks/useWallets'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
@@ -22,6 +23,7 @@ const QRInfoAddressScreen = () => {
   const { showSuccess } = useAlert()
   const { chainCurrent } = useChains()
   const { wallet } = useWallets()
+  const { translate } = useLanguage()
   const styles = createStyles(isDark)
 
   const [activeTab, setActiveTab] = useState<'scan' | 'receive'>('receive')
@@ -32,7 +34,7 @@ const QRInfoAddressScreen = () => {
     try {
       copyToClipboard(wallet?.address || '', true)
     } catch {
-      showSuccess({ text: 'Failed to copy address' })
+      showSuccess({ text: translate('receive.msg.copyFail') })
     }
   }
 
@@ -66,7 +68,7 @@ const QRInfoAddressScreen = () => {
         <ThemeTouchableOpacity type='outline' style={styles.copyButton} onPress={handleCopyAddress}>
           <Ionicons name='copy-outline' size={16} color={COLORS.green600} />
           <ThemedText numberOfLines={1} style={styles.copyButtonText}>
-            Copy address
+            {translate('receive.copyAddress')}
           </ThemedText>
         </ThemeTouchableOpacity>
 
@@ -74,7 +76,7 @@ const QRInfoAddressScreen = () => {
           <ThemeTouchableOpacity type='outline' style={styles.copyButton} onPress={handleOpenExplorer}>
             <Ionicons name='open-outline' size={16} color={COLORS.green600} />
             <ThemedText numberOfLines={1} style={styles.copyButtonText}>
-              View on Explorer
+              {translate('receive.viewOnExplorer')}
             </ThemedText>
           </ThemeTouchableOpacity>
         )}
@@ -84,8 +86,8 @@ const QRInfoAddressScreen = () => {
 
   const renderScanSection = () => (
     <View style={styles.scanSection}>
-      <ThemedText style={styles.scanTitle}>Scan QR Code</ThemedText>
-      <ThemedText style={styles.scanSubtitle}>Point your camera at a QR code to scan</ThemedText>
+      <ThemedText style={styles.scanTitle}>{translate('receive.scanTitle')}</ThemedText>
+      <ThemedText style={styles.scanSubtitle}>{translate('receive.scanSubtitle')}</ThemedText>
       <ThemeTouchableOpacity
         style={styles.openCameraButton}
         onPress={() => {
@@ -94,14 +96,14 @@ const QRInfoAddressScreen = () => {
         }}
       >
         <Ionicons name='camera-outline' size={24} color={isDark ? '#FFFFFF' : '#000000'} />
-        <ThemedText style={styles.openCameraText}>Open Camera</ThemedText>
+        <ThemedText style={styles.openCameraText}>{translate('receive.openCamera')}</ThemedText>
       </ThemeTouchableOpacity>
     </View>
   )
 
   return (
     <View style={styles.container}>
-      <HeaderScreen title='Receive' />
+      <HeaderScreen title={translate('receive.title')} />
 
       <ScrollView contentContainerStyle={styles.content} style={styles.content}>
         {/* Tab Buttons */}

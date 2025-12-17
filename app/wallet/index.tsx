@@ -9,6 +9,7 @@ import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { GAP_DEFAULT, PADDING_DEFAULT } from '@/constants/style'
 import useAuth from '@/hooks/useAuth'
+import useLanguage from '@/hooks/useLanguage'
 import useModal from '@/hooks/useModal'
 import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
@@ -27,6 +28,7 @@ const WalletScreen = () => {
   const router = useRouter()
   const { passPhase, addPassPhrase } = usePassPhrase()
   const { closeModal, openModal } = useModal()
+  const { translate } = useLanguage()
   // wallets available in state
 
   const [showData, setShowData] = useState(false)
@@ -79,7 +81,7 @@ const WalletScreen = () => {
 
     if (imported.length > 0) {
       sections.push({
-        title: 'Imported Accounts',
+        title: translate('wallet.imported'),
         data: imported,
         isImported: true,
       })
@@ -88,7 +90,7 @@ const WalletScreen = () => {
     const grouped = Array.from(groups.values()).sort((a, b) => a.indexMnemonic - b.indexMnemonic)
     for (const group of grouped) {
       sections.push({
-        title: `Seed Phrase ${group.indexMnemonic + 1}`,
+        title: `${translate('wallet.seedPhrase')} ${group.indexMnemonic + 1}`,
         subtitle: group.mnemonic,
         data: group.wallets,
         indexMnemonic: group.indexMnemonic,
@@ -97,7 +99,7 @@ const WalletScreen = () => {
     }
 
     return sections
-  }, [walletList, passPhase])
+  }, [walletList, passPhase, translate])
 
   // Placeholder avatar generator (replace with your own if needed)
 
@@ -168,10 +170,10 @@ const WalletScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <HeaderScreen title={'Wallets'} />
+      <HeaderScreen title={translate('wallet.title')} />
 
       <View style={[styles.tableHeader, { gap: GAP_DEFAULT.Gap8, marginTop: 20 }]}>
-        <ThemedText style={styles.headerCellLeft}>Wallet Name</ThemedText>
+        <ThemedText style={styles.headerCellLeft}>{translate('wallet.tableName')}</ThemedText>
         <ThemeTouchableOpacity type='default' style={styles.addButton} onPress={handleCreateWalletAndPassPhrase}>
           <AntDesign name='plus' size={20} color={colors.white} />
           {/* <ThemedText style={styles.addButtonText}>Account</ThemedText> */}
@@ -253,14 +255,14 @@ const WalletScreen = () => {
             {!section.isImported && (
               <ThemeTouchableOpacity type='text' style={styles.addAccountButton} onPress={() => handleCreateAccount(section.indexMnemonic!)}>
                 <AntDesign name='plus' size={16} color={colors.blue} />
-                <ThemedText style={styles.addAccountText}>Add</ThemedText>
+                <ThemedText style={styles.addAccountText}>{translate('wallet.add')}</ThemedText>
               </ThemeTouchableOpacity>
             )}
           </View>
         )}
         ListEmptyComponent={
           <View style={{ padding: 16 }}>
-            <ThemedText>Chưa có ví nào</ThemedText>
+            <ThemedText>{translate('wallet.empty')}</ThemedText>
           </View>
         }
         contentContainerStyle={{ padding: 0 }}

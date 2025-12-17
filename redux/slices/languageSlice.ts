@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import MessageEN from '@/assets/languages/en.json'
+import MessageVN from '@/assets/languages/vn.json'
 import { KEY_REDUX } from '@/constants/redux'
 import { KEY_STORAGE } from '@/constants/storage'
 import { TYPE_LANGUAGE } from '@/types/language'
@@ -31,7 +32,7 @@ const getLanguage = (language: LANGUAGE_SUPPORT): LanguageState => {
     default:
       return {
         locale: LANGUAGE_SUPPORT.VN,
-        messages: MessageEN,
+        messages: MessageVN,
       }
   }
 }

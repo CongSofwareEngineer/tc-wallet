@@ -1,0 +1,339 @@
+{
+  "common": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "logout": "Đăng xuất",
+    "home": "Trang chủ",
+    "search": "Tìm kiếm",
+    "cart": "Giỏ hàng",
+    "profile": "Tài khoản",
+    "language": "Ngôn ngữ",
+    "back": "Quay lại",
+    "close": "Đóng",
+    "reject": "Từ chối",
+    "approve": "Đồng ý",
+    "confirm": "Xác nhận",
+    "copy": "Sao chép",
+    "save": "Lưu",
+    "from": "Từ",
+    "to": "Đến",
+    "balance": "Số dư",
+    "max": "TỐI ĐA",
+    "loading": "Đang tải...",
+    "paste": "Dán",
+    "or": "hoặc"
+  },
+  "createWallet": {
+    "title": "Tạo mới hoặc nhập",
+    "welcome": "Chào mừng đến với Web3 Wallet",
+    "description": "Tạo hoặc nhập ví để bắt đầu với DeFi",
+    "createButton": "Tạo ví",
+    "importSeed": "Nhập bằng Cụm từ khôi phục",
+    "importPrivateKey": "Nhập bằng Khóa riêng tư",
+    "restoreFile": "Khôi phục từ tệp",
+    "backupTitle": "Sao lưu Cụm từ khôi phục",
+    "backupDesc": "Viết lại 12 từ này theo đúng thứ tự. Bạn sẽ cần chúng để khôi phục ví của mình.",
+    "warning": "Không bao giờ chia sẻ cụm từ khôi phục. Bất kỳ ai có những từ này đều có thể truy cập vào ví của bạn.",
+    "backedUp": "Tôi đã sao lưu an toàn cụm từ khôi phục",
+    "createAccount": "Tạo tài khoản"
+  },
+  "importWallet": {
+    "title": "Nhập ví",
+    "subtitleSeed": "Nhập cụm từ khôi phục để khôi phục ví của bạn",
+    "subtitlePrivateKey": "Nhập khóa riêng tư để khôi phục ví của bạn",
+    "seedLabel": "Cụm từ khôi phục (12 từ)",
+    "privateKeyLabel": "Khóa riêng tư (64 hex)",
+    "seedPlaceholder": "Nhập cụm từ khôi phục...",
+    "privateKeyPlaceholder": "Nhập khóa riêng tư...",
+    "wordsCount": "từ • yêu cầu 12",
+    "invalidPrivateKey": "Định dạng khóa riêng tư không hợp lệ",
+    "encryptedInfo": "Khóa của bạn được mã hóa và lưu trữ cục bộ trên thiết bị.",
+    "understand": "Tôi hiểu",
+    "submit": "Nhập ví",
+    "errorImported": "Khóa riêng tư này đã được nhập"
+  },
+  "importAccount": {
+    "title": "Nhập tài khoản",
+    "description": "Nhập ví để bắt đầu với DeFi"
+  },
+  "home": {
+    "tabs": {
+      "tokens": "Token",
+      "collections": "Bộ sưu tập"
+    },
+    "header": {
+      "account": "Tài khoản"
+    },
+    "tokens": {
+      "title": "Token",
+      "importCustom": "Nhập Token tùy chỉnh",
+      "loading": "Đang tải token..."
+    },
+    "collections": {
+      "title": "Bộ sưu tập"
+    },
+    "infoWallet": {
+      "totalAssets": "Tổng tài sản"
+    },
+    "options": {
+      "send": "Gửi"
+    }
+  },
+  "manageConnect": {
+    "title": "Quản lý kết nối",
+    "empty": "Chưa có kết nối nào",
+    "list": {
+      "url": "URL:",
+      "networks": "Mạng:",
+      "disconnect": "Ngắt kết nối",
+      "disconnectAll": "Ngắt kết nối tất cả",
+      "modalDisconnect": "Bạn có chắc chắn muốn ngắt kết nối?",
+      "unknownDapp": "DApp không xác định",
+      "unknownUrl": "URL không xác định",
+      "verified": "Đã xác minh",
+      "connectedWallet": "Ví đã kết nối",
+      "noActive": "Không có kết nối hoạt động",
+      "noActiveDesc": "Kết nối với DApps để xem chúng tại đây. Các kết nối ví của bạn sẽ được hiển thị với thông tin chi tiết về mạng và quyền đã kết nối."
+    }
+  },
+  "walletDetail": {
+    "title": "Chi tiết ví",
+    "name": "Tên",
+    "namePlaceholder": "Tên tài khoản",
+    "address": "Địa chỉ",
+    "walletType": "Loại ví",
+    "imported": "Tài khoản nhập",
+    "mnemonic": "Ví cụm từ",
+    "privateKey": "Khóa riêng tư",
+    "seedPhrase": "Cụm từ khôi phục",
+    "delete": "Xóa tài khoản"
+  },
+  "wallet": {
+    "title": "Ví",
+    "tableName": "Tên ví",
+    "imported": "Tài khoản nhập",
+    "seedPhrase": "Cụm từ gốc",
+    "account": "Tài khoản",
+    "add": "Thêm",
+    "empty": "Chưa có ví nào"
+  },
+  "userName": "Tên người dùng",
+  "password": "Mật khẩu",
+  "somethingWentWrong": "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+  "textPopular": {
+    "userName": "Tên người dùng",
+    "password": "Mật khẩu",
+    "passwordAgain": "Nhập lại mật khẩu",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "fullName": "Họ và tên",
+    "address": "Địa chỉ",
+    "confirmPassword": "Xác nhận mật khẩu"
+  },
+  "warning": {
+    "logout": "Bạn có muốn đăng xuất khỏi tài khoản không?",
+    "required": "Trường này là bắt buộc",
+    "invalidEmail": "Email không hợp lệ",
+    "invalidPhone": "Số điện thoại không hợp lệ",
+    "invalidPassword": "Mật khẩu không hợp lệ",
+    "minLength": "Trường này phải có ít nhất {min} ký tự",
+    "maxLength": "Trường này không đươc quá {max} ký tự",
+    "emailExists": "Email đã được sử dụng",
+    "phoneExists": "Số điện thoại đã được sử dụng",
+    "passwordMismatch": "Mật khẩu không khớp",
+    "loginFailed": "Đăng nhập thất bại, vui lòng kiểm tra lại tên người dùng và mật khẩu",
+    "networkError": "Lỗi mạng, vui lòng kiểm tra kết nối Internet của bạn",
+    "serverError": "Lỗi máy chủ, vui lòng thử lại sau",
+    "unknownError": "Lỗi không xác định, vui lòng thử lại sau",
+    "emptyField": "Trường này không được để trống",
+    "invalidInput": "Đầu vào không hợp lệ",
+    "passwordAgain": "Mật khẩu không khớp, vui lòng nhập lại"
+  },
+  "errorWeb3": {
+    "transactionUnderpriced": "Giá giao dịch quá thấp.",
+    "transactionTimeout": "Giao dịch đã hết giờ chờ.",
+    "userRejected": "Người dùng đã từ chối giao dịch này.",
+    "insufficientFunds": "Số dư không đủ trả phí",
+    "wrongNetwork": "Mạng lưới không hợp lệ. Vui lòng chuyển đến mạng lưới hỗ trợ.",
+    "insufficientBalance": "Số dư không đủ",
+    "insufficientBalanceForGas": "Số dư không đủ cho lượng token + gas",
+    "insufficientNativeBalanceForGas": "Số dư bản địa không đủ cho gas"
+  },
+  "placeholder": {
+    "enterUserName": "Nhập tên người dùng",
+    "enterPassword": "Nhập mật khẩu",
+    "enterPasswordAgain": "Nhập mật khẩu lại"
+  },
+  "login": {
+    "titlePage": "Đăng nhập",
+    "welcome": "Xin chào",
+    "loginToContinue": "Đăng nhập để tiếp tục"
+  },
+  "register": {
+    "titlePage": "Đăng ký",
+    "welcome": "Xin chào",
+    "registerToContinue": "Đăng ký để tiếp tục"
+  },
+  "homeScreen": {
+    "titlePage": "Trang chủ",
+    "search": "Tìm kiếm"
+  },
+  "production": {
+    "titlePage": "Sản phẩm"
+  },
+  "thayHongToan": {
+    "listRegister": "Danh sách đăng ký"
+  },
+  "swap": {
+    "title": "Hoán đổi",
+    "selectToken": "Chọn",
+    "selectOutputChain": "Chọn mạng nhận",
+    "swapDetails": "Chi tiết hoán đổi",
+    "exchangeRate": "Tỷ giá",
+    "priceImpact": "Tác động giá",
+    "minimumReceived": "Nhận tối thiểu",
+    "networkFee": "Phí mạng",
+    "swapButton": "Hoán đổi",
+    "swapping": "Đang hoán đổi...",
+    "transactionSuccessful": "Giao dịch thành công",
+    "transactionFailed": "Giao dịch thất bại"
+  },
+  "selectChain": {
+    "title": "Chọn mạng",
+    "searchPlaceholder": "Tìm tên mạng hoặc ID..."
+  },
+  "tokenDetail": {
+    "title": "Chi tiết Token",
+    "verified": "Đã xác minh",
+    "decimals": "Số thập phân",
+    "securityScore": "Điểm bảo mật",
+    "totalSupply": "Tổng cung"
+  },
+  "backupPage": {
+    "title": "Sao lưu ví",
+    "subtitle": "Bảo vệ dữ liệu ví của bạn bằng tệp văn bản sao lưu được bảo vệ bằng mật khẩu. Chọn Tải xuống, vị trí tùy chỉnh hoặc chia sẻ để lưu.",
+    "warningTitle": "⚠️ Thông báo bảo mật quan trọng",
+    "warningText": "• Lưu trữ tệp sao lưu của bạn ở vị trí an toàn\n• Không bao giờ chia sẻ mật khẩu sao lưu của bạn\n• Giữ nhiều bản sao ở các vị trí an toàn khác nhau\n• Bản sao lưu này chứa thông tin ví nhạy cảm",
+    "passwordLabel": "Mật khẩu sao lưu",
+    "passwordPlaceholder": "Nhập mật khẩu mạnh",
+    "confirmLabel": "Xác nhận mật khẩu",
+    "confirmPlaceholder": "Xác nhận mật khẩu của bạn",
+    "passwordMismatch": "Mật khẩu không khớp",
+    "buttonCreate": "Tạo bản sao lưu",
+    "buttonCreating": "Đang tạo bản sao lưu...",
+    "successMessage": "Đã lưu bản sao lưu vào vị trí tùy chỉnh!",
+    "errorMessage": "Không thể tạo tệp sao lưu. Vui lòng thử lại.",
+    "noLocationError": "Chưa chọn vị trí. Vui lòng thử lại.",
+    "strength": "Độ mạnh",
+    "feedback": {
+      "minChar": "Ít nhất 8 ký tự",
+      "lowercase": "Chữ thường",
+      "uppercase": "Chữ hoa",
+      "number": "Số",
+      "special": "Ký tự đặc biệt"
+    },
+    "strengthLevel": {
+      "veryWeak": "Rất yếu",
+      "weak": "Yếu",
+      "fair": "Trung bình",
+      "good": "Tốt",
+      "strong": "Mạnh"
+    }
+  },
+  "importChain": {
+    "title": "Tạo mạng mới",
+    "chainId": "Chain ID",
+    "networkName": "Tên mạng",
+    "rpcUrl": "RPC URL dự phòng",
+    "symbol": "Ký hiệu",
+    "blockExplorer": "URL trình khám phá khối",
+    "placeholder": {
+      "networkName": "Nhập tên mạng",
+      "rpcUrl": "Nhập URL RPC",
+      "symbol": "Nhập ký hiệu",
+      "blockExplorer": "Nhập URL trình khám phá khối"
+    },
+    "error": {
+      "chainExists": "Mạng đã tồn tại"
+    },
+    "save": "Lưu"
+  },
+  "sendToken": {
+    "title": "Gửi Token",
+    "selectTokenTitle": "Chọn Token",
+    "from": "TỪ",
+    "to": "Đến",
+    "balance": "Số dư",
+    "recipientPlaceholder": "Địa chỉ người nhận",
+    "max": "TỐI ĐA",
+    "fee": "Phí",
+    "calculating": "Đang tính...",
+    "button": {
+      "send": "Gửi",
+      "sending": "Đang gửi..."
+    },
+    "success": "Giao dịch thành công",
+    "failed": "Giao dịch thất bại",
+    "error": {
+      "insufficientBalance": "Số dư không đủ",
+      "invalidAddress": "Địa chỉ không hợp lệ"
+    }
+  },
+  "receive": {
+    "title": "Nhận",
+    "copyAddress": "Sao chép địa chỉ",
+    "viewOnExplorer": "Xem trên trình khám phá",
+    "scanTitle": "Quét mã QR",
+    "scanSubtitle": "Hướng camera vào mã QR để quét",
+    "openCamera": "Mở Camera",
+    "msg": {
+      "copyFail": "Sao chép địa chỉ thất bại"
+    }
+  },
+  "setting": {
+    "titlePage": "Cài đặt",
+    "authError": "Lỗi xác thực",
+    "theme": {
+      "title": "Giao Diện",
+      "darkMode": "Chế độ tối",
+      "darkModeDesc": "Sử dụng giao diện tối cho ứng dụng"
+    },
+    "notification": {
+      "title": "Thông báo",
+      "pushNotification": "Thông báo đẩy",
+      "pushNotificationDesc": "Nhận thông báo đẩy"
+    },
+    "backup": {
+      "title": "Sao lưu",
+      "backupNow": "Sao lưu ngay"
+    },
+    "dangerZone": "Vùng nguy hiểm",
+    "resetApp": "Đặt lại ứng dụng",
+    "security": {
+      "title": "Bảo mật",
+      "biometric": {
+        "title": "Khoá sinh trắc học",
+        "desc": "Vân tay/Face ID bảo vệ dữ liệu",
+        "prompt": "Xác thực sinh trắc học",
+        "cancel": "Huỷ",
+        "fallback": "Sử dụng mật khẩu"
+      },
+      "passcode": {
+        "title": "Mật khẩu",
+        "desc": "Sử dụng mật khẩu bảo vệ dữ liệu"
+      },
+      "resetPasscode": {
+        "title": "Đặt lại Mật khẩu",
+        "desc": "Đổi mật khẩu bảo vệ dữ liệu"
+      },
+      "modal": {
+        "disableAuth": "Bạn có chắc chắn muốn tắt xác thực?",
+        "enablePasscode": "Bạn có chắc chắn muốn đặt mật khẩu?"
+      },
+      "error": {
+        "notSupported": "Hệ thống không hỗ trợ"
+      },
+      "success": "Xác thực thành công"
+    }
+  }
+}

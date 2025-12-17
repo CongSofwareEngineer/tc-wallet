@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux'
 
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
+import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import { useAppSelector } from '@/redux/hooks'
 import { setSessions } from '@/redux/slices/sessionsSlice'
@@ -22,6 +23,7 @@ const ListConnect = () => {
   const dispatch = useDispatch()
   const wallets = useAppSelector((state) => state.wallet)
   const { mode, isDark } = useMode()
+  const { translate } = useLanguage()
 
   const sessionsSorted = useMemo(() => {
     if (!sessions) return []
@@ -63,21 +65,20 @@ const ListConnect = () => {
             {item?.peer?.metadata?.icons?.[0] && <Image style={styles.dappIcon} source={{ uri: item.peer.metadata.icons[0] }} contentFit='cover' />}
             <View style={styles.sessionMeta}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-                <ThemedText style={styles.dappName}>{item?.peer?.metadata?.name || 'Unknown DApp'}</ThemedText>
+                <ThemedText style={styles.dappName}>{item?.peer?.metadata?.name || translate('manageConnect.list.unknownDapp')}</ThemedText>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                  {isVerified && (
-                    <View style={styles.verifiedBadge}>
-                      <MaterialIcons name='verified' size={12} color='#FFFFFF' />
-                      <ThemedText style={styles.verifiedText}>Verified</ThemedText>
-                    </View>
-                  )}
+                  {isVerified && <View style={styles.verifiedBadge}>
+                    <MaterialIcons name='verified' size={12} color='#FFFFFF' />
+                    <ThemedText style={styles.verifiedText}>{translate('manageConnect.list.verified')}</ThemedText>
+                  </View>
+                  }
                   <TouchableOpacity style={styles.disconnectButton} onPress={() => handleDisconnect(item)}>
                     <AntDesign name='disconnect' size={18} color='#FFFFFF' />
                   </TouchableOpacity>
                 </View>
               </View>
               <View style={styles.urlContainer}>
-                <ThemedText style={styles.dappUrl}>{item.peer?.metadata?.url || 'Unknown URL'}</ThemedText>
+                <ThemedText style={styles.dappUrl}>{item.peer?.metadata?.url || translate('manageConnect.list.unknownUrl')}</ThemedText>
               </View>
             </View>
           </View>
@@ -91,7 +92,7 @@ const ListConnect = () => {
               <Ionicons name='wallet-outline' size={20} color={isDark ? '#999999' : '#666666'} />
             </View>
             <View style={styles.detailText}>
-              <ThemedText style={styles.detailLabel}>Connected Wallet</ThemedText>
+              <ThemedText style={styles.detailLabel}>{translate('manageConnect.list.connectedWallet')}</ThemedText>
               <ThemedText style={styles.detailValue}>
                 {wallet?.name ? `${wallet.name} (${ellipsisText(wallet.address, 6, 8)})` : ellipsisText(addressConnected, 6, 8)}
               </ThemedText>
@@ -108,10 +109,9 @@ const ListConnect = () => {
         <View style={styles.emptyIcon}>
           <AntDesign name='disconnect' size={64} color={isDark ? '#333333' : '#CCCCCC'} />
         </View>
-        <ThemedText style={styles.emptyTitle}>No Active Connections</ThemedText>
+        <ThemedText style={styles.emptyTitle}>{translate('manageConnect.list.noActive')}</ThemedText>
         <ThemedText style={styles.emptyDescription}>
-          Connect to DApps to see them here. Your wallet connections will be displayed with detailed information about connected networks and
-          permissions.
+          {translate('manageConnect.list.noActiveDesc')}
         </ThemedText>
       </View>
     )
@@ -129,7 +129,7 @@ const ListConnect = () => {
 
       {sessionsSorted.length > 0 && (
         <ThemeTouchableOpacity style={styles.disconnectAllButton} onPress={handleDisconnectAll}>
-          <ThemedText style={styles.disconnectAllText}>Disconnect All</ThemedText>
+          <ThemedText style={styles.disconnectAllText}>{translate('manageConnect.list.disconnectAll')}</ThemedText>
         </ThemeTouchableOpacity>
       )}
     </View>

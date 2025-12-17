@@ -32,6 +32,7 @@ import WalletEvmUtil from '@/utils/walletEvm'
 
 import SelectAccount from '@/components/SelectAccount'
 import { IsIos } from '@/constants/app'
+import useLanguage from '@/hooks/useLanguage'
 import { Ionicons } from '@expo/vector-icons'
 import InputEnter from './Component/InputEnter'
 import SelectToken from './Component/SelectToken'
@@ -57,6 +58,7 @@ const SendTokenScreen = () => {
   const { wallet, wallets, indexWalletActive } = useWallets()
   const { data: tokens, refetch: refetchBalanceTokens } = useBalanceToken()
   const { openSheet, closeSheet } = useSheet()
+  const { translate } = useLanguage()
 
   const [form, setForm] = useState<FormSendToken>({
     toAddress: '',
@@ -151,7 +153,7 @@ const SendTokenScreen = () => {
       if (BigNumber(convertWeiToBalance(balanceNative?.toString() || 0)).isLessThanOrEqualTo(estimatedGas?.totalFee || 0)) {
         setFormError({
           ...formError,
-          errorBalance: 'Not enough balance',
+          errorBalance: translate('sendToken.error.insufficientBalance'),
         })
       }
     }
@@ -310,7 +312,7 @@ const SendTokenScreen = () => {
         formClone.amountUsd = amountUsd
       }
       if (BigNumber(formClone.amountToken || 0).isGreaterThan(maxBalance || 0)) {
-        formErrorClone.amountToken = 'Số dư không đủ'
+        formErrorClone.amountToken = translate('sendToken.error.insufficientBalance')
       }
     }
 
@@ -328,7 +330,7 @@ const SendTokenScreen = () => {
         formClone.amountToken = ''
       }
       if (BigNumber(formClone.amountUsd || 0).isGreaterThan(maxBalanceByUSD || 0)) {
-        formErrorClone.amountUsd = 'Số dư không đủ'
+        formErrorClone.amountUsd = translate('sendToken.error.insufficientBalance')
       }
     }
 
@@ -336,7 +338,7 @@ const SendTokenScreen = () => {
       formErrorClone.toAddress = ''
       formClone.toAddress = param.toAddress
       if (!isAddressEVM(param.toAddress)) {
-        formErrorClone.toAddress = 'Địa chỉ không hợp lệ'
+        formErrorClone.toAddress = translate('sendToken.error.invalidAddress')
       }
     }
 
@@ -346,7 +348,7 @@ const SendTokenScreen = () => {
 
   return (
     <KeyboardAvoiding>
-      <HeaderScreen title='Send Token' />
+      <HeaderScreen title={translate('sendToken.title')} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps='handled'
@@ -358,7 +360,7 @@ const SendTokenScreen = () => {
         {/* From Wallet Section */}
         <View style={styles.card}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-            <ThemedText style={styles.sectionLabel}>FROM</ThemedText>
+            <ThemedText style={styles.sectionLabel}>{translate('sendToken.from')}</ThemedText>
             <TouchableOpacity
               style={[
                 styles.sendButton,
@@ -373,7 +375,7 @@ const SendTokenScreen = () => {
                   (loadingTokenPrice || !form?.toAddress || !selectedToken || !form?.amountToken || isSending) && styles.sendButtonTextDisabled,
                 ]}
               >
-                {isSending ? 'Sending…' : 'Send'}
+                {isSending ? translate('sendToken.button.sending') : translate('sendToken.button.send')}
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -407,7 +409,7 @@ const SendTokenScreen = () => {
           >
             <View>
               <ThemedText type='small' style={{ opacity: 0.6, marginBottom: 4 }}>
-                Balance
+                {translate('sendToken.balance')}
               </ThemedText>
               <ThemedText style={{ fontWeight: '600' }}>
                 {BigNumber(selectedToken?.balance_formatted || 0)
@@ -432,7 +434,7 @@ const SendTokenScreen = () => {
         {/* <View style={styles.card}> */}
         <View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <ThemedText style={styles.sectionLabel}>To</ThemedText>
+            <ThemedText style={styles.sectionLabel}>{translate('sendToken.to')}</ThemedText>
             <View style={styles.inputActions}>
               <TouchableOpacity
                 onPress={handleScanAddress}
@@ -451,7 +453,7 @@ const SendTokenScreen = () => {
           <View style={[styles.inputContainer]}>
             <InputEnter
               disabled={isSending || loadingTokenPrice}
-              placeholder='Recipient address'
+              placeholder={translate('sendToken.recipientPlaceholder')}
               autoCapitalize='none'
               value={form.toAddress}
               onChangeText={(text: string) => {
@@ -474,7 +476,7 @@ const SendTokenScreen = () => {
                     opacity: isSending || loadingTokenPrice ? 0.5 : 1,
                   }}
                 >
-                  <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 14 }}>MAX</ThemedText>
+                  <ThemedText style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 14 }}>{translate('sendToken.max')}</ThemedText>
                 </TouchableOpacity>
               }
               // rightIcon={<ThemedText style={styles.amountLabel}>{selectedToken?.symbol || 'TOKEN'}</ThemedText>}
@@ -522,9 +524,9 @@ const SendTokenScreen = () => {
         {/* Network Fee */}
         <View style={styles.feeCard}>
           <View style={styles.feeRow}>
-            <ThemedText style={styles.feeLabel}>Fee</ThemedText>
+            <ThemedText style={styles.feeLabel}>{translate('sendToken.fee')}</ThemedText>
             <ThemedText style={styles.feeValue}>
-              {loadingEstimatedGas && 'Calculating...'}
+              {loadingEstimatedGas && translate('sendToken.calculating')}
 
               {formError?.errorBalance ? (
                 `${formError?.errorBalance} ${chainCurrent?.nativeCurrency.symbol}`
@@ -541,7 +543,7 @@ const SendTokenScreen = () => {
         {/* Transaction Result */}
         {!!txHash && (
           <View style={styles.resultCard}>
-            <ThemedText style={[styles.resultTitle, { color: isDark ? '#10B981' : '#047857' }]}>Transaction Successful</ThemedText>
+            <ThemedText style={[styles.resultTitle, { color: isDark ? '#10B981' : '#047857' }]}>{translate('sendToken.success')}</ThemedText>
             <ThemedText allowFontScaling={false} selectable style={[styles.resultText, { color: isDark ? '#10B981' : '#065F46' }]}>
               {txHash}{' '}
               <TouchableOpacity onPress={() => copyToClipboard(txHash)}>
@@ -554,7 +556,7 @@ const SendTokenScreen = () => {
 
         {!!txError && (
           <View style={styles.errorCard}>
-            <ThemedText style={[styles.resultTitle, { color: isDark ? '#EF4444' : '#DC2626' }]}>Transaction Failed</ThemedText>
+            <ThemedText style={[styles.resultTitle, { color: isDark ? '#EF4444' : '#DC2626' }]}>{translate('sendToken.failed')}</ThemedText>
             <ThemedText selectable style={[styles.resultText, { color: isDark ? '#DC2626' : '#7F1D1D' }]}>
               {getError(txError)}
             </ThemedText>

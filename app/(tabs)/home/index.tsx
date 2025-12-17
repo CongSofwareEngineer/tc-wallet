@@ -10,6 +10,7 @@ import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useWallets from '@/hooks/useWallets'
 
+import useLanguage from '@/hooks/useLanguage'
 import useTheme from '@/hooks/useTheme'
 import { width } from '@/utils/systems'
 import { MaterialIcons } from '@expo/vector-icons'
@@ -25,6 +26,7 @@ const HEIGHT_HEADER_SCROLL = 200
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState('Tokens')
+  const { translate } = useLanguage()
   const router = useRouter()
   const { background } = useTheme()
   const { wallet } = useWallets()
@@ -92,7 +94,7 @@ export default function HomeScreen() {
         {/* Network Filter + Tabs inside header */}
         <View>
           <View style={[styles.tabsContainer, { backgroundColor: background.background }]}>
-            {['Tokens', 'Collections'].map((tab) => (
+            {['tokens', 'collections'].map((tab) => (
               <ThemeTouchableOpacity
                 type='text'
                 key={tab}
@@ -102,7 +104,7 @@ export default function HomeScreen() {
                 }}
               >
                 <ThemedText type='subtitle' style={[styles.tabText, activeTab === tab && { color: COLORS.green600 }]}>
-                  {tab}
+                  {translate(`home.tabs.${tab}` as any)}
                 </ThemedText>
               </ThemeTouchableOpacity>
             ))}
@@ -116,7 +118,7 @@ export default function HomeScreen() {
       {/* <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} /> */}
 
       <View style={[{ flex: 1 }]}>
-        {activeTab === 'Tokens' ? (
+        {activeTab === 'tokens' ? (
           <Tokens headerHeight={headerHeight} scrollY={scrollY} />
         ) : (
           <Collections headerHeight={headerHeight} scrollY={scrollY} />

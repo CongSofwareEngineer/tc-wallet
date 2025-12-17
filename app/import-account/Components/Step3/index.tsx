@@ -8,6 +8,7 @@ import ThemedText from '@/components/UI/ThemedText'
 import ThemeTouchableOpacity from '@/components/UI/ThemeTouchableOpacity'
 import { COLORS, GAP_DEFAULT } from '@/constants/style'
 import useAlert from '@/hooks/useAlert'
+import useLanguage from '@/hooks/useLanguage'
 import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
@@ -23,6 +24,7 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
   const { colors, text } = useTheme()
   const [accepted, setAccepted] = useState(false)
   const [value, setValue] = useState('')
+  const { translate } = useLanguage()
 
   const router = useRouter()
   const [isImporting, startImporting] = useTransition()
@@ -48,7 +50,7 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
 
           if (isExit) {
             showAlert({
-              text: 'This private key is already imported',
+              text: translate('importWallet.errorImported'),
             })
             return
           }
@@ -62,7 +64,7 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
           const isExit = wallets.find((w) => w.address.toLowerCase() === wallet.address.toLowerCase())
           if (isExit) {
             showAlert({
-              text: 'This private key is already imported',
+              text: translate('importWallet.errorImported'),
             })
             return
           }
@@ -82,22 +84,22 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
         </View>
 
         <ThemedText type='subtitle' style={styles.title}>
-          Import Wallet
+          {translate('importWallet.title')}
         </ThemedText>
       </View>
 
       <ThemedText style={[styles.subtitle, { color: text.color, opacity: 0.75 }]}>
-        {type === 'passPhrase' ? ' Enter your seed phrase to restore your wallet' : 'Enter your private key to restore your wallet'}
+        {type === 'passPhrase' ? translate('importWallet.subtitleSeed') : translate('importWallet.subtitlePrivateKey')}
       </ThemedText>
 
       {type === 'passPhrase' ? (
         <View style={{ gap: GAP_DEFAULT.Gap8 }}>
-          <ThemedText type='defaultSemiBold'>Seed Phrase (12 words)</ThemedText>
+          <ThemedText type='defaultSemiBold'>{translate('importWallet.seedLabel')}</ThemedText>
           <View style={[styles.seedBox, { borderColor: colors.gray1 }]}>
             <TextInput
               style={[styles.textArea, { color: text.color }]}
               multiline
-              placeholder='Enter your seed phrase...'
+              placeholder={translate('importWallet.seedPlaceholder')}
               placeholderTextColor={colors.gray2}
               value={value}
               onChangeText={setValue}
@@ -115,18 +117,18 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
           </View>
           {!!value && (
             <ThemedText type='small' style={{ color: colors.yellow1 }}>
-              {wordsCount} words • expecting 12
+              {wordsCount} {translate('importWallet.wordsCount')}
             </ThemedText>
           )}
         </View>
       ) : (
         <View style={{ gap: GAP_DEFAULT.Gap8 }}>
-          <ThemedText type='defaultSemiBold'>Private Key (64 hex)</ThemedText>
+          <ThemedText type='defaultSemiBold'>{translate('importWallet.privateKeyLabel')}</ThemedText>
           <View style={[styles.seedBox, { borderColor: colors.gray1 }]}>
             <TextInput
               multiline
               style={[styles.singleLine, { color: text.color }]}
-              placeholder='Enter your private key...'
+              placeholder={translate('importWallet.privateKeyPlaceholder')}
               placeholderTextColor={colors.gray2}
               value={value}
               onChangeText={setValue}
@@ -136,7 +138,7 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
           </View>
           {!!value && !isPkValid && (
             <ThemedText type='small' style={{ color: colors.yellow1 }}>
-              Invalid private key format
+              {translate('importWallet.invalidPrivateKey')}
             </ThemedText>
           )}
         </View>
@@ -145,12 +147,12 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
       {/* Info box */}
       <View style={[styles.infoBox, { backgroundColor: colors.black2, borderColor: colors.gray1 }]}>
         <ThemedText type='small' opacity={0.8}>
-          Your keys are encrypted and stored locally on your device.
+          {translate('importWallet.encryptedInfo')}
         </ThemedText>
         <View style={styles.acceptRow}>
           <Checkbox value={accepted} onValueChange={setAccepted} color={accepted ? colors.green : undefined} />
           <ThemedText type='small' opacity={0.8}>
-            I understand
+            {translate('importWallet.understand')}
           </ThemedText>
         </View>
       </View>
@@ -172,7 +174,7 @@ const Step3 = ({ handleClose, type = 'passPhrase' }: Props) => {
       </LinearGradient> */}
       <ThemeTouchableOpacity disabled={!accepted || !isPkValid} style={[styles.importButton]} onPress={handleSubmit} loading={isImporting}>
         <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>
-          Import Wallet
+          {translate('importWallet.submit')}
         </ThemedText>
       </ThemeTouchableOpacity>
     </View>

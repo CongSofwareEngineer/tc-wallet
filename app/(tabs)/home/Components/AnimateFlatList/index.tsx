@@ -3,6 +3,7 @@ import { Animated, RefreshControl, View } from 'react-native'
 
 import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
+import useLanguage from '@/hooks/useLanguage'
 export type Props<T> = {
   data: T[]
   loading?: boolean
@@ -31,6 +32,7 @@ function AnimateFlatList<T>({
   listHeaderComponent,
 }: Props<T>) {
   const flatListRef = React.useRef<Animated.FlatList<T>>(null)
+  const { translate } = useLanguage()
   useEffect(() => {
     // Reset scroll position when key changes (switching tabs or view modes)
     if (flatListRef.current) {
@@ -63,7 +65,7 @@ function AnimateFlatList<T>({
         (loading ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
             <MyLoading size={48} />
-            <ThemedText style={{ color: '#999999', marginTop: 12 }}>Loading tokens…</ThemedText>
+            <ThemedText style={{ color: '#999999', marginTop: 12 }}>{translate('home.tokens.loading')}</ThemedText>
           </View>
         ) : null)
       }

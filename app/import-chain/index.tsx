@@ -12,6 +12,7 @@ import useChains from '@/hooks/useChains'
 import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import useChainList from '@/hooks/react-query/useChainList'
 import useAlert from '@/hooks/useAlert'
+import useLanguage from '@/hooks/useLanguage'
 import { cloneDeep } from '@/utils/functions'
 import styles from './styles'
 interface FormData {
@@ -30,6 +31,7 @@ const ImportChainScreen = () => {
   const { showAlert } = useAlert()
   const { chainList: chainListLocal, addNetwork } = useChains()
   const { data: chainListAPI, isLoading: isLoadingChainList } = useChainList()
+  const { translate } = useLanguage()
 
   const [formData, setFormData] = useState<FormData>({})
   const [formDataError, setFormDataError] = useState<FormDataError>({})
@@ -93,7 +95,7 @@ const ImportChainScreen = () => {
       const chain = chainListAPI?.find((chain) => chain.id.toString() === value)
       const isExitChain = chainListLocal?.some((chain) => chain.id.toString() === value)
       if (isExitChain) {
-        error.chainId = 'Chain already exists'
+        error.chainId = translate('importChain.error.chainExists')
       } else {
         error.chainId = ''
       }
@@ -121,14 +123,14 @@ const ImportChainScreen = () => {
     <KeyboardAvoiding>
       <View style={styles.container}>
         {/* Header */}
-        <HeaderScreen title='Create Chain' />
+        <HeaderScreen title={translate('importChain.title')} />
 
         {/* Content */}
         <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           <View style={styles.content}>
             {/* Chain ID */}
             <View style={styles.fieldContainer}>
-              <ThemedText style={styles.label}>Chain ID</ThemedText>
+              <ThemedText style={styles.label}>{translate('importChain.chainId')}</ThemedText>
               <View style={styles.inputContainer}>
                 <ThemedInput
                   showError
@@ -145,7 +147,7 @@ const ImportChainScreen = () => {
 
             {/* Network Name */}
             <View style={styles.fieldContainer}>
-              <ThemedText style={styles.label}>Network Name</ThemedText>
+              <ThemedText style={styles.label}>{translate('importChain.networkName')}</ThemedText>
               <View style={styles.inputContainer}>
                 <ThemedInput
                   showError
@@ -154,14 +156,14 @@ const ImportChainScreen = () => {
                   style={styles.input}
                   value={formData?.networkName}
                   onChangeText={(text) => onChangeFormData('networkName', text)}
-                  placeholder='Enter network name'
+                  placeholder={translate('importChain.placeholder.networkName')}
                 />
               </View>
             </View>
 
             {/* Failover RPC URL */}
             <View style={styles.fieldContainer}>
-              <ThemedText style={styles.label}>Failover RPC URL</ThemedText>
+              <ThemedText style={styles.label}>{translate('importChain.rpcUrl')}</ThemedText>
               <View style={styles.inputContainer}>
                 <ThemedInput
                   showError
@@ -170,14 +172,14 @@ const ImportChainScreen = () => {
                   style={styles.input}
                   value={formData?.rpcUrl}
                   onChangeText={(text) => onChangeFormData('rpcUrl', text)}
-                  placeholder='Enter RPC URL'
+                  placeholder={translate('importChain.placeholder.rpcUrl')}
                 />
               </View>
             </View>
 
             {/* Symbol */}
             <View style={styles.fieldContainer}>
-              <ThemedText style={styles.label}>Symbol</ThemedText>
+              <ThemedText style={styles.label}>{translate('importChain.symbol')}</ThemedText>
               <View style={styles.inputContainer}>
                 <ThemedInput
                   showError
@@ -186,14 +188,14 @@ const ImportChainScreen = () => {
                   style={styles.input}
                   value={formData?.symbol}
                   onChangeText={(text) => onChangeFormData('symbol', text)}
-                  placeholder='Enter symbol'
+                  placeholder={translate('importChain.placeholder.symbol')}
                 />
               </View>
             </View>
 
             {/* Block Explorer URL */}
             <View style={styles.fieldContainer}>
-              <ThemedText style={styles.label}>Block Explorer URL</ThemedText>
+              <ThemedText style={styles.label}>{translate('importChain.blockExplorer')}</ThemedText>
               <View style={styles.inputContainer}>
                 <ThemedInput
                   showError
@@ -203,7 +205,7 @@ const ImportChainScreen = () => {
                   style={styles.input}
                   value={formData?.blockExplorerUrl}
                   onChangeText={(text) => setFormData({ ...formData, blockExplorerUrl: text })}
-                  placeholder='Enter block explorer URL'
+                  placeholder={translate('importChain.placeholder.blockExplorer')}
                 />
               </View>
             </View>
@@ -213,7 +215,7 @@ const ImportChainScreen = () => {
         </ScrollView>
         <View style={{ padding: PADDING_DEFAULT.Padding16 }}>
           <ThemeTouchableOpacity disabled={isLoadingChainList} loading={isLoading} style={styles.saveButton} onPress={handleCreateNetwork}>
-            <ThemedText style={styles.saveButtonText}>Save</ThemedText>
+            <ThemedText style={styles.saveButtonText}>{translate('importChain.save')}</ThemedText>
           </ThemeTouchableOpacity>
         </View>
       </View>

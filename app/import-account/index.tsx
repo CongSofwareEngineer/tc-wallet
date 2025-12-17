@@ -4,13 +4,20 @@ import { ScrollView, View } from 'react-native'
 import HeaderScreen from '@/components/Header'
 import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import { PADDING_DEFAULT } from '@/constants/style'
-
+import useLanguage from '@/hooks/useLanguage'
+import useMode from '@/hooks/useMode'
+import useTheme from '@/hooks/useTheme'
+import { useRouter } from 'expo-router'
 import Step1 from './Components/Step1'
 import ImportWallet from './Components/Step3'
 import styles from './styles'
 
 export default function ImportAccountScreen() {
   const [step, setStep] = useState(1)
+  const { mode } = useMode()
+  const { text } = useTheme()
+  const router = useRouter()
+  const { translate } = useLanguage()
 
   const handleImportWalletWithSeedPhrase = () => {
     setStep(2)
@@ -31,7 +38,7 @@ export default function ImportAccountScreen() {
           // padding: PADDING_DEFAULT.Padding16,
         }}
       >
-        <HeaderScreen title='Import Account' />
+        <HeaderScreen title={translate('importAccount.title')} />
         <View style={[styles.container, { padding: PADDING_DEFAULT.Padding16 }]}>
           {step === 1 && (
             <Step1

@@ -54,7 +54,7 @@ const SettingScreen = () => {
           router.replace('/create-wallet')
         }
       } catch (error) {
-        showAlert({ text: 'Lỗi xác thực' })
+        showAlert({ text: translate('setting.authError') })
       }
     }
     openModal({
@@ -90,12 +90,12 @@ const SettingScreen = () => {
           <Items>
             <View style={styles.containerTitle}>
               <AntDesign name='sun' size={20} color={text.color} style={{ marginRight: 10 }} />
-              <ThemedText type='defaultSemiBold'>Giao Diện</ThemedText>
+              <ThemedText type='defaultSemiBold'>{translate('setting.theme.title')}</ThemedText>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <View style={{ flex: 1 }}>
-                <ThemedText>Chế độ tối</ThemedText>
-                <ThemedText opacity={0.7}>Sử dụng giao diện tối cho ứng dụng</ThemedText>
+                <ThemedText>{translate('setting.theme.darkMode')}</ThemedText>
+                <ThemedText opacity={0.7}>{translate('setting.theme.darkModeDesc')}</ThemedText>
               </View>
               <View>
                 <ThemeSwitch value={isDark} onValueChange={() => setMode(isDark ? MODE.Light : MODE.Dark)} />
@@ -107,12 +107,12 @@ const SettingScreen = () => {
           <Items>
             <View style={styles.containerTitle}>
               <AntDesign name='notification' size={20} color={text.color} style={{ marginRight: 10 }} />
-              <ThemedText type='defaultSemiBold'>{translate('setting.notification')}</ThemedText>
+              <ThemedText type='defaultSemiBold'>{translate('setting.notification.title')}</ThemedText>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <View>
-                <ThemedText>Chế độ tối</ThemedText>
-                <ThemedText opacity={0.7}>Chế độ tối</ThemedText>
+                <ThemedText>{translate('setting.notification.pushNotification')}</ThemedText>
+                <ThemedText opacity={0.7}>{translate('setting.notification.pushNotificationDesc')}</ThemedText>
               </View>
               <ThemeSwitch value={settings.isNotification} onValueChange={() => setSetting({ isNotification: !settings.isNotification })} />
             </View>
@@ -137,13 +137,13 @@ const SettingScreen = () => {
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
               <AntDesign name='delete' size={20} color={COLORS.red} style={{ marginRight: 10 }} />
               <ThemedText style={{ color: COLORS.red }} type='defaultSemiBold'>
-                Vùng nguy hiểm
+                {translate('setting.dangerZone')}
               </ThemedText>
             </View>
             <ThemeTouchableOpacity type='danger' onPress={resetApp} style={{ marginBottom: 10 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <AntDesign name='rest' size={20} color={COLORS.white} style={{ marginRight: 10 }} />
-                <ThemedText>Reset App</ThemedText>
+                <ThemedText>{translate('setting.resetApp')}</ThemedText>
               </View>
             </ThemeTouchableOpacity>
           </Items>

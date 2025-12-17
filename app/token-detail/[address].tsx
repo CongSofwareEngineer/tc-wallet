@@ -13,6 +13,7 @@ import { IsAndroid } from '@/constants/app'
 import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useChains from '@/hooks/useChains'
+import useLanguage from '@/hooks/useLanguage'
 import useSheet from '@/hooks/useSheet'
 import useTheme from '@/hooks/useTheme'
 import { copyToClipboard, ellipsisText } from '@/utils/functions'
@@ -23,6 +24,7 @@ const TokenDetailScreen = () => {
   const { address } = useLocalSearchParams<{ address: string }>()
   const { data: listTokens } = useBalanceToken(true)
   const { text } = useTheme()
+  const { translate } = useLanguage()
   const router = useRouter()
   const { openSheet } = useSheet()
 
@@ -70,7 +72,7 @@ const TokenDetailScreen = () => {
 
   return (
     <View style={[styles.container, !IsAndroid && { flex: 1 }]}>
-      <HeaderScreen title='Token Detail' />
+      <HeaderScreen title={translate('tokenDetail.title')} />
       <View
         style={{
           padding: PADDING_DEFAULT.Padding16,
@@ -86,7 +88,7 @@ const TokenDetailScreen = () => {
               {tokenCurrent.verified_contract && (
                 <View style={styles.verifiedBadge}>
                   <AntDesign name='check-circle' size={14} color='#00D09C' />
-                  <Text style={styles.verifiedText}>Verified</Text>
+                  <Text style={styles.verifiedText}>{translate('tokenDetail.verified')}</Text>
                 </View>
               )}
             </View>
@@ -136,7 +138,7 @@ const TokenDetailScreen = () => {
           <View style={styles.extraInfoItem}>
             <View style={styles.extraInfoRow}>
               <Feather name='hash' size={15} color='#aaa' style={styles.infoIcon} />
-              <Text style={styles.extraInfoLabel}>Decimals</Text>
+              <Text style={styles.extraInfoLabel}>{translate('tokenDetail.decimals')}</Text>
             </View>
             <Text style={styles.extraInfoValue}>{tokenCurrent.decimals}</Text>
           </View>
@@ -145,7 +147,7 @@ const TokenDetailScreen = () => {
             <View style={styles.extraInfoItem}>
               <View style={styles.extraInfoRow}>
                 <AntDesign name='safety' size={15} color='#aaa' style={styles.infoIcon} />
-                <Text style={styles.extraInfoLabel}>Security score</Text>
+                <Text style={styles.extraInfoLabel}>{translate('tokenDetail.securityScore')}</Text>
               </View>
               <Text style={styles.extraInfoValue}>{tokenCurrent.security_score || 0}</Text>
             </View>
@@ -154,7 +156,7 @@ const TokenDetailScreen = () => {
           <View style={styles.extraInfoItem}>
             <View style={styles.extraInfoRow}>
               <MaterialIcons name='all-inclusive' size={15} color='#aaa' style={styles.infoIcon} />
-              <Text style={styles.extraInfoLabel}>Total Supply</Text>
+              <Text style={styles.extraInfoLabel}>{translate('tokenDetail.totalSupply')}</Text>
             </View>
             {tokenCurrent.total_supply_formatted ? (
               <Text style={styles.extraInfoValue}>{BigNumber(tokenCurrent.total_supply_formatted).toFormat()}</Text>

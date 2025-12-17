@@ -6,6 +6,7 @@ import { TouchableOpacity, View } from 'react-native'
 import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
 import { PADDING_DEFAULT } from '@/constants/style'
+import useLanguage from '@/hooks/useLanguage'
 import useModal from '@/hooks/useModal'
 import { useAppSelector } from '@/redux/hooks'
 import WalletKit from '@/utils/walletKit'
@@ -15,6 +16,7 @@ import styles from './styles'
 
 const ManageConnectScreen = () => {
   const sessions = useAppSelector((state) => state.sessions)
+  const { translate } = useLanguage()
 
   const router = useRouter()
   const { openModal } = useModal()
@@ -36,7 +38,7 @@ const ManageConnectScreen = () => {
         <View style={[styles.containerHeader]}>
           <ThemedText type='subtitle'> </ThemedText>
 
-          <ThemedText type='subtitle'>Quản lý kết nối</ThemedText>
+          <ThemedText type='subtitle'>{translate('manageConnect.title')}</ThemedText>
           <TouchableOpacity onPress={() => router.push('/connect-dapp')}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
               <AntDesign name='plus-circle' size={20} color={'white'} />
@@ -47,7 +49,7 @@ const ManageConnectScreen = () => {
 
       {Object.keys(sessions || {}).length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ThemedText style={{ textAlign: 'center', color: '#888' }}>Chưa có kết nối nào</ThemedText>
+          <ThemedText style={{ textAlign: 'center', color: '#888' }}>{translate('manageConnect.empty')}</ThemedText>
         </View>
       ) : (
         <>

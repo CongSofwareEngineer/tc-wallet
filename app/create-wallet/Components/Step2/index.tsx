@@ -105,12 +105,12 @@ const Step2 = ({ handleClose }: Props) => {
             <AntDesign disabled={loading} name='arrow-left' size={16} color={text.color} />
           </TouchableOpacity>
 
-          <ThemedText>Backup Your Seed Phrase</ThemedText>
+          <ThemedText>{translate('createWallet.backupTitle')}</ThemedText>
         </View>
-        <ThemedText>Write down these 12 words in order. You&apos;ll need them to recover your wallet.</ThemedText>
+        <ThemedText>{translate('createWallet.backupDesc')}</ThemedText>
         <View style={stylesCustom.containerWarning}>
           <AntDesign name='warning' size={20} color={text.color} />
-          <ThemedText type='small'>Never share your seed phrase. Anyone with these words can access your wallet.</ThemedText>
+          <ThemedText type='small'>{translate('createWallet.warning')}</ThemedText>
         </View>
         <View>
           <View style={[styles.containerContent, styles[`containerContent${mode}`]]}>
@@ -158,7 +158,7 @@ const Step2 = ({ handleClose }: Props) => {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: GAP_DEFAULT.Gap8 }}>
 
                 <ThemeCheckBox value={agree} />
-                <ThemedText>I have safely backed up my seed phrase</ThemedText>
+                <ThemedText>{translate('createWallet.backedUp')}</ThemedText>
               </View>
             </ThemeTouchableOpacity>
             <ThemeTouchableOpacity
@@ -167,7 +167,7 @@ const Step2 = ({ handleClose }: Props) => {
               disabled={!agree}
               style={{ opacity: agree ? 1 : 0.5, alignItems: 'center' }}
             >
-              <ThemedText>Create Account</ThemedText>
+              <ThemedText>{translate('createWallet.createAccount')}</ThemedText>
             </ThemeTouchableOpacity>
           </>
         )}

@@ -6,6 +6,7 @@ import MyImage from '@/components/MyImage'
 import ThemedText from '@/components/UI/ThemedText'
 import { COLORS, PADDING_DEFAULT } from '@/constants/style'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
+import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 import useSheet from '@/hooks/useSheet'
 import useTheme from '@/hooks/useTheme'
@@ -23,6 +24,7 @@ const SelectToken = ({ addressToken, callback }: Props) => {
   const { closeSheet } = useSheet()
   const { text } = useTheme()
   const { data: listTokens } = useBalanceToken()
+  const { translate } = useLanguage()
 
   const styles = createStyles(isDark)
   const selectedToken = useMemo(() => {
@@ -38,7 +40,7 @@ const SelectToken = ({ addressToken, callback }: Props) => {
   return (
     <View style={styles.container}>
       <ThemedText type='subtitle' style={styles.title}>
-        Chọn Token
+        {translate('sendToken.selectTokenTitle')}
       </ThemedText>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>

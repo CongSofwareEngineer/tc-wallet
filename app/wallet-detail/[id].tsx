@@ -8,6 +8,7 @@ import ModalWarning from '@/components/ModalWarning'
 import ThemedInput from '@/components/UI/ThemedInput'
 import ThemedText from '@/components/UI/ThemedText'
 import useAuth from '@/hooks/useAuth'
+import useLanguage from '@/hooks/useLanguage'
 import useModal from '@/hooks/useModal'
 import usePassPhrase from '@/hooks/usePassPhrase'
 import useTheme from '@/hooks/useTheme'
@@ -30,6 +31,7 @@ const WalletDetailScreen = () => {
   const { passPhase } = usePassPhrase()
   const { handleAuth } = useAuth()
   const { closeModal, openModal } = useModal()
+  const { translate } = useLanguage()
   const router = useRouter()
 
   const [isEditing, setIsEditing] = useState(false)
@@ -124,6 +126,7 @@ const WalletDetailScreen = () => {
           </View>
         </View>
         <ThemedText style={styles.headerTitle}>{walletSelected?.name || `Account ${parseInt(id || '0') + 1}`}</ThemedText>
+        <ThemedText style={styles.headerTitle}>{translate('walletDetail.title')}</ThemedText>
       </View>
     )
   }
@@ -139,7 +142,7 @@ const WalletDetailScreen = () => {
           {/* Account Name Section */}
           <View style={styles.section}>
             <View style={styles.row}>
-              {!isEditing && <ThemedText style={styles.label}>Name</ThemedText>}
+              {!isEditing && <ThemedText style={styles.label}>{translate('walletDetail.name')}</ThemedText>}
               {isEditing ? (
                 <View style={styles.editRow}>
                   <ThemedInput value={editName} onChangeText={setEditName} style={styles.input} placeholder='Tên tài khoản' />
@@ -164,8 +167,8 @@ const WalletDetailScreen = () => {
           {/* Account Address Section */}
           <View style={styles.section}>
             <View style={styles.row}>
-              <ThemedText style={styles.label}>Address</ThemedText>
-              <TouchableOpacity style={styles.valueRow} onPress={() => handleCopy(walletSelected.address, 'Địa chỉ')}>
+              <ThemedText style={styles.label}>{translate('walletDetail.address')}</ThemedText>
+              <TouchableOpacity style={styles.valueRow} onPress={() => handleCopy(walletSelected.address, translate('walletDetail.address'))}>
                 <ThemedText style={styles.addressValue} numberOfLines={1}>
                   {ellipsisText(walletSelected.address, 4, 6)} <Ionicons name='copy-outline' size={16} color={text.color} />
                 </ThemedText>
@@ -176,10 +179,10 @@ const WalletDetailScreen = () => {
           {/* Wallet Type Section */}
           <View style={styles.section}>
             <View style={styles.row}>
-              <ThemedText style={styles.label}>Wallet</ThemedText>
+              <ThemedText style={styles.label}>{translate('walletDetail.walletType')}</ThemedText>
               <View style={styles.valueRow}>
                 <ThemedText numberOfLines={1} style={styles.value}>
-                  {walletSelected?.indexMnemonic === -1 ? 'Imported accounts' : 'Mnemonic wallets'}
+                  {walletSelected?.indexMnemonic === -1 ? translate('walletDetail.imported') : translate('walletDetail.mnemonic')}
                 </ThemedText>
               </View>
             </View>
@@ -188,11 +191,11 @@ const WalletDetailScreen = () => {
           {/* Private Key Section */}
           <View style={styles.section}>
             <TouchableOpacity style={styles.row} onPress={handleShowPrivateKey}>
-              <ThemedText style={styles.label}>Private key</ThemedText>
+              <ThemedText style={styles.label}>{translate('walletDetail.privateKey')}</ThemedText>
               <AntDesign name='right' size={16} color={text.color} />
             </TouchableOpacity>
             {showPrivateKey && (
-              <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(privateKey, 'Private key')}>
+              <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(privateKey, translate('walletDetail.privateKey'))}>
                 <ThemedText style={styles.hiddenText}>
                   {privateKey}{' '}
                   <Ionicons style={{ position: 'relative', top: 4, paddingHorizontal: 2 }} name='copy-outline' size={14} color={text.color} />
@@ -206,11 +209,11 @@ const WalletDetailScreen = () => {
           {walletSelected.passPhrase && (
             <View style={styles.section}>
               <TouchableOpacity style={styles.row} onPress={handleShowPassPhrase}>
-                <ThemedText style={styles.label}>Seed Phrase</ThemedText>
+                <ThemedText style={styles.label}>{translate('walletDetail.seedPhrase')}</ThemedText>
                 <AntDesign name='right' size={16} color={text.color} />
               </TouchableOpacity>
               {showPassPhrase && (
-                <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(walletSelected.passPhrase, 'Private key')}>
+                <TouchableOpacity style={styles.hiddenContent} onPress={() => handleCopy(walletSelected.passPhrase, translate('walletDetail.seedPhrase'))}>
                   <ThemedText style={styles.hiddenText} selectable>
                     {walletSelected.passPhrase}{' '}
                     <Ionicons style={{ position: 'relative', top: 4, paddingHorizontal: 4 }} name='copy-outline' size={14} color={text.color} />
@@ -224,7 +227,7 @@ const WalletDetailScreen = () => {
           {/* Delete Account Section */}
           <View style={[styles.section, styles.dangerSection, { marginBottom: 40 }]}>
             <TouchableOpacity style={styles.row} onPress={handleDeleteAccount}>
-              <ThemedText style={[styles.label, styles.dangerText]}>Delete Account</ThemedText>
+              <ThemedText style={[styles.label, styles.dangerText]}>{translate('walletDetail.delete')}</ThemedText>
               <AntDesign name='delete' size={16} color='#EF4444' />
             </TouchableOpacity>
           </View>

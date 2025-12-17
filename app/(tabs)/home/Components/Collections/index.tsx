@@ -8,6 +8,7 @@ import MyImage from '@/components/MyImage'
 import MyLoading from '@/components/MyLoading'
 import ThemedText from '@/components/UI/ThemedText'
 import { GAP_DEFAULT } from '@/constants/style'
+import useLanguage from '@/hooks/useLanguage'
 import useTheme from '@/hooks/useTheme'
 import { detectUrlImage } from '@/utils/functions'
 
@@ -27,6 +28,7 @@ const GRID_PADDING = 16
 
 const Collections = ({ scrollY, headerHeight }: Props) => {
   const { text } = useTheme()
+  const { translate } = useLanguage()
   const router = useRouter()
   const currentSwipeable = useRef(false)
   const [isGridView, setIsGridView] = useState(false) // true = grid view (2 items), false = list view (1 item)
@@ -38,7 +40,7 @@ const Collections = ({ scrollY, headerHeight }: Props) => {
       return (
         <View style={{ padding: 20, alignItems: 'center', justifyContent: 'center', gap: 10 }}>
           <MyLoading />
-          <ThemedText>Loading...</ThemedText>
+          <ThemedText>{translate('common.loading')}</ThemedText>
         </View>
       )
     } else {
@@ -54,7 +56,7 @@ const Collections = ({ scrollY, headerHeight }: Props) => {
               gap: GAP_DEFAULT.Gap8,
             }}
           >
-            <ThemedText>Collections ({collections?.length})</ThemedText>
+            <ThemedText>{translate('home.collections.title')} ({collections?.length})</ThemedText>
           </View>
           <View
             style={{

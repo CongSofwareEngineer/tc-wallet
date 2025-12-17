@@ -1,106 +1,188 @@
 {
   "common": {
-    "login": "Đăng nhập",
-    "register": "Đăng ký",
-    "logout": "Đăng xuất",
-    "home": "Trang chủ",
-    "search": "Tìm kiếm",
-    "cart": "Giỏ hàng",
-    "profile": "Tài khoản",
-    "language": "Ngôn ngữ",
-    "back": "Quay lại",
-    "close": "Đóng",
-    "reject": "Từ chối",
-    "approve": "Đồng ý",
-    "confirm": "Xác nhận",
-    "copy": "Sao chép",
-    "save": "Lưu",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "home": "Home",
+    "search": "Search",
+    "cart": "Cart",
+    "profile": "Profile",
+    "language": "Language",
+    "back": "Back",
+    "close": "Close",
+    "reject": "Reject",
+    "approve": "Approve",
+    "confirm": "Confirm",
+    "copy": "Copy",
+    "save": "Save",
     "from": "From",
     "to": "To",
     "balance": "Balance",
-    "max": "MAX"
+    "max": "MAX",
+    "loading": "Loading...",
+    "paste": "Paste",
+    "or": "or"
   },
-  "userName": "Tên người dùng",
-  "password": "Mật khẩu",
-  "somethingWentWrong": "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+  "createWallet": {
+    "title": "Create or Import",
+    "welcome": "Welcome to Web3 Wallet",
+    "description": "Create or import a wallet to get started with DeFi",
+    "createButton": "Create Wallet",
+    "importSeed": "Import with Seed Phrase",
+    "importPrivateKey": "Import with Private Key",
+    "restoreFile": "Restore file",
+    "backupTitle": "Backup Your Seed Phrase",
+    "backupDesc": "Write down these 12 words in order. You'll need them to recover your wallet.",
+    "warning": "Never share your seed phrase. Anyone with these words can access your wallet.",
+    "backedUp": "I have safely backed up my seed phrase",
+    "createAccount": "Create Account"
+  },
+  "importWallet": {
+    "title": "Import Wallet",
+    "subtitleSeed": "Enter your seed phrase to restore your wallet",
+    "subtitlePrivateKey": "Enter your private key to restore your wallet",
+    "seedLabel": "Seed Phrase (12 words)",
+    "privateKeyLabel": "Private Key (64 hex)",
+    "seedPlaceholder": "Enter your seed phrase...",
+    "privateKeyPlaceholder": "Enter your private key...",
+    "wordsCount": "words • expecting 12",
+    "invalidPrivateKey": "Invalid private key format",
+    "encryptedInfo": "Your keys are encrypted and stored locally on your device.",
+    "understand": "I understand",
+    "submit": "Import Wallet",
+    "errorImported": "This private key is already imported"
+  },
+  "importAccount": {
+    "title": "Import Account",
+    "description": "Import a wallet to get started with DeFi"
+  },
+  "home": {
+    "tabs": {
+      "tokens": "Tokens",
+      "collections": "Collections"
+    },
+    "header": {
+      "account": "Account"
+    },
+    "tokens": {
+      "title": "Tokens",
+      "importCustom": "Import Custom Token",
+      "loading": "Loading tokens..."
+    },
+    "collections": {
+      "title": "Collections"
+    },
+    "infoWallet": {
+      "totalAssets": "Total Assets"
+    },
+    "options": {
+      "send": "Send"
+    }
+  },
+  "manageConnect": {
+    "title": "Manage Connections",
+    "empty": "No connections yet",
+    "list": {
+      "url": "URL:",
+      "networks": "Networks:",
+      "disconnect": "Disconnect",
+      "disconnectAll": "Disconnect All",
+      "modalDisconnect": "Are you sure you want to disconnect?",
+      "unknownDapp": "Unknown DApp",
+      "unknownUrl": "Unknown URL",
+      "verified": "Verified",
+      "connectedWallet": "Connected Wallet",
+      "noActive": "No Active Connections",
+      "noActiveDesc": "Connect to DApps to see them here. Your wallet connections will be displayed with detailed information about connected networks and permissions."
+    }
+  },
+  "walletDetail": {
+    "title": "Wallet Details",
+    "name": "Name",
+    "namePlaceholder": "Account Name",
+    "address": "Address",
+    "walletType": "Wallet Type",
+    "imported": "Imported Account",
+    "mnemonic": "Mnemonic Wallet",
+    "privateKey": "Private Key",
+    "seedPhrase": "Seed Phrase",
+    "delete": "Delete Account"
+  },
+  "wallet": {
+    "title": "Wallets",
+    "tableName": "Wallet Name",
+    "imported": "Imported Accounts",
+    "seedPhrase": "Seed Phrase",
+    "account": "Account",
+    "add": "Add",
+    "empty": "No wallets yet"
+  },
+  "userName": "Username",
+  "password": "Password",
+  "somethingWentWrong": "Something went wrong. Please try again later.",
   "textPopular": {
-    "userName": "Tên người dùng",
-    "password": "Mật khẩu",
-    "passwordAgain": "Nhập lại mật khẩu",
+    "userName": "Username",
+    "password": "Password",
+    "passwordAgain": "Enter password again",
     "email": "Email",
-    "phone": "Số điện thoại",
-    "fullName": "Họ và tên",
-    "address": "Địa chỉ",
-    "confirmPassword": "Xác nhận mật khẩu"
+    "phone": "Phone number",
+    "fullName": "Full name",
+    "address": "Address",
+    "confirmPassword": "Confirm Password"
   },
   "warning": {
-    "logout": "Bạn có muốn đăng xuất khỏi tài khoản không?",
-    "required": "Trường này là bắt buộc",
-    "invalidEmail": "Email không hợp lệ",
-    "invalidPhone": "Số điện thoại không hợp lệ",
-    "invalidPassword": "Mật khẩu không hợp lệ",
-    "minLength": "Trường này phải có ít nhất {min} ký tự",
-    "maxLength": "Trường này không đươc quá {max} ký tự",
-    "emailExists": "Email đã được sử dụng",
-    "phoneExists": "Số điện thoại đã được sử dụng",
-    "passwordMismatch": "Mật khẩu không khớp",
-    "loginFailed": "Đăng nhập thất bại, vui lòng kiểm tra lại tên người dùng và mật khẩu",
-    "networkError": "Lỗi mạng, vui lòng kiểm tra kết nối Internet của bạn",
-    "serverError": "Lỗi máy chủ, vui lòng thử lại sau",
-    "unknownError": "Lỗi không xác định, vui lòng thử lại sau",
-    "emptyField": "Trường này không được để trống",
-    "invalidInput": "Đầu vào không hợp lệ",
-    "passwordAgain": "Mật khẩu không khớp, vui lòng nhập lại"
+    "logout": "Do you want to logout?",
+    "required": "This field is required",
+    "invalidEmail": "Invalid email",
+    "invalidPhone": "Invalid phone number",
+    "invalidPassword": "Invalid password",
+    "minLength": "Must have at least {min} characters",
+    "maxLength": "Must not exceed {max} characters",
+    "emailExists": "Email already exists",
+    "phoneExists": "Phone number already exists",
+    "passwordMismatch": "Passwords do not match",
+    "loginFailed": "Login failed, please check your username and password",
+    "networkError": "Network error, please check your internet connection",
+    "serverError": "Server error, please try again later",
+    "unknownError": "Unknown error, please try again later",
+    "emptyField": "This field cannot be empty",
+    "invalidInput": "Invalid input",
+    "passwordAgain": "Passwords do not match, please try again"
   },
   "errorWeb3": {
-    "transactionUnderpriced": "Giá giao dịch quá thấp.",
-    "transactionTimeout": "Giao dịch đã hết giờ chờ.",
-    "userRejected": "Người dùng đã từ chối giao dịch này.",
-    "insufficientFunds": "Số dư không đủ trả phí",
-    "wrongNetwork": "Mạng lưới không hợp lệ. Vui lòng chuyển đến mạng lưới hỗ trợ.",
+    "transactionUnderpriced": "Transaction underpriced.",
+    "transactionTimeout": "Transaction timed out.",
+    "userRejected": "User rejected this transaction.",
+    "insufficientFunds": "Insufficient funds for gas",
+    "wrongNetwork": "Invalid network. Please switch to a supported network.",
     "insufficientBalance": "Insufficient balance",
     "insufficientBalanceForGas": "Insufficient balance for amount + gas",
     "insufficientNativeBalanceForGas": "Insufficient native balance for gas"
   },
   "placeholder": {
-    "enterUserName": "Nhập tên người dùng",
-    "enterPassword": "Nhập mật khẩu",
-    "enterPasswordAgain": "Nhập mật khẩu lại"
+    "enterUserName": "Enter username",
+    "enterPassword": "Enter password",
+    "enterPasswordAgain": "Enter password again"
   },
   "login": {
-    "titlePage": "Đăng nhập",
-    "welcome": "Xin chào",
-    "loginToContinue": "Đăng nhập để tiếp tục"
+    "titlePage": "Login",
+    "welcome": "Welcome",
+    "loginToContinue": "Login to continue"
   },
   "register": {
-    "titlePage": "Đăng ký",
-    "welcome": "Xin chào",
-    "registerToContinue": "Đăng ký để tiếp tục"
+    "titlePage": "Register",
+    "welcome": "Welcome",
+    "registerToContinue": "Register to continue"
   },
   "homeScreen": {
-    "titlePage": "Trang chủ",
-    "search": "Tìm kiếm"
+    "titlePage": "Home",
+    "search": "Search"
   },
   "production": {
-    "titlePage": "Sản phẩm"
-  },
-  "setting": {
-    "titlePage": "Cài đặt",
-    "language": "Ngôn ngữ",
-    "darkMode": "Chế độ",
-    "dark": "Tối",
-    "light": "Sáng",
-    "system": "Hệ thống",
-    "notification": "Thông báo",
-    "changePassword": "Đổi mật khẩu",
-    "backup": {
-      "title": "Sao lưu và khôi phục",
-      "backupNow": "Sao lưu ngay",
-      "restore": "Khôi phục"
-    }
+    "titlePage": "Product"
   },
   "thayHongToan": {
-    "listRegister": "Danh sách đăng ký"
+    "listRegister": "Registration List"
   },
   "swap": {
     "title": "Swap",
@@ -115,5 +197,143 @@
     "swapping": "Swapping...",
     "transactionSuccessful": "Transaction Successful",
     "transactionFailed": "Transaction Failed"
+  },
+  "selectChain": {
+    "title": "Select Chain",
+    "searchPlaceholder": "Search chain name or chain ID..."
+  },
+  "tokenDetail": {
+    "title": "Token Detail",
+    "verified": "Verified",
+    "decimals": "Decimals",
+    "securityScore": "Security score",
+    "totalSupply": "Total Supply"
+  },
+  "backupPage": {
+    "title": "Backup Wallet",
+    "subtitle": "Secure your wallet data with a password-protected backup text file. Choose Downloads, custom location, or share to save.",
+    "warningTitle": "⚠️ Important Security Notice",
+    "warningText": "• Store your backup file in a secure location\n• Never share your backup password\n• Keep multiple copies in different secure locations\n• This backup contains sensitive wallet information",
+    "passwordLabel": "Backup Password",
+    "passwordPlaceholder": "Enter strong password",
+    "confirmLabel": "Confirm Password",
+    "confirmPlaceholder": "Confirm your password",
+    "passwordMismatch": "Passwords do not match",
+    "buttonCreate": "Create Backup",
+    "buttonCreating": "Creating Backup...",
+    "successMessage": "Backup saved to custom location!",
+    "errorMessage": "Failed to create backup file. Please try again.",
+    "noLocationError": "No location selected. Please try again.",
+    "strength": "Strength",
+    "feedback": {
+      "minChar": "At least 8 characters",
+      "lowercase": "Lowercase letter",
+      "uppercase": "Uppercase letter",
+      "number": "Number",
+      "special": "Special character"
+    },
+    "strengthLevel": {
+      "veryWeak": "Very Weak",
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    }
+  },
+  "importChain": {
+    "title": "Create Chain",
+    "chainId": "Chain ID",
+    "networkName": "Network Name",
+    "rpcUrl": "Failover RPC URL",
+    "symbol": "Symbol",
+    "blockExplorer": "Block Explorer URL",
+    "placeholder": {
+      "networkName": "Enter network name",
+      "rpcUrl": "Enter RPC URL",
+      "symbol": "Enter symbol",
+      "blockExplorer": "Enter block explorer URL"
+    },
+    "error": {
+      "chainExists": "Chain already exists"
+    },
+    "save": "Save"
+  },
+  "sendToken": {
+    "title": "Send Token",
+    "selectTokenTitle": "Select Token",
+    "from": "FROM",
+    "to": "To",
+    "balance": "Balance",
+    "recipientPlaceholder": "Recipient address",
+    "max": "MAX",
+    "fee": "Fee",
+    "calculating": "Calculating...",
+    "button": {
+      "send": "Send",
+      "sending": "Sending..."
+    },
+    "success": "Transaction Successful",
+    "failed": "Transaction Failed",
+    "error": {
+      "insufficientBalance": "Not enough balance",
+      "invalidAddress": "Invalid address"
+    }
+  },
+  "receive": {
+    "title": "Receive",
+    "copyAddress": "Copy address",
+    "viewOnExplorer": "View on Explorer",
+    "scanTitle": "Scan QR Code",
+    "scanSubtitle": "Point your camera at a QR code to scan",
+    "openCamera": "Open Camera",
+    "msg": {
+      "copyFail": "Failed to copy address"
+    }
+  },
+  "setting": {
+    "titlePage": "Settings",
+    "authError": "Authentication Error",
+    "theme": {
+      "title": "Appearance",
+      "darkMode": "Dark Mode",
+      "darkModeDesc": "Use dark theme for the application"
+    },
+    "notification": {
+      "title": "Notifications",
+      "pushNotification": "Push Notifications",
+      "pushNotificationDesc": "Receive push notifications"
+    },
+    "backup": {
+      "title": "Backup",
+      "backupNow": "Backup Now"
+    },
+    "dangerZone": "Danger Zone",
+    "resetApp": "Reset App",
+    "security": {
+      "title": "Security",
+      "biometric": {
+        "title": "Biometric Lock",
+        "desc": "Protect data with Fingerprint/Face ID",
+        "prompt": "Biometric Authentication",
+        "cancel": "Cancel",
+        "fallback": "Use Passcode"
+      },
+      "passcode": {
+        "title": "Passcode",
+        "desc": "Protect data with passcode"
+      },
+      "resetPasscode": {
+        "title": "Reset Passcode",
+        "desc": "Change your data protection passcode"
+      },
+      "modal": {
+        "disableAuth": "Are you sure you want to disable text authentication?",
+        "enablePasscode": "Are you sure you want to set a passcode?"
+      },
+      "error": {
+        "notSupported": "System not supported"
+      },
+      "success": "Authentication successful"
+    }
   }
 }
