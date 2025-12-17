@@ -202,6 +202,11 @@
     "title": "Chọn mạng",
     "searchPlaceholder": "Tìm tên mạng hoặc ID..."
   },
+  "selectLanguage": {
+    "title": "Chọn ngôn ngữ",
+    "en": "Tiếng Anh",
+    "vn": "Tiếng Việt"
+  },
   "tokenDetail": {
     "title": "Chi tiết Token",
     "verified": "Đã xác minh",

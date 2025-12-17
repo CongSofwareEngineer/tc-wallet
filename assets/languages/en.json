@@ -202,6 +202,11 @@
     "title": "Select Chain",
     "searchPlaceholder": "Search chain name or chain ID..."
   },
+  "selectLanguage": {
+    "title": "Select Language",
+    "en": "English",
+    "vn": "Vietnamese"
+  },
   "tokenDetail": {
     "title": "Token Detail",
     "verified": "Verified",
