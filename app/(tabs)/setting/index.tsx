@@ -25,7 +25,7 @@ import Security from './Components/Security'
 import styles from './styles'
 
 const SettingScreen = () => {
-  const { translate, setLanguage } = useLanguage()
+  const { translate, setLanguage, lang } = useLanguage()
   const { text, colors } = useTheme()
   const { setMode, isDark } = useMode()
   const { handleAuth, isSetupAuth } = useAuth()
@@ -101,6 +101,24 @@ const SettingScreen = () => {
                 <ThemeSwitch value={isDark} onValueChange={() => setMode(isDark ? MODE.Light : MODE.Dark)} />
               </View>
             </View>
+          </Items>
+
+          {/* // Language */}
+          <Items>
+            <ThemeTouchableOpacity onPress={() => router.push('/select-language' as any)}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <AntDesign name={'earth' as any} size={20} color={text.color} style={{ marginRight: 10 }} />
+                  <ThemedText type='defaultSemiBold'>{translate('common.language')}</ThemedText>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <ThemedText style={{ color: colors.gray }}>
+                    {lang === LANGUAGE_SUPPORT.EN ? translate('selectLanguage.en') : translate('selectLanguage.vn')}
+                  </ThemedText>
+                  <AntDesign name='right' size={16} color={colors.gray} />
+                </View>
+              </View>
+            </ThemeTouchableOpacity>
           </Items>
 
           {/* // Notification */}
