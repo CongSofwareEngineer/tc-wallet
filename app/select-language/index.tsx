@@ -12,6 +12,7 @@ import useMode from '@/hooks/useMode'
 import useTheme from '@/hooks/useTheme'
 import { LANGUAGE_SUPPORT } from '@/types/language'
 
+import { width } from '@/utils/systems'
 import styles from './styles'
 
 const SelectLanguageScreen = () => {
@@ -19,8 +20,6 @@ const SelectLanguageScreen = () => {
   const { colors, text } = useTheme()
   const { translate, lang, setLanguage } = useLanguage()
   const router = useRouter()
-  console.log({ lang });
-
 
   const languages = [
     {
@@ -58,7 +57,7 @@ const SelectLanguageScreen = () => {
             onPress={() => handleSelectLanguage(item.code)}
           >
             <View style={styles.itemContent}>
-              <ThemedText style={styles.flag}>{item.flag}</ThemedText>
+              <ThemedText style={{ fontSize: width(13), lineHeight: width(13) }} >{item.flag}</ThemedText>
               <ThemedText type='defaultSemiBold'>{item.name}</ThemedText>
             </View>
             {lang === item.code && <AntDesign name='check' size={20} color={COLORS.green3} style={styles.checkIcon} />}

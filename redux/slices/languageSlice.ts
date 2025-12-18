@@ -17,8 +17,8 @@ type LanguageState = {
 }
 
 const initialState: LanguageState = {
-  locale: LANGUAGE_SUPPORT.EN,
-  messages: MessageEN,
+  locale: LANGUAGE_SUPPORT.VN,
+  messages: MessageVN,
 }
 
 const getLanguage = (language: LANGUAGE_SUPPORT): LanguageState => {

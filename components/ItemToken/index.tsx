@@ -1,7 +1,7 @@
 import { COLORS } from '@/constants/style'
 import useTheme from '@/hooks/useTheme'
 import { Token } from '@/services/moralis/type'
-import { copyToClipboard, ellipsisText } from '@/utils/functions'
+import { copyToClipboard, ellipsisText, uppercase } from '@/utils/functions'
 import { width } from '@/utils/systems'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'
 import BigNumber from 'bignumber.js'
@@ -62,8 +62,8 @@ const ItemToken = ({ item, onClick, swipeableProps, showAddress, isSelected }: P
               {item.name}
             </ThemedText>
             <ThemedText style={styles.cryptoBalance}>
-              {item.balance_formatted && `${BigNumber(item.balance_formatted).decimalPlaces(6, BigNumber.ROUND_DOWN).toFormat()} `}
-              {item.symbol}
+              {item.balance_formatted && `${BigNumber(item.balance_formatted).decimalPlaces(7, BigNumber.ROUND_DOWN).toFormat()} `}
+              {uppercase(item.symbol)}
             </ThemedText>
           </TouchableOpacity>
 

@@ -13,15 +13,16 @@ type Props = {
   item: Network
   onPress?: (chainId?: ChainId) => any
   noEdit?: boolean
+  chainId?: ChainId
 }
-const ItemChain = ({ item, onPress, noEdit = false }: Props) => {
+const ItemChain = ({ item, onPress, noEdit = false, chainId }: Props) => {
   const router = useRouter()
   const { text } = useTheme()
   const { chainCurrent } = useChains()
 
   return (
     <TouchableOpacity
-      style={[styles.networkItem, chainCurrent?.id === item.id && styles.selectedNetworkItem]}
+      style={[styles.networkItem, (chainId || chainCurrent?.id) === item.id && styles.selectedNetworkItem]}
       onPress={() => onPress?.(item.id)}
     >
       <View style={styles.networkIconWrap}>

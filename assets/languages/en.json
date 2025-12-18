@@ -80,7 +80,7 @@
     }
   },
   "manageConnect": {
-    "title": "Manage Connections",
+    "title": "Connections",
     "empty": "No connections yet",
     "list": {
       "url": "URL:",

@@ -5,7 +5,7 @@ import { KEY_REACT_QUERY } from '@/constants/reactQuery'
 import AlchemyService from '@/services/alchemy'
 import MoralisService from '@/services/moralis'
 import { IQueryKey } from '@/types/reactQuery'
-import { isAddress } from '@/utils/nvm'
+import { isAddressEVM } from '@/utils/nvm'
 
 import useChainSelected from '../useChainSelected'
 
@@ -13,7 +13,7 @@ const getData = async ({ queryKey }: IQueryKey): Promise<string> => {
   try {
     const symbolOrAddress = queryKey[1] as string
     const chainId = queryKey[2] as number
-    if (isAddress(symbolOrAddress)) {
+    if (isAddressEVM(symbolOrAddress)) {
       const res = await MoralisService.getPriceByAddress(symbolOrAddress, chainId)
       return res
     } else {

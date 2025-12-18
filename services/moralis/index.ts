@@ -70,6 +70,7 @@ class MoralisService {
         url: `/wallets/${params.address}/tokens?chain=${this.getChainType(params.chainId)}&limit=${params.limit || 100}`,
       })
       const arr = (res?.data?.result || res.result || []) as Token[]
+
       arr.forEach((token, index) => {
         if (isTokenNative(token.token_address)) {
           arr[index].token_address = zeroAddress

@@ -2,7 +2,7 @@ import MessageEN from '../assets/languages/en.json'
 
 export enum LANGUAGE_SUPPORT {
   EN = 'en',
-  VN = 'VN',
+  VN = 'vn',
 }
 
 export type TYPE_LANGUAGE = typeof MessageEN

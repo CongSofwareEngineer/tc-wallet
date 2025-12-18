@@ -428,7 +428,7 @@ const SendNFTScreen = () => {
             <ThemedText allowFontScaling={false} selectable style={[styles.resultText, { color: isDark ? '#10B981' : '#065F46' }]}>
               {txHash}{' '}
               <TouchableOpacity onPress={() => copyToClipboard(txHash)}>
-                <Ionicons name='copy-outline' style={{ position: 'relative', top: 4 }} size={16} color={isDark ? '#10B981' : '#065F46'} />
+                <Ionicons name='copy-outline' style={{ position: 'relative', top: width(1.3) }} size={16} color={isDark ? '#10B981' : '#065F46'} />
               </TouchableOpacity>
               {!IsIos && <View style={{ width: '100%' }} />}
             </ThemedText>

@@ -6,7 +6,7 @@ import EVMServices from '@/services/EVM'
 import { Params } from '@/types/walletConnect'
 import { RawTransactionEVM } from '@/types/web3'
 
-import { TYPE_TRANSACTION } from '@/constants/walletConncet'
+import { TYPE_TRANSACTION } from '@/constants/walletConnect'
 import { setChainSelected } from '@/redux/slices/chainSelected'
 import { addNetwork } from '@/redux/slices/chainSlice'
 import { decodeData } from '../crypto'

@@ -2,10 +2,12 @@ import AntDesign from '@expo/vector-icons/AntDesign'
 import { Tabs } from 'expo-router'
 
 import { COLORS } from '@/constants/style'
+import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
 
 const TabNavigation = () => {
   const { isDark } = useMode()
+  const { translate } = useLanguage()
 
   return (
     <Tabs
@@ -23,7 +25,7 @@ const TabNavigation = () => {
       <Tabs.Screen
         name='home'
         options={{
-          title: 'Home',
+          title: translate('common.home'),
 
           tabBarIcon: ({ color }) => <AntDesign size={16} name='home' color={color} />,
         }}
@@ -31,7 +33,7 @@ const TabNavigation = () => {
       <Tabs.Screen
         name='manage-connect'
         options={{
-          title: 'Connect',
+          title: translate('manageConnect.title'),
           tabBarIcon: ({ color }) => <AntDesign size={16} name='link' color={color} />,
         }}
       />
@@ -39,7 +41,7 @@ const TabNavigation = () => {
       <Tabs.Screen
         name='setting'
         options={{
-          title: 'Setting',
+          title: translate('setting.titlePage'),
           tabBarIcon: ({ color }) => <AntDesign size={16} name='setting' color={color} />,
         }}
       />

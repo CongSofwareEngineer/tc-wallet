@@ -3,6 +3,7 @@ import { Platform } from 'react-native'
 import fetcherConfig from '@/configs/fetcher'
 import { IFetch } from '@/configs/fetcher/type'
 import { APP_CONFIG } from '@/constants/appConfig'
+import { uppercase } from '@/utils/functions'
 
 const fetcher = (params: IFetch) => {
   let url = 'api/alchemy/' + (params?.url || '')
@@ -26,10 +27,12 @@ const fetcher = (params: IFetch) => {
 class AlchemyService {
   static async getPriceBySymbol(symbol: string): Promise<string> {
     try {
+      if (uppercase(symbol) === 'MATIC') {
+        symbol = 'POL'
+      }
       const res = await fetcher({
         url: `/prices/v1/apiKey/tokens/by-symbol?symbols=${symbol}`,
       })
-      console.log({ res })
 
       if (Array.isArray(res?.data)) {
         const tokenData = res.data.find((item: any) => item.symbol.toLowerCase() === symbol.toLowerCase())

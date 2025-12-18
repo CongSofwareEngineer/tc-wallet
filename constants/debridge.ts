@@ -1,5 +1,5 @@
 import { ChainId } from '@/types/web3'
-import { arbitrum, base, bsc, linea, mainnet, optimism, polygon, unichain } from 'viem/chains'
+import { arbitrum, avalanche, base, bsc, linea, mainnet, optimism, polygon, unichain } from 'viem/chains'
 
 export const ADDRESS_AFFILIATE = '0x9f276af79b2b5de2946a88b0fe2717318f924d7c' as const
 
@@ -26,4 +26,5 @@ export const LIST_TOKEN_DEFAULT = {
   [bsc.id]: ['BNB', 'USDC', 'USDT'],
   [unichain.id]: ['ETH', 'UNI', 'USDC', 'USDT'],
   [linea.id]: ['ETH', 'USDC', 'USDT'],
+  [avalanche.id]: ['AVAX', 'USDC', 'USDT'],
 } as Record<ChainId, string[]>

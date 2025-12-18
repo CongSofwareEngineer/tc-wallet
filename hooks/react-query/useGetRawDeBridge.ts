@@ -91,6 +91,7 @@ const getData = async ({ queryKey }: IQueryKey): Promise<Data> => {
       },
       showError: false,
     })
+
     return {
       amountIn,
       amountOut: res?.data?.tokenOut?.amount,

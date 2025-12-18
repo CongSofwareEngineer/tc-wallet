@@ -1,9 +1,10 @@
-import { Address, hexToBigInt, isHex, TransactionRequest } from 'viem'
+import { encodeFunctionData, erc20Abi, hexToBigInt, isHex, TransactionRequest } from 'viem'
 
 import { store } from '@/redux/store'
 import { ChainId, RawTransactionEVM } from '@/types/web3'
 
-import { TYPE_TRANSACTION } from '@/constants/walletConncet'
+import { TYPE_TRANSACTION } from '@/constants/walletConnect'
+import { Address } from '@/types/wallet'
 import { isChainIdDefault } from '@/utils/nvm'
 import BigNumber from 'bignumber.js'
 import Web3Service from '../web3'
@@ -20,6 +21,17 @@ class EVMServices extends Web3Service {
     })
 
     return gas
+  }
+  static createApproveTransaction(tokenAddress: Address, spender: Address, amount: string) {
+    const tx: TransactionRequest = {
+      to: tokenAddress as any,
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: 'approve',
+        args: [spender as any, amount as any],
+      }),
+    }
+    return tx
   }
 
   static async getRawTransactions(raw: RawTransactionEVM): Promise<RawTransactionEVM> {
@@ -38,7 +50,7 @@ class EVMServices extends Web3Service {
         tx.nonce = BigNumber(hexToBigInt(tx.nonce).toString()).toNumber()
       }
     } else {
-      const nonce = await publicClient.getTransactionCount({ address: raw.from as Address, blockTag: 'latest' })
+      const nonce = await publicClient.getTransactionCount({ address: raw.from as any, blockTag: 'latest' })
       tx.nonce = nonce
     }
 
@@ -46,7 +58,7 @@ class EVMServices extends Web3Service {
       tx.from = raw.from
     } else {
       const walletActive = store.getState().wallet.wallet
-      tx.from = walletActive!.address as Address
+      tx.from = walletActive!.address as any
     }
 
     // 3) Gas price / fees
@@ -216,6 +228,27 @@ class EVMServices extends Web3Service {
 
       return false
     }
+  }
+
+
+  static async getAllowance(chainId: ChainId, address: Address, spender: Address, owner?: Address) {
+    const provider = this.getClient(chainId)
+    const walletActive = store.getState().wallet.wallet
+    const balance = await provider.readContract({
+      address: address as any,
+      abi: erc20Abi,
+      functionName: 'allowance',
+      args: [owner || walletActive!.address as any, spender as any],
+    })
+    return balance
+  }
+
+  static async checkIsApprove(chainId: ChainId, address: Address, spender: Address, amount?: string | number | bigint, owner?: Address) {
+    const balance = await this.getAllowance(chainId, address, spender, owner)
+    if (BigNumber(balance).lt(amount?.toString() || '0')) {
+      return false
+    }
+    return true
   }
 }
 

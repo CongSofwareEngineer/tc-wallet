@@ -7,7 +7,7 @@ import useDebounce from '@/hooks/useDebounce'
 import useTheme from '@/hooks/useTheme'
 import { Token } from '@/services/moralis/type'
 import { ChainId } from '@/types/web3'
-import { lowercase } from '@/utils/functions'
+import { lowercase, uppercase } from '@/utils/functions'
 import { height } from '@/utils/systems'
 import { Feather, MaterialIcons } from '@expo/vector-icons'
 import React, { useMemo, useState } from 'react'
@@ -56,7 +56,7 @@ const SelectToken = ({
   const defaultToken = useMemo(() => {
     if (chainId) {
       const arr = LIST_TOKEN_DEFAULT[chainId]
-      const arrFilter = dataFiltered.filter((item) => arr.includes(item.symbol))
+      const arrFilter = dataFiltered.filter((item) => arr?.includes(uppercase(item.symbol)!))
       return arrFilter
     }
     return []
@@ -81,13 +81,15 @@ const SelectToken = ({
                   opacity: isSelected ? 0.5 : 1,
                 }}
               >
+
                 {item.logo || item.thumbnail ? (
                   <MyImage src={item.logo || item.thumbnail} style={{ width: 24, height: 24, borderRadius: 12 }} />
                 ) : (
                   <MaterialIcons name='token' size={24} color={text.color} />
                 )}
-                <ThemedText>{item.symbol}</ThemedText>
+                <ThemedText>{uppercase(item.symbol)}</ThemedText>
               </View>
+
             </TouchableOpacity>
           )
         })}

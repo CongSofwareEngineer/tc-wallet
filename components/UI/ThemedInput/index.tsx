@@ -5,6 +5,7 @@ import useTheme from '@/hooks/useTheme'
 
 import ThemedText from '../ThemedText'
 
+import { width } from '@/utils/systems'
 import { styles } from './styles'
 import stylesCss from './styles.module.css'
 
@@ -88,7 +89,7 @@ const ThemedInput = ({
           ref={ref}
           className={stylesCss.input}
           placeholderTextColor={text.colorPlaceholder}
-          style={[{ backgroundColor: 'transparent', color: text.color, fontSize: 16, flex: 1, paddingLeft: 0 }, style]}
+          style={[{ backgroundColor: 'transparent', color: text.color, fontSize: width(5), flex: 1, paddingLeft: 0 }, style]}
           {...props}
           editable={!disabled}
           onChangeText={onChangeText}

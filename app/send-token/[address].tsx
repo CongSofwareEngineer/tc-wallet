@@ -547,7 +547,7 @@ const SendTokenScreen = () => {
             <ThemedText allowFontScaling={false} selectable style={[styles.resultText, { color: isDark ? '#10B981' : '#065F46' }]}>
               {txHash}{' '}
               <TouchableOpacity onPress={() => copyToClipboard(txHash)}>
-                <Ionicons name='copy-outline' size={16} color={isDark ? '#10B981' : '#065F46'} />
+                <Ionicons style={{ position: 'relative', top: width(1.3) }} name='copy-outline' size={16} color={isDark ? '#10B981' : '#065F46'} />
               </TouchableOpacity>
               {!IsIos && <View style={{ width: '100%' }} />}
             </ThemedText>

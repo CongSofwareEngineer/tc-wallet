@@ -23,9 +23,13 @@ import { styles } from './styles'
 // Token list is typed via services/moralis/type Token
 
 const HEIGHT_HEADER_SCROLL = 200
+const TAB_OPTIONS = {
+  tokens: 'tokens',
+  collections: 'collections',
+}
 
 export default function HomeScreen() {
-  const [activeTab, setActiveTab] = useState('Tokens')
+  const [activeTab, setActiveTab] = useState(TAB_OPTIONS.tokens)
   const { translate } = useLanguage()
   const router = useRouter()
   const { background } = useTheme()
@@ -94,7 +98,7 @@ export default function HomeScreen() {
         {/* Network Filter + Tabs inside header */}
         <View>
           <View style={[styles.tabsContainer, { backgroundColor: background.background }]}>
-            {['tokens', 'collections'].map((tab) => (
+            {Object.values(TAB_OPTIONS).map((tab) => (
               <ThemeTouchableOpacity
                 type='text'
                 key={tab}

@@ -1,3 +1,4 @@
+import { ERROR_TYPE } from '@/constants/erros'
 import useLanguage from './useLanguage'
 
 const useErrorWeb3 = () => {
@@ -25,10 +26,13 @@ const useErrorWeb3 = () => {
         case message.includes('insufficient balance for amount'):
         case message.includes('Missing or invalid parameters'):
         case message.includes('total cost (gas * gas fee + value)'):
+        case message.includes(ERROR_TYPE.InsufficientFunds):
           return translate('errorWeb3.insufficientFunds')
         case message.includes('User rejected the request'):
+        case message.includes(ERROR_TYPE.UserRejected):
           return translate('errorWeb3.userRejected')
         case message.includes('Transaction was not mined within 750 seconds'):
+        case message.includes(ERROR_TYPE.TransactionTimeout):
           return translate('errorWeb3.transactionTimeout')
         case message.includes('replacement transaction underpriced'):
           return translate('errorWeb3.transactionUnderpriced')
