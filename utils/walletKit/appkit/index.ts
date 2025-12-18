@@ -34,6 +34,15 @@ class AppKit {
     return AppKit.instance
   }
 
+  static async registerDeviceToken(token: string, clientId: string): Promise<void> {
+    if (!AppKit.instance) throw new Error('AppKit not initialized')
+    await AppKit.instance.registerDeviceToken({
+      token,
+      clientId,
+      notificationType: 'fcm', // or 'fcm' based on platform, usually handled by core
+    })
+  }
+
   static getInstance(): TypeWalletKit | null {
     return AppKit.instance
   }
