@@ -122,7 +122,7 @@ export default function HomeScreen() {
       {/* <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} /> */}
 
       <View style={[{ flex: 1 }]}>
-        {activeTab === 'tokens' ? (
+        {activeTab === TAB_OPTIONS.tokens ? (
           <Tokens headerHeight={headerHeight} scrollY={scrollY} />
         ) : (
           <Collections headerHeight={headerHeight} scrollY={scrollY} />
