@@ -62,6 +62,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.black3,
     borderTopLeftRadius: BORDER_RADIUS_DEFAULT.Radius16,
     borderTopRightRadius: BORDER_RADIUS_DEFAULT.Radius16,
+    maxHeight: height(100) - 60,
+    position: 'relative',
+    overflow: 'hidden',
   },
 })
 export default MySheet

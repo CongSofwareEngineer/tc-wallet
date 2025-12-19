@@ -247,7 +247,7 @@ const SwapScreen = () => {
   const handleSelectOutputChain = () => {
     openSheet({
       content: (
-        <View>
+        <View  >
           <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
             {translate('swap.selectOutputChain')}
           </ThemedText>
@@ -371,14 +371,17 @@ const SwapScreen = () => {
         bounces={false}
         style={{ flex: 1, padding: PADDING_DEFAULT.Padding16 }}
       >
+
         {/* Input Token Section */}
         <View style={styles.card}>
-          <View style={{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', justifyContent: 'space-between' }}>
-            <ThemedText style={styles.sectionLabel}>{translate('common.from')}</ThemedText>
+          <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12, alignItems: 'center', justifyContent: 'space-between' }}>
+            <View  >
+              <ThemedText style={styles.sectionLabel}>{translate('common.from')}</ThemedText>
+            </View>
 
             {inputToken && (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <ThemedText numberOfLines={1} style={styles.balanceText}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
+                <ThemedText numberOfLines={1} style={[styles.balanceText]}>
                   {translate('common.balance')}:{' '}
                   {BigNumber(inputToken.balance_formatted || 0)
                     .decimalPlaces(7, BigNumber.ROUND_DOWN)
@@ -390,6 +393,8 @@ const SwapScreen = () => {
               </View>
             )}
           </View>
+
+
           <View style={styles.topRow}>
             {/* Chain Selector (Read-only/Current) */}
             <TouchableOpacity style={styles.chainSelectorSmall} disabled={true}>

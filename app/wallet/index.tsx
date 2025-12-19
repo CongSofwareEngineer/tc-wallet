@@ -136,6 +136,7 @@ const WalletScreen = () => {
 
   const handleActiveAccount = (index: number) => {
     setWalletActive(index)
+    router.back()
   }
 
   const handleShowData = async () => {

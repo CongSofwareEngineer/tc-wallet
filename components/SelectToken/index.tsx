@@ -98,7 +98,7 @@ const SelectToken = ({
   }
 
   return (
-    <View>
+    <View style={{ maxHeight: height(80) - 40, position: 'relative', overflow: 'hidden' }}>
       <ThemedText type='subtitle' style={{ marginBottom: 12 }}>
         Select Token
       </ThemedText>
@@ -110,7 +110,7 @@ const SelectToken = ({
         onChangeText={setSearch}
       />
 
-      <View style={{ height: height(70), marginTop: 10 }}>
+      <View style={{ marginTop: 10 }}>
         {showTokenDefault && renderTokenDefault()}
         <FlatList
           // contentContainerStyle={{ paddingBottom: 50 }}
