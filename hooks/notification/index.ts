@@ -1,3 +1,4 @@
-const registerNotifications = async () => { }
-
+const registerNotifications = async () => {
+  console.log('registerNotifications default')
+}
 export default registerNotifications

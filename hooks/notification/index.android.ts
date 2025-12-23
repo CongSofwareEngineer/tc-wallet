@@ -14,6 +14,8 @@ const registerNotifications = async () => {
     }
 
     const tokenData = await Notifications.getDevicePushTokenAsync()
+    console.log({ getDevicePushTokenAsync: tokenData })
+
     const token = tokenData.data
     const appKitInstance = AppKit.getInstance()
 

@@ -81,7 +81,6 @@ const SelectToken = ({
                   opacity: isSelected ? 0.5 : 1,
                 }}
               >
-
                 {item.logo || item.thumbnail ? (
                   <MyImage src={item.logo || item.thumbnail} style={{ width: 24, height: 24, borderRadius: 12 }} />
                 ) : (
@@ -89,7 +88,6 @@ const SelectToken = ({
                 )}
                 <ThemedText>{uppercase(item.symbol)}</ThemedText>
               </View>
-
             </TouchableOpacity>
           )
         })}
@@ -110,7 +108,7 @@ const SelectToken = ({
         onChangeText={setSearch}
       />
 
-      <View style={{ marginTop: 10 }}>
+      <View style={{ marginTop: 10, maxHeight: height(70) }}>
         {showTokenDefault && renderTokenDefault()}
         <FlatList
           // contentContainerStyle={{ paddingBottom: 50 }}
