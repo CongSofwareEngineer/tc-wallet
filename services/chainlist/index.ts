@@ -1,3 +1,5 @@
+import fetcher from '@/configs/fetcher'
+import { IsWeb } from '@/constants/app'
 import { CHAIN_DEFAULT } from '@/constants/chain'
 import { ChainInfo, Network } from '@/types/web3'
 import {
@@ -92,7 +94,17 @@ class ChainListServices extends BaseAPI {
   }
   static async getAllChains() {
     try {
-      const res = await this.get({ url: '/rpcs.json' })
+      let res
+      if (IsWeb) {
+        res = await fetcher({
+          baseUrl: window.origin,
+          url: '/api/chain-list',
+        })
+      } else {
+        res = await this.get({ url: '/rpcs.json' })
+      }
+      console.log({ getAllChains: res })
+
       const arr = res.data as unknown as ChainInfo[]
 
       const arrChainValid = arr.filter((chain, index) => {

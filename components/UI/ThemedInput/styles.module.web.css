@@ -1,19 +1,15 @@
 .input {
-  &::focus,
-  &::focus-visible {
-    border-color: transparent !important;
-    border-width: 0px !important;
-  }
+  outline: none !important;
+  border: none !important;
 }
+
 .input:focus {
   outline: none !important;
+  border: none !important;
 }
+
 .input:focus-visible {
   outline: none !important;
+  border: none !important;
 }
-.input::placeholder {
-  outline: none !important;
-}
-.input:disabled {
-  outline: none !important;
-}
+

@@ -89,7 +89,7 @@ const ThemedInput = ({
           ref={ref}
           className={stylesCss.input}
           placeholderTextColor={text.colorPlaceholder}
-          style={[{ backgroundColor: 'transparent', color: text.color, fontSize: width(5), flex: 1, paddingLeft: 0 }, style]}
+          style={[{ outline: 'none', backgroundColor: 'transparent', color: text.color, fontSize: width(5), flex: 1, paddingLeft: 0 }, style]}
           {...props}
           editable={!disabled}
           onChangeText={onChangeText}

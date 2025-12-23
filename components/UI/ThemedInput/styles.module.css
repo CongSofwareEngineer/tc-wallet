@@ -1,2 +1,13 @@
 .input {
+  outline: none;
 }
+
+.input:focus {
+  outline: none;
+}
+
+.input:focus-visible {
+  outline: none;
+}
+
+
