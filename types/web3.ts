@@ -25,6 +25,8 @@ export type ChainInfo = {
     url: string
     [key: string]: unknown
   }[]
+  icon?: string
+  [key: string]: unknown
 }
 export type Callback = {
   callbackSuccess?: (hash?: Hash) => void

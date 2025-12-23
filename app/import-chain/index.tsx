@@ -21,6 +21,7 @@ interface FormData {
   chainId?: string
   symbol?: string
   blockExplorerUrl?: string
+  iconChain?: string
 }
 
 interface FormDataError extends FormData { }
@@ -71,7 +72,7 @@ const ImportChainScreen = () => {
             },
           }
           : undefined,
-        iconChain: '', // Default empty icon
+        iconChain: formData.iconChain || '', // Default empty icon
         isCustom: true, // Mark as custom network
       }
 

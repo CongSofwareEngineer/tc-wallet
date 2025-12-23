@@ -1,5 +1,5 @@
 import { CHAIN_DEFAULT } from '@/constants/chain'
-import { ChainInfo } from '@/types/web3'
+import { ChainInfo, Network } from '@/types/web3'
 import {
   ChainFormatters,
   defineBlock,
@@ -61,7 +61,7 @@ class ChainListServices extends BaseAPI {
   static baseUrl: string = 'https://chainlist.org/'
 
   static convertChainListToChainViem = (chain: ChainInfo) => {
-    const chainConvert = defineChain({
+    const chainConvert: Network = defineChain({
       serializers: {
         transaction: serializeTransaction,
       },
@@ -82,7 +82,11 @@ class ChainListServices extends BaseAPI {
           url: chain.explorers?.[0]?.url || 'no',
         },
       },
-    })
+    }) as any
+
+    if (chain?.icon) {
+      chainConvert.iconChain = `https://icons.llamao.fi/icons/chains/rsz_${chain.icon}.jpg`
+    }
 
     return chainConvert
   }
