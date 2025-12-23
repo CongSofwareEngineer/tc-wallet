@@ -14,7 +14,6 @@ import { encodeData } from '@/utils/crypto'
 
 import { getKeyEncode } from '@/utils/secureStorage'
 import { createStyles } from './styles'
-console.log('BackupScreen website')
 
 const BackupScreen = () => {
   const router = useRouter()

@@ -26,7 +26,7 @@ export const generateKey = () => {
     binary += String.fromCharCode(randomBytes[i])
   }
 
-  return stringToHex(btoa(binary).replace(/\+-/g, '@').replace(/\//g, '@').slice(0, 16))
+  return stringToHex(binary)
 }
 
 export const getKeyEncode = async () => {

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "274217461048",
+    "project_id": "tc-wallet-78c23",
+    "storage_bucket": "tc-wallet-78c23.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:274217461048:android:45c3a0c07b4cb1a06b8dcd",
+        "android_client_info": {
+          "package_name": "com.web3.tcwallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3yIQGA-54oaz8OGNl_DgwP2MteNfGqT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
