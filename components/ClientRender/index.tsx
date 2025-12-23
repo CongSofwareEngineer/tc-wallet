@@ -53,7 +53,7 @@ const ClientRender = ({ children }: { children: ReactNode }) => {
                 borderColor: COLORS.black2,
                 flex: 1,
                 backgroundColor: background.background,
-                maxWidth: 576,
+                maxWidth: 500,
                 width: '100%',
               }}
             >
