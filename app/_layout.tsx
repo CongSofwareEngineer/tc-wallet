@@ -3,6 +3,7 @@ import '@/components/NotiPlatform'
 import ReactQueryProvider from '@/components/ReactQueryProvider'
 import StackScreen from '@/components/StackScreen'
 import { APP_CONFIG } from '@/constants/appConfig'
+import registerNotifications from '@/hooks/notification'
 import { persistor, store } from '@/redux/store'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
@@ -21,7 +22,7 @@ SplashScreen.setOptions({
 })
 export default function RootLayout() {
   useEffect(() => {
-    require('@/hooks/notification')
+    registerNotifications()
   }, [])
 
   return (

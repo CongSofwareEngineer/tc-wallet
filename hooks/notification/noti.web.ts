@@ -27,4 +27,4 @@ const registerNotifications = async () => {
   }
 }
 
-registerNotifications()
+export default registerNotifications
