@@ -76,7 +76,9 @@
           "icon": "./assets/images/icon.png",
           "color": "#ffffff",
           "defaultChannel": "default",
-          "sounds": [],
+          "sounds": [
+            "./local/assets/music/nhac_chuong_tin_nhan_messenger-www_tiengdong_com.wav",
+          ],
           "enableBackgroundRemoteNotifications": false
         }
       ],
