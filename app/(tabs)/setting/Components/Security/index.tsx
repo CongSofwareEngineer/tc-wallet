@@ -111,9 +111,9 @@ const Security = () => {
         console.log({ isEnrolled, dataFaceId })
       } else {
         if (IsIos) {
-          Linking.openSettings()
+          await Linking.openSettings()
         } else {
-          startActivityAsync(ActivityAction.SECURITY_SETTINGS);
+          await startActivityAsync(ActivityAction.SECURITY_SETTINGS);
         }
 
         showAlert({ text: translate('setting.security.error.notSupported') })
