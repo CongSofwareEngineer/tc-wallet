@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux'
 import ModalWarning from '@/components/ModalWarning'
 import ThemedText from '@/components/UI/ThemedText'
 import ThemeSwitch from '@/components/UI/ThemeSwitch'
+import { IsIos } from '@/constants/app'
 import { KEY_STORAGE } from '@/constants/storage'
 import useAlert from '@/hooks/useAlert'
 import useAuth from '@/hooks/useAuth'
@@ -19,7 +20,8 @@ import useTheme from '@/hooks/useTheme'
 import { useAppSelector } from '@/redux/hooks'
 import { setPasscode } from '@/redux/slices/settingsSlice'
 import { removeSecureData } from '@/utils/secureStorage'
-
+import { ActivityAction, startActivityAsync } from 'expo-intent-launcher'
+import * as Linking from 'expo-linking'
 import styles from '../../styles'
 import Items from '../Item'
 
@@ -108,6 +110,12 @@ const Security = () => {
 
         console.log({ isEnrolled, dataFaceId })
       } else {
+        if (IsIos) {
+          Linking.openSettings()
+        } else {
+          startActivityAsync(ActivityAction.SECURITY_SETTINGS);
+        }
+
         showAlert({ text: translate('setting.security.error.notSupported') })
       }
     }
