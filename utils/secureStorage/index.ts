@@ -4,7 +4,7 @@ import { MMKV } from 'react-native-mmkv'
 
 import { SECURITY_CONFIG } from '@/constants/appConfig'
 import { KEY_STORAGE } from '@/constants/storage'
-import { stringToHex } from 'viem'
+import { bytesToHex } from 'viem'
 
 export const checkSupportSecure = async () => {
   try {
@@ -18,15 +18,7 @@ export const generateKey = () => {
   // byteLength = số byte random, 32 byte ~ 256-bit
 
   const randomBytes = ExpoCrypto.getRandomBytes(32)
-
-  // Chuyển Uint8Array -> chuỗi Base64
-  let binary = ''
-
-  for (let i = 0; i < randomBytes.length; i++) {
-    binary += String.fromCharCode(randomBytes[i])
-  }
-
-  return stringToHex(binary, { size: 16 })
+  return bytesToHex(randomBytes, { size: 16 })
 }
 
 export const getKeyEncode = async () => {
