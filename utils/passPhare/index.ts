@@ -42,18 +42,21 @@ class PassPhase {
       return baseUtils.chain(baseUtils.checksum(1, calcChecksum), baseUtils.radix2(11, true), baseUtils.alphabet(wordlist))
     }
 
-    const a = ExpoCrypto.getRandomBytes(128 / 8)
+    //12, 16, 24 words
+    const bits = amount === 12 ? 128 : amount === 16 ? 192 : 256
+
+    const a = ExpoCrypto.getRandomBytes(bits / 8)
     const words = getCoder(english).encode(a)
 
     return words.join(' ')
   }
 
-  static async getMnemonic(indexMnemonic = 0, isSaveLocal = true): Promise<string> {
+  static async getMnemonic(indexMnemonic = 0, isSaveLocal = true, amount = 12): Promise<string> {
     const arrMnemonic: ListMnemonic = (await getSecureData(KEY_STORAGE.Mnemonic)) || []
 
 
     if (!arrMnemonic[indexMnemonic]) {
-      arrMnemonic[indexMnemonic] = PassPhase.generateMnemonic(12)
+      arrMnemonic[indexMnemonic] = PassPhase.generateMnemonic(amount)
       // Newly generated mnemonic stored in secure storage if allowed
 
       if (isSaveLocal) {
