@@ -16,9 +16,8 @@ export const checkSupportSecure = async () => {
 
 export const generateKey = () => {
   // byteLength = số byte random, 32 byte ~ 256-bit
-
   const randomBytes = ExpoCrypto.getRandomBytes(32)
-  return bytesToHex(randomBytes, { size: 16 })
+  return bytesToHex(randomBytes)
 }
 
 export const getKeyEncode = async () => {
