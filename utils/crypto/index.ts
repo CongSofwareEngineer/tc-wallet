@@ -11,7 +11,8 @@ export const encodeData = async (value: any, password?: string) => {
     const keyEncode = password || (await getKeyEncode())
     const text = JSON.stringify(value)
     const encryptedValue = CryptoJS.AES.encrypt(text, CryptoJS.enc.Utf8.parse(keyEncode), {
-      iv: getIV(), mode: CryptoJS.mode.CBC,
+      iv: getIV(),
+      mode: CryptoJS.mode.CBC,
       padding: CryptoJS.pad.Pkcs7
     }).toString()
     return encryptedValue
