@@ -5,6 +5,8 @@ import { images } from '@/configs/images'
 import { IsIos } from '@/constants/app'
 import { openAlert } from '@/redux/slices/alertSlice'
 import { store } from '@/redux/store'
+import { ActivityAction, startActivityAsync } from 'expo-intent-launcher'
+import * as Linking from 'expo-linking'
 
 export const cloneDeep = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj))
@@ -129,4 +131,12 @@ export const formatCustomTimestamp = () => {
 
   // Nối chuỗi theo cấu trúc: YYYY_MM_DD__THH_mm_ss_msz
   return `${year}_${month}_${day}__T${hours}_${mins}_${secs}_${ms}z`
+}
+
+export const openSetting = async (type: ActivityAction = ActivityAction.SETTINGS) => {
+  if (IsIos) {
+    await Linking.openSettings()
+  } else {
+    await startActivityAsync(type)
+  }
 }
