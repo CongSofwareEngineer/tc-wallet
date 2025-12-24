@@ -15,6 +15,8 @@ export const getKeyEncode = async () => {
   return toHex(process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE) as string
 }
 
+export const restoreKeyEncode = async () => { }
+
 const create = async () => {
   return window.localStorage
 }

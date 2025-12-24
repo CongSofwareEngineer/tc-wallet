@@ -36,7 +36,6 @@ const RestoreScreen = () => {
   const handleSelectFile = async () => {
     try {
       const result = await readFileFromPicker({ type: 'text/plain' })
-      console.log({ result })
 
       if (result.content) {
         // Simulate file object for UI display
@@ -69,6 +68,7 @@ const RestoreScreen = () => {
       setIsLoading(true)
 
       const dataDecode = await decodeData(fileContent, password)
+
       if (dataDecode?.wallets && dataDecode?.passphrases && dataDecode?.timestamp && dataDecode?.wallets?.length > 0 && dataDecode?.encryptionKey) {
         await restoreKeyEncode(dataDecode.encryptionKey)
         setWallets(dataDecode.wallets)

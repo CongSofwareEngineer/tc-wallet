@@ -6,7 +6,6 @@ import { Animated, Platform, ScrollView, TextInput, TouchableOpacity, View } fro
 
 import KeyboardAvoiding from '@/components/KeyboardAvoiding'
 import ThemedText from '@/components/UI/ThemedText'
-import { APP_CONFIG } from '@/constants/appConfig'
 import { useAlert } from '@/hooks/useAlert'
 import useLanguage from '@/hooks/useLanguage'
 import useMode from '@/hooks/useMode'
@@ -15,12 +14,11 @@ import { encodeData } from '@/utils/crypto'
 import { getDataLocal, saveDataLocal } from '@/utils/storage'
 
 import HeaderScreen from '@/components/Header'
+import { formatCustomTimestamp } from '@/utils/functions'
 import { getKeyEncode } from '@/utils/secureStorage'
 import { createStyles } from './styles'
 
 const BackupScreen = () => {
-  console.log('BackupScreen smartphone')
-
   const router = useRouter()
   const { showSuccess, showError } = useAlert()
   const { isDark } = useMode()
@@ -45,15 +43,11 @@ const BackupScreen = () => {
 
     setIsLoading(true)
     try {
-      let timestamp = new Date().toISOString()
-      timestamp = timestamp.replaceAll(':', '_')
-      timestamp = timestamp.replaceAll('-', '_')
-      timestamp = timestamp.replaceAll('.', '_')
+      const timestamp = formatCustomTimestamp()
       const encryptionKey = await getKeyEncode()
 
       // Tạo backup data với password để tăng security
       const backupData = {
-        version: APP_CONFIG.appVersion,
         timestamp: timestamp,
         wallets: wallets.wallets,
         passphrases: passphrases,

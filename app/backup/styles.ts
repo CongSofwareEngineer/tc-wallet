@@ -55,6 +55,7 @@ export const createStyles = (isDark: boolean) =>
       flex: 1,
       color: isDark ? '#FFFFFF' : '#000000',
       paddingVertical: 0,
+      outline: 'none',
     },
     eyeButton: {
       padding: 4,

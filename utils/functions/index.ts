@@ -113,3 +113,20 @@ export const isObject = (data: any, checkEmpty = false) => {
 
   return checkEmpty ? isObj && Object.keys(data).length > 0 : isObj
 }
+
+export const formatCustomTimestamp = () => {
+  const now = new Date()
+
+  const year = now.getUTCFullYear()
+  // Tháng trong JS bắt đầu từ 0 nên phải +1
+  const month = String(now.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(now.getUTCDate()).padStart(2, '0')
+
+  const hours = String(now.getUTCHours()).padStart(2, '0')
+  const mins = String(now.getUTCMinutes()).padStart(2, '0')
+  const secs = String(now.getUTCSeconds()).padStart(2, '0')
+  const ms = String(now.getUTCMilliseconds()).padStart(3, '0')
+
+  // Nối chuỗi theo cấu trúc: YYYY_MM_DD__THH_mm_ss_msz
+  return `${year}_${month}_${day}__T${hours}_${mins}_${secs}_${ms}z`
+}
