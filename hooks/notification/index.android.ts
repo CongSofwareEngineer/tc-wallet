@@ -1,8 +1,16 @@
 import AppKit from '@/utils/walletKit/appkit'
+import Constants from 'expo-constants'
 import * as Notifications from 'expo-notifications'
 
 const registerNotifications = async () => {
   try {
+    await Notifications.setNotificationChannelAsync('tc-wallet', {
+      name: 'tc-wallet',
+      importance: Notifications.AndroidImportance.MAX,
+      sound: 'music_noti_1.wav',
+      showBadge: true,
+    })
+
     const { status: existingStatus } = await Notifications.getPermissionsAsync()
     let finalStatus = existingStatus
     if (existingStatus !== 'granted') {
@@ -14,7 +22,12 @@ const registerNotifications = async () => {
     }
 
     const tokenData = await Notifications.getDevicePushTokenAsync()
-    console.log({ getDevicePushTokenAsync: tokenData })
+    console.log('Device Push Token (FCM/Native):', tokenData.data)
+
+    const expoTokenData = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig?.extra?.eas?.projectId,
+    })
+    console.log('Expo Push Token (for Expo Tool):', expoTokenData.data)
 
     const token = tokenData.data
     const appKitInstance = AppKit.getInstance()
