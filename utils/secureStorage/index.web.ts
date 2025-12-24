@@ -1,5 +1,6 @@
 import { KEY_STORAGE } from '@/constants/storage'
 
+import { toHex } from 'viem'
 import { decodeData, encodeData } from '../crypto'
 
 export const checkSupportSecure = async () => {
@@ -7,11 +8,11 @@ export const checkSupportSecure = async () => {
 }
 
 export const generateKey = () => {
-  return process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE
+  return toHex(process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE)
 }
 
 export const getKeyEncode = async () => {
-  return process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE as string
+  return toHex(process.env.EXPO_PUBLIC_KEY_ENCODE_STORAGE) as string
 }
 
 const create = async () => {
