@@ -2,7 +2,7 @@ import * as Clipboard from 'expo-clipboard'
 import { formatUnits, parseUnits } from 'viem'
 
 import { images } from '@/configs/images'
-import { IsIos } from '@/constants/app'
+import { IsAndroid, IsIos } from '@/constants/app'
 import { openAlert } from '@/redux/slices/alertSlice'
 import { store } from '@/redux/store'
 import { ActivityAction, startActivityAsync } from 'expo-intent-launcher'
@@ -136,7 +136,8 @@ export const formatCustomTimestamp = () => {
 export const openSetting = async (type: ActivityAction = ActivityAction.SETTINGS) => {
   if (IsIos) {
     await Linking.openSettings()
-  } else {
+  }
+  if (IsAndroid) {
     await startActivityAsync(type)
   }
 }
