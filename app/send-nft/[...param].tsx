@@ -19,7 +19,7 @@ import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
 import { RawTransactionEVM } from '@/types/web3'
 import { convertWeiToBalance, copyToClipboard, ellipsisText, getRadomColor } from '@/utils/functions'
-import { isAddress, isAddressEVM } from '@/utils/nvm'
+import { isAddressEVM } from '@/utils/nvm'
 import { width } from '@/utils/systems'
 import WalletEvmUtil from '@/utils/walletEvm'
 
@@ -248,7 +248,7 @@ const SendNFTScreen = () => {
     if (typeof param.toAddress !== 'undefined') {
       formErrorClone.toAddress = ''
       formClone.toAddress = param.toAddress
-      if (!isAddress(param.toAddress)) {
+      if (!isAddressEVM(param.toAddress)) {
         formErrorClone.toAddress = 'Địa chỉ không hợp lệ'
       }
     }

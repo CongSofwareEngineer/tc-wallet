@@ -11,7 +11,7 @@ import { IsIos } from '@/constants/app'
 import { COLORS } from '@/constants/style'
 import useSheet from '@/hooks/useSheet'
 import { sleep } from '@/utils/functions'
-import { isAddress } from '@/utils/nvm'
+import { isAddressEVM } from '@/utils/nvm'
 import WalletKit from '@/utils/walletKit'
 
 type QrScanProps = {
@@ -75,7 +75,7 @@ const QrScan = ({ type = 'connect', onScanned }: QrScanProps) => {
     switch (type) {
       case 'address':
         data = getAddressByEip681(data)
-        isValid = isAddress(data)
+        isValid = isAddressEVM(data)
 
         break
       case 'form':
