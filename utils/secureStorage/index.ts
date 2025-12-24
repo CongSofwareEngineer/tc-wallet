@@ -26,7 +26,7 @@ export const generateKey = () => {
     binary += String.fromCharCode(randomBytes[i])
   }
 
-  return stringToHex(binary, { size: 32 })
+  return stringToHex(binary, { size: 16 })
 }
 
 export const getKeyEncode = async () => {
