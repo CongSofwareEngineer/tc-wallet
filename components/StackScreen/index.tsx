@@ -33,7 +33,7 @@ const StackScreen = () => {
         <StackExpo.Screen name='(tabs)' options={{ headerShown: false }} />
 
         <StackExpo.Screen
-          name='wallet-detail/[id]'
+          name='wallet-detail'
           options={{
             animation: 'slide_from_right',
           }}

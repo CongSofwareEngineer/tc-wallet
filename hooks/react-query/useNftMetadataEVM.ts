@@ -4,7 +4,7 @@ import fetcher from '@/configs/fetcher'
 import { KEY_REACT_QUERY } from '@/constants/reactQuery'
 import { NFT } from '@/services/moralis/type'
 import { IQueryKey } from '@/types/reactQuery'
-import { detectUrlImage } from '@/utils/functions'
+import { detectUrlImage, stringifyBigInt } from '@/utils/functions'
 
 type UseNftMetadataEVM = {
   animation_url?: string
@@ -24,22 +24,23 @@ const getData = async ({ queryKey }: IQueryKey): Promise<UseNftMetadataEVM> => {
         url: nft?.token_uri,
       })
 
-      if (resTokenUrl?.data.image) {
+      if (resTokenUrl?.data?.image) {
         resTokenUrl.data.image = detectUrlImage(resTokenUrl.data.image)
       }
 
-      return resTokenUrl?.data
+      return resTokenUrl?.data || (nft?.normalized_metadata as UseNftMetadataEVM) || {}
     }
 
-    return nft?.normalized_metadata as UseNftMetadataEVM
+    return (nft?.normalized_metadata as UseNftMetadataEVM) || {}
   } catch (error) {
-    return nft?.normalized_metadata as UseNftMetadataEVM
+    return (nft?.normalized_metadata as UseNftMetadataEVM) || {}
   }
 }
-const useNftMetadataEVM = (nft: NFT) => {
+const useNftMetadataEVM = (nft: NFT | undefined) => {
   const data = useQuery({
-    queryKey: [KEY_REACT_QUERY.getNftMetadataEVM, nft],
+    queryKey: [KEY_REACT_QUERY.getNftMetadataEVM, stringifyBigInt(nft || {})],
     queryFn: getData,
+    enabled: !!nft,
   })
 
   return data

@@ -5,7 +5,7 @@ import { ADDRESS_AFFILIATE, AFFILIATE_FEE_PERCENT, BRIDE_API, REFERRAL_CODE } fr
 import { KEY_REACT_QUERY } from '@/constants/reactQuery'
 import { Token } from '@/services/moralis/type'
 import { ChainId } from '@/types/web3'
-import { convertBalanceToWei } from '@/utils/functions'
+import { convertBalanceToWei, stringifyBigInt } from '@/utils/functions'
 import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { zeroAddress } from 'viem'
@@ -35,7 +35,7 @@ export default function useExchangeToken({
   const { chainId } = useChainSelected()
 
   return useQuery({
-    queryKey: [KEY_REACT_QUERY.getExchangeToken, tokenIn, tokenOut, amountIn, slippage, userAddress, chainId, chainIdOut],
+    queryKey: [KEY_REACT_QUERY.getExchangeToken, stringifyBigInt(tokenIn), stringifyBigInt(tokenOut), amountIn, slippage, userAddress, chainId, chainIdOut],
     queryFn: async ({ queryKey }) => {
       const [, tokenIn, tokenOut, amountIn, slippage, userAddress, chainId, chainIdOut] = queryKey as [
         string,
@@ -65,19 +65,6 @@ export default function useExchangeToken({
           showError: false,
         })
 
-        console.log({
-          resOneChain: res,
-          queryData: {
-            chainId: chainId,
-            tokenIn: getTokenAddress(tokenIn),
-            tokenInAmount: convertBalanceToWei(amountIn, tokenIn.decimals! as number),
-            slippage,
-            tokenOut: getTokenAddress(tokenOut),
-            tokenOutRecipient: userAddress,
-            affiliateFeeRecipient: ADDRESS_AFFILIATE,
-            affiliateFeePercent: AFFILIATE_FEE_PERCENT,
-          },
-        })
         if (res?.data?.errorMessage) {
           throw Error(res?.data?.errorMessage)
         }
@@ -123,7 +110,6 @@ export default function useExchangeToken({
           },
           showError: false,
         })
-        console.log({ resCrossChain: res })
 
         if (res?.data?.errorMessage) {
           throw Error(res?.data?.errorMessage)

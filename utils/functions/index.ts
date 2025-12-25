@@ -8,6 +8,19 @@ import { store } from '@/redux/store'
 import { ActivityAction, startActivityAsync } from 'expo-intent-launcher'
 import * as Linking from 'expo-linking'
 
+export const stringifyBigInt = (obj: any): any => {
+  if (typeof obj === 'bigint') {
+    return obj.toString()
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(stringifyBigInt)
+  }
+  if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, stringifyBigInt(value)]))
+  }
+  return obj
+}
+
 export const cloneDeep = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj))
 }

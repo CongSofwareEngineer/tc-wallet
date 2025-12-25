@@ -7,6 +7,7 @@ import { IQueryKey } from '@/types/reactQuery'
 import { ChainId, RawTransactionEVM } from '@/types/web3'
 import { convertWeiToBalance } from '@/utils/functions'
 
+import { stringifyBigInt } from '@/utils/functions'
 import useChainSelected from '../useChainSelected'
 
 const estimateGasEVM = async ({ queryKey }: IQueryKey) => {
@@ -36,7 +37,7 @@ const useEstimateGas = (transaction?: RawTransactionEVM | null) => {
   const { chainId } = useChainSelected()
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: [KEY_REACT_QUERY.getEstimateGas, transaction, chainId],
+    queryKey: [KEY_REACT_QUERY.getEstimateGas, stringifyBigInt(transaction), chainId],
     queryFn: estimateGasEVM,
     enabled: !!transaction,
   })

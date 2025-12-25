@@ -340,5 +340,19 @@
       },
       "success": "Authentication successful"
     }
+  },
+  "signTypedData": {
+    "title": "EIP-712 Typed Data",
+    "unableToParse": "Unable to parse typed data",
+    "domain": "Domain",
+    "domainSubtitle": "Signing domain",
+    "message": "Message",
+    "messageSubtitle": "Structured data",
+    "types": "Types",
+    "typesSubtitle": "Type definitions",
+    "primaryType": "Primary Type",
+    "primaryTypeSubtitle": "Root struct name",
+    "raw": "Raw",
+    "rawSubtitle": "Original payload"
   }
 }

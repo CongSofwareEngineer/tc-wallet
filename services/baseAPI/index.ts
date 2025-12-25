@@ -1,5 +1,6 @@
 import { IFetch, ReturnData } from '@/configs/fetcher/type'
 import { KEY_STORAGE } from '@/constants/storage'
+import { stringifyBigInt } from '@/utils/functions'
 import { getSecureData } from '@/utils/secureStorage'
 
 class BaseAPI {
@@ -105,7 +106,7 @@ class BaseAPI {
       }
 
       if (body) {
-        fetchInit.body = JSON.stringify(body)
+        fetchInit.body = JSON.stringify(stringifyBigInt(body))
       }
 
       const resFetch = await fetch(callUrl.href, fetchInit)

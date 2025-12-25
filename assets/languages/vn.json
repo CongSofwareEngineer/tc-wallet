@@ -340,5 +340,19 @@
       },
       "success": "Xác thực thành công"
     }
+  },
+  "signTypedData": {
+    "title": "Dữ liệu ký EIP-712",
+    "unableToParse": "Không thể phân tích dữ liệu ký",
+    "domain": "Miền",
+    "domainSubtitle": "Miền ký",
+    "message": "Tin nhắn",
+    "messageSubtitle": "Dữ liệu cấu trúc",
+    "types": "Các kiểu",
+    "typesSubtitle": "Định nghĩa kiểu",
+    "primaryType": "Kiểu chính",
+    "primaryTypeSubtitle": "Tên cấu trúc gốc",
+    "raw": "Dữ liệu gốc",
+    "rawSubtitle": "Payload ban đầu"
   }
 }

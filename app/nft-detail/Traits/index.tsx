@@ -6,7 +6,7 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import ThemedText from '@/components/UI/ThemedText'
 import { COLORS } from '@/constants/style'
 import { NFT } from '@/services/moralis/type'
-import { copyToClipboard, detectUrlImage, isLink, isObject, numberWithCommas } from '@/utils/functions'
+import { copyToClipboard, detectUrlImage, isLink, isObject, numberWithCommas, stringifyBigInt } from '@/utils/functions'
 
 import { styles } from '../styles'
 
@@ -117,7 +117,7 @@ const Traits = ({ nft }: Props) => {
 
     return (
       <ErrorBoundary>
-        <ThemedText type='small'>{isObject(value) ? JSON.stringify(value) : (value as any)?.toString()}</ThemedText>
+        <ThemedText type='small'>{isObject(value) ? JSON.stringify(stringifyBigInt(value)) : (value as any)?.toString()}</ThemedText>
       </ErrorBoundary>
     )
   }

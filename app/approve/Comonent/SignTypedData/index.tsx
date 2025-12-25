@@ -4,15 +4,17 @@ import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-nat
 
 import ThemedText from '@/components/UI/ThemedText'
 import useChains from '@/hooks/useChains'
+import useLanguage from '@/hooks/useLanguage'
 import useTheme from '@/hooks/useTheme'
 import { RequestWC } from '@/redux/slices/requestWC'
-import { copyToClipboard } from '@/utils/functions'
+import { copyToClipboard, stringifyBigInt } from '@/utils/functions'
 
 import { Ionicons } from '@expo/vector-icons'
 import styles from '../../styles'
 
 const SignTypedData = ({ params }: { params: RequestWC }) => {
   const { colors } = useTheme()
+  const { translate } = useLanguage()
   const { chainList, chainCurrent } = useChains()
   const primaryColor = (colors as any)?.primary || '#4CAF50'
   const textSecondary = (colors as any)?.textSecondary || '#A0A0A0'
@@ -85,7 +87,7 @@ const SignTypedData = ({ params }: { params: RequestWC }) => {
 
   const renderJson = (value: unknown) => {
     try {
-      const pretty = JSON.stringify(value, null, 2)
+      const pretty = JSON.stringify(stringifyBigInt(value), null, 2)
       return <ThemedText style={sectionStyles.code}>{pretty}</ThemedText>
     } catch {
       return <ThemedText style={sectionStyles.code}>{String(value)}</ThemedText>
@@ -94,7 +96,7 @@ const SignTypedData = ({ params }: { params: RequestWC }) => {
 
   const handleCopy = async (value: unknown) => {
     try {
-      const text = typeof value === 'string' ? value : JSON.stringify(value, null, 2)
+      const text = typeof value === 'string' ? value : JSON.stringify(stringifyBigInt(value), null, 2)
       await copyToClipboard(text)
     } catch {
       // noop
@@ -106,7 +108,7 @@ const SignTypedData = ({ params }: { params: RequestWC }) => {
       <ScrollView contentContainerStyle={{ padding: 8 }}>
         {!typedData ? (
           <View style={sectionStyles.sectionBox}>
-            <ThemedText style={sectionStyles.sectionSubtitle}>Unable to parse typed data</ThemedText>
+            <ThemedText style={sectionStyles.sectionSubtitle}>{translate('signTypedData.unableToParse')}</ThemedText>
             <View style={sectionStyles.sectionContent}>{renderJson(rawTypedData)}</View>
           </View>
         ) : (
@@ -114,7 +116,7 @@ const SignTypedData = ({ params }: { params: RequestWC }) => {
             <View style={sectionStyles.headerRow}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 {!!resolvedChain?.iconChain && <Image source={{ uri: resolvedChain.iconChain }} style={sectionStyles.chainIcon} />}
-                <ThemedText style={sectionStyles.headerTitle}>EIP-712 Typed Data</ThemedText>
+                <ThemedText style={sectionStyles.headerTitle}>{translate('signTypedData.title')}</ThemedText>
               </View>
               {primaryType && (
                 <View style={sectionStyles.chip}>
@@ -124,31 +126,45 @@ const SignTypedData = ({ params }: { params: RequestWC }) => {
             </View>
 
             {domain !== undefined && (
-              <Section title='Domain' subtitle='Signing domain' onCopy={() => handleCopy(domain)} initiallyOpen>
+              <Section
+                title={translate('signTypedData.domain')}
+                subtitle={translate('signTypedData.domainSubtitle')}
+                onCopy={() => handleCopy(domain)}
+                initiallyOpen
+              >
                 {renderJson(domain)}
               </Section>
             )}
 
             {message !== undefined && (
-              <Section title='Message' subtitle='Structured data' onCopy={() => handleCopy(message)} initiallyOpen>
+              <Section
+                title={translate('signTypedData.message')}
+                subtitle={translate('signTypedData.messageSubtitle')}
+                onCopy={() => handleCopy(message)}
+                initiallyOpen
+              >
                 {renderJson(message)}
               </Section>
             )}
 
             {types !== undefined && (
-              <Section title='Types' subtitle='Type definitions' onCopy={() => handleCopy(types)}>
+              <Section title={translate('signTypedData.types')} subtitle={translate('signTypedData.typesSubtitle')} onCopy={() => handleCopy(types)}>
                 {renderJson(types)}
               </Section>
             )}
 
             {primaryType !== undefined && (
-              <Section title='Primary Type' subtitle='Root struct name' onCopy={() => handleCopy(primaryType)}>
+              <Section
+                title={translate('signTypedData.primaryType')}
+                subtitle={translate('signTypedData.primaryTypeSubtitle')}
+                onCopy={() => handleCopy(primaryType)}
+              >
                 <ThemedText style={sectionStyles.code}>{String(primaryType)}</ThemedText>
               </Section>
             )}
 
             {/* Raw fallback */}
-            <Section title='Raw' subtitle='Original payload' onCopy={() => handleCopy(rawTypedData)}>
+            <Section title={translate('signTypedData.raw')} subtitle={translate('signTypedData.rawSubtitle')} onCopy={() => handleCopy(rawTypedData)}>
               {renderJson(rawTypedData)}
             </Section>
           </>
