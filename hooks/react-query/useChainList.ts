@@ -1,5 +1,5 @@
 import { KEY_REACT_QUERY } from '@/constants/reactQuery'
-import ChainListServices from '@/services/chainList'
+import ChainListServices from '@/services/chainLists'
 import { useQuery } from '@tanstack/react-query'
 import { Assign, Chain, ChainFormatters } from 'viem'
 
