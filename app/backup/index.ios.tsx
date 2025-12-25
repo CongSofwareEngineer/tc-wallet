@@ -17,8 +17,6 @@ import { getKeyEncode } from '@/utils/secureStorage'
 import { createStyles } from './styles'
 
 const BackupScreen = () => {
-  console.log('BackupScreen smartphone')
-
   const router = useRouter()
   const { showSuccess, showError } = useAlert()
   const { isDark } = useMode()

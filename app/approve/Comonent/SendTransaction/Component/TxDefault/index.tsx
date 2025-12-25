@@ -11,7 +11,7 @@ import useAlert from '@/hooks/useAlert'
 import useChains from '@/hooks/useChains'
 import useTheme from '@/hooks/useTheme'
 import { RequestWC } from '@/redux/slices/requestWC'
-import { convertWeiToBalance, copyToClipboard, ellipsisText, lowercase } from '@/utils/functions'
+import { convertWeiToBalance, copyToClipboard, ellipsisText } from '@/utils/functions'
 
 import createLocalStyles from '../../styles'
 
@@ -72,28 +72,18 @@ const TxDefault = ({ params }: { params: RequestWC }) => {
   }, [params])
 
   const { data: dataFunctionNameDecode } = useFunctionNameDecode(tx?.data)
-  console.log({ dataFunctionNameDecode })
 
   const dataInfo = useMemo(() => {
     const data = tx?.data as string | undefined
     if (!data || typeof data !== 'string' || data.length < 4) return null
     try {
-      const hexFunc = lowercase(`0x${data.slice(2, 10)}`)
-      console.log({ hexFunc })
-
-      // if(hexFunc===CODE_FUNCTION[599290589]){
-
-      // }
-
       const decoded = decodeFunctionData({ abi: erc20Abi, data: data as Hex })
-      console.log({ decoded })
 
       return decoded
     } catch {
       return null
     }
   }, [tx])
-  console.log({ dataInfo })
 
   return (
     <View style={[styles.container, { backgroundColor: colors.black3, padding: 12, borderRadius: 12 }]}>

@@ -4,10 +4,7 @@ import * as TaskManager from 'expo-task-manager'
 const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK'
 
 TaskManager.defineTask<Notifications.NotificationTaskPayload>(BACKGROUND_NOTIFICATION_TASK, async ({ data, error }) => {
-  console.log({ data, error })
-
   if (error) {
-    console.error('Background task error:', error)
     return
   }
 
@@ -16,7 +13,6 @@ TaskManager.defineTask<Notifications.NotificationTaskPayload>(BACKGROUND_NOTIFIC
     if (!dataNoti?.body) return
 
     const dataOnly = JSON.parse(dataNoti.body)
-    console.log({ dataOnly })
     await Notifications.setBadgeCountAsync(1)
 
     await Notifications.scheduleNotificationAsync({

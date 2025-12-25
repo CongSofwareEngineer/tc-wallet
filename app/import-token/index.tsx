@@ -183,7 +183,6 @@ const ImportTokenScreen = () => {
     setLoading(true)
     try {
       // TODO: Implement token import logic
-      console.log('Importing token:', formData)
       // Add your import logic here
       router.back()
     } catch (error) {

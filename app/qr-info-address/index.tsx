@@ -90,10 +90,7 @@ const QRInfoAddressScreen = () => {
       <ThemedText style={styles.scanSubtitle}>{translate('receive.scanSubtitle')}</ThemedText>
       <ThemeTouchableOpacity
         style={styles.openCameraButton}
-        onPress={() => {
-          // Navigate to camera screen
-          console.log('Open camera')
-        }}
+
       >
         <Ionicons name='camera-outline' size={24} color={isDark ? '#FFFFFF' : '#000000'} />
         <ThemedText style={styles.openCameraText}>{translate('receive.openCamera')}</ThemedText>

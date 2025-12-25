@@ -37,7 +37,6 @@ const Security = () => {
   const setting = useAppSelector((state) => state.settings)
 
   const handleChangePasscode = () => {
-    console.log('handleChangePasscode', setting)
 
     const callbackDisable = async () => {
       try {
@@ -58,7 +57,7 @@ const Security = () => {
   }
 
   const handleEditPasscode = async () => {
-    console.log('handleEditPasscode')
+    ('handleEditPasscode')
 
     const callbackDisable = async () => {
       try {
@@ -107,7 +106,7 @@ const Security = () => {
           showAlert({ text: translate('setting.security.success') })
         }
 
-        console.log({ isEnrolled, dataFaceId })
+        ({ isEnrolled, dataFaceId })
       } else {
         await openSetting(ActivityAction.SECURITY_SETTINGS);
         showAlert({ text: translate('setting.security.error.notSupported') })

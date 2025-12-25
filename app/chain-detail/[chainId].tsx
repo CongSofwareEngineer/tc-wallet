@@ -70,7 +70,6 @@ const ChainDetailScreen = () => {
       // Update the network using the hook
       updateNetworks(updatedNetwork)
 
-      console.log('Chain updated successfully:', updatedNetwork)
       router.back()
     } catch (error) {
       console.error('Error updating chain:', error)

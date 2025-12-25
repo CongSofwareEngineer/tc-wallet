@@ -31,7 +31,6 @@ const TokenDetailScreen = () => {
   const tokenCurrent = useMemo(() => {
     return listTokens?.find((i) => i.token_address.toLowerCase() === address.toLowerCase()) || listTokens?.[0]
   }, [listTokens, address])
-  console.log({ tokenCurrent })
 
   const priceChange = tokenCurrent?.usd_price_24hr_percent_change || 0
   const priceChangeColor = priceChange >= 0 ? '#00D09C' : '#FF4D4D'

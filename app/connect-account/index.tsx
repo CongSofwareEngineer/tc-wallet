@@ -30,7 +30,7 @@ const ConnectAccountScreen = () => {
   const request = useMemo(() => {
     return requestWC[0]
   }, [requestWC])
-  console.log({ query, request })
+    ({ query, request })
 
   const listChains = useMemo(() => {
     if (!request) return []

@@ -95,13 +95,13 @@ const SendTokenScreen = () => {
         const decode = encodeFunctionData({
           abi: erc20Abi,
           functionName: 'transfer',
-          args: [wallet.address as `0x${string}`, BigInt(selectedToken.balance)],
+          args: [wallet.address as `0x${string}`, Number(selectedToken.balance) as any],
         })
         const raw: RawTransactionEVM = {
           from: wallet?.address as `0x${string}`,
           to: selectedToken.token_address as `0x${string}`,
           data: decode,
-          value: 0n,
+          value: 0 as any,
         }
         return raw
       }

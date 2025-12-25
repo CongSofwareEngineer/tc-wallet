@@ -8,7 +8,7 @@ export const useFilter = () => {
   const filters = useSelector((state: RootState) => state.filter)
 
   const setFilterToken = (updates: Partial<RootState['filter']['tokens']>) => {
-    console.log({ updates })
+    ; ({ updates })
 
     dispatch(setFilter({ tokens: updates as any }))
   }

@@ -79,7 +79,6 @@ const ImportChainScreen = () => {
       // Add the network using the hook
       addNetwork(newNetwork)
 
-      console.log('Chain created successfully:', newNetwork)
       router.back()
     } catch (error) {
       console.error('Error creating chain:', error)

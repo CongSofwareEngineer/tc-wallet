@@ -42,13 +42,10 @@ const ConnectDAppScreen = ({ type = 'connect' }: Props) => {
     try {
       setLoading(true)
       const kit = await WalletKit.init()
-      console.log({ kit, uri })
 
       await sleep(500)
       await kit.pair({ uri })
-    } catch (error) {
-      console.log({ error })
-    }
+    } catch (error) { }
   }
 
   function toggleCameraFacing() {

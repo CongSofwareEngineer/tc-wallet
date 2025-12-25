@@ -20,8 +20,6 @@ const PersonalSign = ({ params }: { params: RequestWC }) => {
       }
       return message
     } catch (error) {
-      console.log({ error, message: params?.params?.request.params[0] })
-
       return 'Invalid message'
     }
   }, [wallets, params])

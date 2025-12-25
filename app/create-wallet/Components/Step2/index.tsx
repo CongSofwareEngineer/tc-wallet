@@ -61,7 +61,6 @@ const Step2 = ({ handleClose }: Props) => {
     setLoading(false)
   }
 
-  console.log({ loading });
 
 
   const renderPassPhrase = () => {

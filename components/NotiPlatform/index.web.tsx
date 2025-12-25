@@ -4,8 +4,6 @@ import * as TaskManager from 'expo-task-manager'
 const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK'
 
 TaskManager.defineTask<Notifications.NotificationTaskPayload>(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, executionInfo }) => {
-  console.log({ data, error, executionInfo })
-
   const isNotificationResponse = 'actionIdentifier' in data
   if (isNotificationResponse) {
     // Do something with the notification response from user

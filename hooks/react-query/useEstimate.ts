@@ -18,7 +18,7 @@ const estimateGasEVM = async ({ queryKey }: IQueryKey) => {
     const [gasPrice, estimatedGas] = await Promise.all([EVMServices.getGasPrice(chainId, 1.5), EVMServices.estimateGas(raw)])
 
     const totalFee = convertWeiToBalance(BigNumber(estimatedGas.toString()).multipliedBy(gasPrice.toString()).toFixed(), 18)
-    const totalFeeUpToHight = BigNumber(totalFee).multipliedBy(1.1).toFixed() // add 20% buffer
+    const totalFeeUpToHight = BigNumber(totalFee).multipliedBy(1.2).toFixed() // add 20% buffer
 
     return {
       totalFee: totalFeeUpToHight,

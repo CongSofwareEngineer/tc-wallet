@@ -41,7 +41,6 @@ const useSubscribeWC = () => {
     }
 
     const onSessionProposal = async (e: any) => {
-      console.log({ onSessionProposal: e })
 
       store.dispatch(
         setRequestWC({
@@ -69,7 +68,6 @@ const useSubscribeWC = () => {
         instance.on('session_request', onSessionRequest)
         instance.on('session_proposal', onSessionProposal)
         instance.on('session_authenticate', async (e) => {
-          console.log({ session_authenticate: e })
         })
 
         // auto reconnect

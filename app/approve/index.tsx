@@ -12,6 +12,7 @@ import { sleep } from '@/utils/functions'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useCollections from '@/hooks/react-query/useCollections'
 import useListNFTs from '@/hooks/react-query/useListNFTs'
+import WalletKit from '@/utils/walletKit'
 import CurrentSession from './Comonent/CurrentSession'
 import PersonalSign from './Comonent/Personalsign'
 import SendTransaction from './Comonent/SendTransaction'
@@ -48,7 +49,6 @@ const ApproveScreen = () => {
     try {
       setRejecting(true)
       if (requestLasted?.id) {
-        const WalletKit = await import('@/utils/walletKit').then((mod) => mod.default)
         await WalletKit.respondSessionRequest(requestLasted.id, requestLasted.topic, 'USER_REJECTED', true)
         await sleep(500)
         removeRequest(requestLasted.id)
@@ -66,7 +66,6 @@ const ApproveScreen = () => {
       const method = requestLasted?.params?.request?.method
 
       if (requestLasted?.id) {
-        const WalletKit = await import('@/utils/walletKit').then((mod) => mod.default)
 
         const { id, params, topic } = requestLasted
         WalletKit.onApproveRequest(id, topic, params as any)

@@ -32,7 +32,6 @@ const ImageMain = ({ nft }: Props) => {
 
     return false
   }, [typeUrlAnimation, metaData, typeUrlImage])
-  console.log({ typeUrlImage, typeUrlAnimation, metaData, loading: isLoading || isLoadingImage || isLoadingAnimation })
 
   return (
     <View style={styles.container}>
