@@ -18,7 +18,10 @@ if (APP_CONFIG.isDevelopment && Platform.OS !== 'web') {
   require('@/utils/debug/reactotron')
 }
 // Set the animation options. This is optional.
-SplashScreen.preventAutoHideAsync()
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+})
 
 export default function RootLayout() {
   useEffect(() => {
