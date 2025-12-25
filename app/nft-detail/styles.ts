@@ -97,3 +97,5 @@ export const styles = StyleSheet.create({
     color: '#00D09C',
   },
 })
+
+export default () => {}

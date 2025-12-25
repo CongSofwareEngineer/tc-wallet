@@ -22,3 +22,5 @@ export type BorderWidth = {
     borderWidth: number
   }
 }
+
+export default () => {}

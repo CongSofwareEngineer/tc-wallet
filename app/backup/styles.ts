@@ -151,3 +151,5 @@ export const createStyles = (isDark: boolean) =>
       borderRadius: 2,
     },
   })
+
+export default () => {}

@@ -154,3 +154,5 @@ export const createStyles = (isDark: boolean) =>
       color: isDark ? '#999999' : '#666666',
     },
   })
+
+export default () => {}

@@ -84,3 +84,5 @@ export const getStyles = (isDark: boolean) => {
     },
   })
 }
+
+export default () => {}

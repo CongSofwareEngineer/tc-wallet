@@ -176,13 +176,14 @@ const SwapScreen = () => {
 
 
   useEffect(() => {
-    if (listTokenByChain) {
+    setOutputToken(undefined)
+    if (listTokenByChain?.length > 0) {
       const tokenOut = listTokenByChain.find((t) => (t.token_address || zeroAddress) === zeroAddress)
-      if (tokenOut && !outputToken) {
+      if (tokenOut) {
         setOutputToken(tokenOut)
       }
     }
-  }, [listTokenByChain])
+  }, [listTokenByChain, outputChain])
 
   useEffect(() => {
     if (errorRawTransactionDeBridge?.message) {
