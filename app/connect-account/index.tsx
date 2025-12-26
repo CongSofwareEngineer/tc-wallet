@@ -1,5 +1,4 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { getSdkError } from '@walletconnect/utils'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { useMemo, useState } from 'react'
@@ -12,7 +11,7 @@ import useLanguage from '@/hooks/useLanguage'
 import useRequestWC from '@/hooks/useReuestWC'
 import useTheme from '@/hooks/useTheme'
 import useWallets from '@/hooks/useWallets'
-import { ellipsisText, sleep } from '@/utils/functions'
+import { ellipsisText, getErrorWalletConnect, sleep } from '@/utils/functions'
 import WalletKit from '@/utils/walletKit'
 
 import styles from './styles'
@@ -56,7 +55,7 @@ const ConnectAccountScreen = () => {
       const walletKit = await WalletKit.init()
       await walletKit.rejectSession({
         id: request?.id,
-        reason: getSdkError('USER_REJECTED'),
+        reason: getErrorWalletConnect('USER_REJECTED'),
       })
       await sleep(500)
       removeRequest(request?.id)

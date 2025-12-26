@@ -6,7 +6,7 @@ import 'fast-text-encoding'
 ///
 import { WalletKitTypes } from '@reown/walletkit'
 import { WalletKit as TypeWallet } from '@reown/walletkit/dist/types/client'
-import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
+import { buildApprovedNamespaces } from '@walletconnect/utils'
 import moment from 'moment'
 
 import { openAlert } from '@/redux/slices/alertSlice'
@@ -14,7 +14,7 @@ import { setSessions } from '@/redux/slices/sessionsSlice'
 import { store } from '@/redux/store'
 import { EIPNamespaces, Params, Session, Sessions } from '@/types/walletConnect'
 
-import { cloneDeep } from '../functions'
+import { cloneDeep, getErrorWalletConnect } from '../functions'
 
 import WalletConnectUtils from '../walletConnect'
 import AppKit from './appkit'
@@ -136,7 +136,7 @@ class WalletKit {
     } catch {
       await walletKit.rejectSession({
         id: id,
-        reason: getSdkError('USER_REJECTED'),
+        reason: getErrorWalletConnect('USER_REJECTED'),
       })
     }
   }
@@ -159,7 +159,7 @@ class WalletKit {
   static async disconnectSession(topic: string): Promise<void> {
     try {
       const walletKit = await this.init()
-      await walletKit.disconnectSession({ topic, reason: getSdkError('USER_DISCONNECTED') })
+      await walletKit.disconnectSession({ topic, reason: getErrorWalletConnect('USER_DISCONNECTED') })
     } catch { }
   }
 
@@ -170,7 +170,7 @@ class WalletKit {
       for (const key in sessions) {
         const t = sessions[key].topic
         try {
-          await instance.disconnectSession({ topic: t, reason: getSdkError('USER_DISCONNECTED') })
+          await instance.disconnectSession({ topic: t, reason: getErrorWalletConnect('USER_DISCONNECTED') })
         } catch { }
         await this.safeUnsubscribe(t)
       }
@@ -211,7 +211,7 @@ class WalletKit {
           response: {
             id,
             jsonrpc: '2.0',
-            error: { code: -32001, message: 'Session not found for topic' },
+            error: getErrorWalletConnect('INVALID_SESSION_SETTLE_REQUEST')
           },
         })
         return

@@ -7,14 +7,13 @@ import ThemedText from '@/components/UI/ThemedText'
 import useLanguage from '@/hooks/useLanguage'
 import useRequestWC from '@/hooks/useReuestWC'
 import { useAppSelector } from '@/redux/hooks'
-import { sleep } from '@/utils/functions'
+import { getErrorWalletConnect, sleep } from '@/utils/functions'
 
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useCollections from '@/hooks/react-query/useCollections'
 import useListNFTs from '@/hooks/react-query/useListNFTs'
 import useAuth from '@/hooks/useAuth'
 import WalletKit from '@/utils/walletKit'
-import { getSdkError } from '@walletconnect/utils'
 import CurrentSession from './Comonent/CurrentSession'
 import PersonalSign from './Comonent/Personalsign'
 import SendTransaction from './Comonent/SendTransaction'
@@ -90,7 +89,7 @@ const ApproveScreen = () => {
           const instance = await WalletKit.init()
           await instance.rejectSession({
             id: id,
-            reason: getSdkError('USER_REJECTED'),
+            reason: getErrorWalletConnect('USER_REJECTED'),
           })
 
         }

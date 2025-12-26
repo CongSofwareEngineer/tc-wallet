@@ -5,6 +5,7 @@ import { images } from '@/configs/images'
 import { IsAndroid, IsIos } from '@/constants/app'
 import { openAlert } from '@/redux/slices/alertSlice'
 import { store } from '@/redux/store'
+import { getSdkError, SdkErrorKey } from '@walletconnect/utils'
 import { ActivityAction, startActivityAsync } from 'expo-intent-launcher'
 import * as Linking from 'expo-linking'
 
@@ -153,4 +154,8 @@ export const openSetting = async (type: ActivityAction = ActivityAction.SETTINGS
   if (IsAndroid) {
     await startActivityAsync(type)
   }
+}
+
+export const getErrorWalletConnect = (key: SdkErrorKey) => {
+  return getSdkError(key)
 }
