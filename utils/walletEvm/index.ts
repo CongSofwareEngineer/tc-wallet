@@ -6,11 +6,13 @@ import EVMServices from '@/services/EVM'
 import { Params } from '@/types/walletConnect'
 import { RawTransactionEVM } from '@/types/web3'
 
+import { KEY_STORAGE } from '@/constants/storage'
 import { TYPE_TRANSACTION } from '@/constants/walletConnect'
 import { setChainSelected } from '@/redux/slices/chainSelected'
 import { addNetwork } from '@/redux/slices/chainSlice'
 import { decodeData } from '../crypto'
 import { lowercase, sleep } from '../functions'
+import { getDataLocal, saveDataLocal } from '../storage'
 
 class WalletEvmUtil {
   static getChainIdFromChainRequest(eip: string) {
@@ -196,6 +198,94 @@ class WalletEvmUtil {
     }
   }
 
+  static async getCapabilities(address: string) {
+    const listChain = store.getState().chains
+    const capabilities: any = {}
+
+    listChain.forEach((chain) => {
+      const chainIdHex = `0x${chain.id.toString(16)}`
+      capabilities[chainIdHex] = {
+        atomicBatch: {
+          supported: false,
+        },
+      }
+    })
+
+    return capabilities
+  }
+
+  static async sendCalls(params: any, privateKey: Hex): Promise<Hash> {
+    const { calls, chainId: chainIdHex } = params
+    const chainId = typeof chainIdHex === 'string' && chainIdHex.startsWith('0x') ? parseInt(chainIdHex, 16) : chainIdHex
+
+    let firstHash: Hash | undefined
+
+    for (const call of calls) {
+      const rawTx: RawTransactionEVM = {
+        to: call.to,
+        data: call.data,
+        value: call.value,
+        chainId,
+      }
+      const hash = await this.sendTransaction(rawTx, privateKey)
+      if (!firstHash) {
+        firstHash = hash
+      }
+    }
+
+    if (!firstHash) {
+      throw new Error('No calls to send')
+    }
+
+    return firstHash // Use the first tx hash as the bundleId for EOA sequential execution
+  }
+
+  static async getPermissions() {
+    return [
+      {
+        parentCapability: 'eth_accounts',
+        caveats: [
+          {
+            type: 'filterResponse',
+            value: ['eth_accounts'],
+          },
+        ],
+      },
+    ]
+  }
+
+  static async watchAsset(params: any, chainId: number) {
+    if (params.type !== 'ERC20') {
+      throw new Error('Only ERC20 tokens are supported')
+    }
+    const { address, symbol, decimals, image } = params.options
+    const listTokenImportLocal = getDataLocal(KEY_STORAGE.ListTokenImportLocal) || {}
+
+    const token = {
+      is_imported: true,
+      verified_contract: false,
+      decimals: Number(decimals),
+      symbol: symbol,
+      name: symbol,
+      token_address: address,
+      usd_value: 0,
+      usd_price: 0,
+      logo: image,
+    }
+
+    if (listTokenImportLocal[chainId] && Array.isArray(listTokenImportLocal[chainId])) {
+      const exists = listTokenImportLocal[chainId].find((t: any) => lowercase(t.token_address) === lowercase(address))
+      if (!exists) {
+        listTokenImportLocal[chainId].push(token)
+      }
+    } else {
+      listTokenImportLocal[chainId] = [token]
+    }
+
+    saveDataLocal(KEY_STORAGE.ListTokenImportLocal, listTokenImportLocal)
+    return true
+  }
+
   static async approveRequest(params: Params) {
     try {
       const chainSelected = store.getState().chainSelected
@@ -345,13 +435,35 @@ class WalletEvmUtil {
 
         case 'wallet_getPermissions':
         case 'wallet_requestPermissions':
+          result = await WalletEvmUtil.getPermissions()
+          break
         case 'wallet_registerOnboarding':
+          result = true
+          break
         case 'wallet_watchAsset':
+          result = await WalletEvmUtil.watchAsset(msgParams, chainId)
+          break
         case 'wallet_scanQRCode':
+          // Placeholder for QR Scanning. In a real app, this would open a camera screen.
+          // For now we return a rejected promise or a dummy result to indicate manual action needed.
+          result = Promise.reject(new Error('QR Scanning requires user interaction on the device.'))
+          break
         case 'wallet_sendCalls':
+          result = await WalletEvmUtil.sendCalls(msgParams, wallet?.privateKey)
+          break
         case 'wallet_getCallsStatus':
+          // For sequential EOA, status is just the receipt of the bundleId (first TX)
+          const status = await EVMServices.tracking(msgParams as Hash, chainId)
+          result = {
+            status: status ? 'CONFIRMED' : 'PENDING',
+            receipts: status ? [status] : [],
+          }
+          break
         case 'wallet_showCallsStatus':
+          result = null
+          break
         case 'wallet_getCapabilities':
+          result = await WalletEvmUtil.getCapabilities(wallet.address)
           break
       }
 
