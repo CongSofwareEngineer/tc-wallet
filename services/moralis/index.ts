@@ -6,7 +6,7 @@ import MoralisUtils from '@/utils/moralis'
 
 import { isTokenNative } from '@/utils/nvm'
 import { zeroAddress } from 'viem'
-import { Collection, NFT, NFTResponse, Token } from './type'
+import { Collection, HistoryTx, NFT, NFTResponse, Token } from './type'
 
 const fetcher = (params: IFetch) => {
   const url = `/api/v2.2${params?.url}`
@@ -143,6 +143,39 @@ class MoralisService {
         page: 1,
         cursor: null,
         page_size: 20,
+        result: [],
+        status: 'FAILED',
+      }
+    }
+  }
+
+  static async getHistoryTxByWallet(params: { address: string; chainId: ChainId; cursor?: string; limit?: number }): Promise<HistoryTx> {
+    try {
+      const paramsSearch = new URLSearchParams({
+        chain: this.getChainType(params.chainId),
+        limit: (params.limit || 20).toString(),
+        cursor: params.cursor || '',
+        order: 'DESC',
+      })
+
+      const res = await fetcher({
+        url: `/wallets/${params.address}/history?${paramsSearch.toString()}`,
+      })
+
+      return (
+        res?.data || {
+          page: 1,
+          cursor: null,
+          page_size: 20,
+          result: [],
+          status: 'FAILED',
+        }
+      )
+    } catch (error) {
+      return {
+        page: '1',
+        cursor: null,
+        page_size: '20',
         result: [],
         status: 'FAILED',
       }

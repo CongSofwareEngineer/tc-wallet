@@ -17,4 +17,5 @@ export enum KEY_REACT_QUERY {
   getChainList = 'getChainList',
   getListTokenByChain = 'getListTokenByChain',
   getRawDeBridge = 'getRawDeBridge',
+  getHistoryTxByWallet = 'getHistoryTxByWallet',
 }
