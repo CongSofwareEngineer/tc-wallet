@@ -56,7 +56,7 @@ const useAuth = () => {
     return await new Promise<boolean>(async (resolve, reject) => {
       const data = await getSecureData(KEY_STORAGE.PasscodeAuth)
 
-      if (data) {
+      if (data || setting.isFaceId) {
         openModal({
           maskClosable: false,
           onClose: () => reject(new Error(ERROR_TYPE.PassAuthClose)),

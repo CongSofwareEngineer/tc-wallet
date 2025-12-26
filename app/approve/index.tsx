@@ -12,7 +12,9 @@ import { sleep } from '@/utils/functions'
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useCollections from '@/hooks/react-query/useCollections'
 import useListNFTs from '@/hooks/react-query/useListNFTs'
+import useAuth from '@/hooks/useAuth'
 import WalletKit from '@/utils/walletKit'
+import { getSdkError } from '@walletconnect/utils'
 import CurrentSession from './Comonent/CurrentSession'
 import PersonalSign from './Comonent/Personalsign'
 import SendTransaction from './Comonent/SendTransaction'
@@ -28,6 +30,7 @@ const ApproveScreen = () => {
   const { refetch: refetchBalance } = useBalanceToken()
   const { refetch: refetchCollections } = useCollections()
   const { refetch: refetchNFTs } = useListNFTs()
+  const { handleVerify } = useAuth()
 
   const requestLasted = useMemo(() => {
     if (requestWC[requestWC.length - 1]) {
@@ -60,23 +63,44 @@ const ApproveScreen = () => {
     }
   }
 
-  const handleApprove = async () => {
+  const checkIsVerify = async () => {
     try {
-      setApproving(true)
-      const method = requestLasted?.params?.request?.method
+      const isVerify = await handleVerify()
+      return isVerify
+    } catch (error) {
+      return false
+    }
+  }
 
+  const handleApprove = async () => {
+    setApproving(true)
+    const method = requestLasted?.params?.request?.method
+    try {
       if (requestLasted?.id) {
-
         const { id, params, topic } = requestLasted
-        WalletKit.onApproveRequest(id, topic, params as any)
-        if ('eth_sendTransaction' === method) {
-          await Promise.all([refetchBalance(), refetchCollections(), refetchNFTs()])
+
+        const isVerify = await checkIsVerify()
+        if (isVerify) {
+          await WalletKit.onApproveRequest(id, topic, params as any)
+          if ('eth_sendTransaction' === method) {
+            await Promise.all([refetchBalance(), refetchCollections(), refetchNFTs()])
+          }
+
+        } else {
+          const instance = await WalletKit.init()
+          await instance.rejectSession({
+            id: id,
+            reason: getSdkError('USER_REJECTED'),
+          })
+
         }
-        await sleep(500)
-        removeRequest(requestLasted.id)
+
       }
+      await sleep(500)
     } catch {
+
     } finally {
+      removeRequest(requestLasted?.id!)
       setApproving(false)
       router.dismissAll()
     }
