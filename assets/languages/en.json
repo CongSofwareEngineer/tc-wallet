@@ -354,5 +354,8 @@
     "primaryTypeSubtitle": "Root struct name",
     "raw": "Raw",
     "rawSubtitle": "Original payload"
+  },
+  "history": {
+    "title": "History"
   }
 }

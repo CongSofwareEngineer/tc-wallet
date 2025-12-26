@@ -39,6 +39,14 @@ const TabNavigation = () => {
       />
 
       <Tabs.Screen
+        name='history'
+        options={{
+          title: translate('history.title'),
+          tabBarIcon: ({ color }) => <AntDesign size={16} name='history' color={color} />,
+        }}
+      />
+
+      <Tabs.Screen
         name='setting'
         options={{
           title: translate('setting.titlePage'),
