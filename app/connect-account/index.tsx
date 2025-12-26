@@ -1,7 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { getSdkError } from '@walletconnect/utils'
 import { Image } from 'expo-image'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 import React, { useMemo, useState } from 'react'
 import { FlatList, View } from 'react-native'
 
@@ -25,12 +25,11 @@ const ConnectAccountScreen = () => {
   const { text } = useTheme()
   const { translate } = useLanguage()
   const router = useRouter()
-  const query = useLocalSearchParams()
 
   const request = useMemo(() => {
     return requestWC[0]
   }, [requestWC])
-    ({ query, request })
+
 
   const listChains = useMemo(() => {
     if (!request) return []

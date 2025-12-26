@@ -179,12 +179,16 @@ class WalletEvmUtil {
       const privateKeyDecode = await decodeData(privateKey)
 
       const account = privateKeyToAccount(privateKeyDecode)
-      const signature = await account.signTypedData({
+      const rawSign: any = {
         domain: raw.domain,
         types: raw.types,
-        primaryType: raw.primaryType!,
         message: raw.message!,
-      })
+      }
+      if (raw.primaryType) {
+        rawSign.primaryType = raw.primaryType
+      }
+
+      const signature = await account.signTypedData(rawSign as any)
 
       return signature as Hash
     } catch (error) {
@@ -228,6 +232,10 @@ class WalletEvmUtil {
             types: typeData.types,
             message: typeData.message,
           }
+          if (typeData.primaryType) {
+            raw.primaryType = typeData.primaryType
+          }
+
           result = await WalletEvmUtil.signTypedData(raw, wallet?.privateKey)
           break
         case 'eth_signTransaction':
