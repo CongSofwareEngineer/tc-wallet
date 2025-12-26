@@ -8,10 +8,6 @@ import { styles } from './styles'
 const HistoryScreen = () => {
   const { data: listData, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useHistoryTx()
 
-  if (isLoading) {
-    return <MyLoading />
-  }
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -25,6 +21,7 @@ const HistoryScreen = () => {
         }}
         onEndReachedThreshold={0.5}
         ListFooterComponent={isFetchingNextPage ? <MyLoading /> : null}
+        ListEmptyComponent={isLoading ? <MyLoading /> : null}
         showsVerticalScrollIndicator={false}
       />
     </View>
