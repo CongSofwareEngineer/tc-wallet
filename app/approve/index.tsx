@@ -7,13 +7,14 @@ import ThemedText from '@/components/UI/ThemedText'
 import useLanguage from '@/hooks/useLanguage'
 import useRequestWC from '@/hooks/useReuestWC'
 import { useAppSelector } from '@/redux/hooks'
-import { getErrorWalletConnect, sleep } from '@/utils/functions'
+import { sleep } from '@/utils/functions'
 
 import useBalanceToken from '@/hooks/react-query/useBalanceToken'
 import useCollections from '@/hooks/react-query/useCollections'
 import useListNFTs from '@/hooks/react-query/useListNFTs'
 import useAuth from '@/hooks/useAuth'
 import WalletKit from '@/utils/walletKit'
+import { getSdkError } from '@walletconnect/utils'
 import CurrentSession from './Comonent/CurrentSession'
 import PersonalSign from './Comonent/Personalsign'
 import SendTransaction from './Comonent/SendTransaction'
@@ -61,9 +62,10 @@ const ApproveScreen = () => {
       router.dismissAll()
     }
   }
-
   const checkIsVerify = async () => {
     try {
+      setApproving(true)
+      const method = requestLasted?.params?.request?.method
       const isVerify = await handleVerify()
       return isVerify
     } catch (error) {
@@ -75,9 +77,11 @@ const ApproveScreen = () => {
     setApproving(true)
     const method = requestLasted?.params?.request?.method
     try {
-      if (requestLasted?.id) {
-        const { id, params, topic } = requestLasted
 
+
+      if (requestLasted?.id) {
+
+        const { id, params, topic } = requestLasted
         const isVerify = await checkIsVerify()
         if (isVerify) {
           await WalletKit.onApproveRequest(id, topic, params as any)
@@ -89,17 +93,16 @@ const ApproveScreen = () => {
           const instance = await WalletKit.init()
           await instance.rejectSession({
             id: id,
-            reason: getErrorWalletConnect('USER_REJECTED'),
+            reason: getSdkError('USER_REJECTED'),
           })
 
         }
-
       }
       await sleep(500)
     } catch {
-
     } finally {
       removeRequest(requestLasted?.id!)
+
       setApproving(false)
       router.dismissAll()
     }
