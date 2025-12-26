@@ -15,8 +15,8 @@ import { store } from '@/redux/store'
 import { EIPNamespaces, Params, Session, Sessions } from '@/types/walletConnect'
 
 import { cloneDeep } from '../functions'
-import WalletEvmUtil from '../walletEvm'
 
+import WalletConnectUtils from '../walletConnect'
 import AppKit from './appkit'
 
 export type TypeWalletKit = TypeWallet
@@ -188,7 +188,7 @@ class WalletKit {
         return
       }
       if (params?.chainId?.includes('eip155')) {
-        const result = await WalletEvmUtil.approveRequest(params)
+        const result = await WalletConnectUtils.approveRequest(params)
 
         // result returned from approveRequest
         await this.respondSessionRequest(id, topic, result)
