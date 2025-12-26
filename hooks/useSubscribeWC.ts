@@ -32,8 +32,8 @@ const useSubscribeWC = () => {
             timestamp: Date.now(),
             type: 'request',
           })
-          // await sleep(300)
-          // router.push('/approve')
+          await sleep(300)
+          router.push('/approve')
         }
       } catch (error) {
         console.error({ onSessionRequest: error })
@@ -49,9 +49,9 @@ const useSubscribeWC = () => {
           type: 'proposal',
         })
       )
-      // setTimeout(() => {
-      //   router.replace('/connect-account')
-      // }, 500)
+      setTimeout(() => {
+        router.replace('/connect-account')
+      }, 500)
     }
 
     const init = async () => {
@@ -88,13 +88,7 @@ const useSubscribeWC = () => {
     }
   }, [router, setRequest])
 
-  useEffect(() => {
-    if (requestWC?.length > 0) {
-      setTimeout(() => {
-        router.replace('/connect-account')
-      }, 500)
-    }
-  }, [requestWC])
+
 
 }
 
