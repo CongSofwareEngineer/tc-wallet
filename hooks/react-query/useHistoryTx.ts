@@ -31,7 +31,8 @@ const useHistoryTx = (option: 'nft' | 'token' = 'token') => {
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
   })
+  let allNFTs = data.data?.pages.flatMap((page) => page.result)
 
-  return data
+  return { ...data, data: allNFTs }
 }
 export default useHistoryTx

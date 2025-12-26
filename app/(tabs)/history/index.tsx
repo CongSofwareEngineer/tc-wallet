@@ -6,9 +6,7 @@ import { FlatList, View } from 'react-native'
 import { styles } from './styles'
 
 const HistoryScreen = () => {
-  const { data: historyTx, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useHistoryTx()
-
-  const listData = historyTx?.pages.flatMap((page) => page.result) || []
+  const { data: listData, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useHistoryTx()
 
   if (isLoading) {
     return <MyLoading />
