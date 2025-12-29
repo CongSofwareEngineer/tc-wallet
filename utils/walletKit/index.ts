@@ -7,7 +7,6 @@ import 'fast-text-encoding'
 import { WalletKitTypes } from '@reown/walletkit'
 import { WalletKit as TypeWallet } from '@reown/walletkit/dist/types/client'
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
-import moment from 'moment'
 
 import { openAlert } from '@/redux/slices/alertSlice'
 import { setSessions } from '@/redux/slices/sessionsSlice'
@@ -181,7 +180,7 @@ class WalletKit {
   static async onApproveRequest(id: number, topic: string, params: Params): Promise<void> {
     try {
       const expiryTimestamp = params.request.expiryTimestamp
-      const nowSecUTC = moment().utc().unix()
+      const nowSecUTC = Math.floor(Date.now() / 1000)
 
       if (expiryTimestamp && nowSecUTC > expiryTimestamp) {
         store.dispatch(openAlert({ text: 'Request expired', duration: 2000 }))
