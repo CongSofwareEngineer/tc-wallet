@@ -1,5 +1,6 @@
 import MyImage from '@/components/MyImage'
 import ThemedText from '@/components/UI/ThemedText'
+import { images } from '@/configs/images'
 import { COLORS } from '@/constants/style'
 import useMode from '@/hooks/useMode'
 import useWallets from '@/hooks/useWallets'
@@ -50,7 +51,7 @@ const HistoryItem = ({ item }: Props) => {
           image = metadata?.image || metadata?.image_url || image
         }
       } catch (error) { }
-      primaryImage = detectUrlImage(image)
+      primaryImage = detectUrlImage(image, images.icons.nftDefault)
       primaryDirection = nft.direction
       summaryTitle = nft.token_name || 'NFT Transfer'
       valueSummary = `${nft.amount} ${uppercase(nft.token_symbol)}`

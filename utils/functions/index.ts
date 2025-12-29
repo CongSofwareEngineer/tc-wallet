@@ -93,8 +93,10 @@ export const convertBalanceToWei = (balance: string | number | bigint | null | u
   return parseUnits(balance.toString(), decimals).toString()
 }
 
-export const detectUrlImage = (src: string | null | undefined) => {
-  if (!src) return images.icons.unknown
+export const detectUrlImage = (src: string | null | undefined, defaultImage?: string) => {
+  if (!src) {
+    return defaultImage || images.icons.unknown
+  }
   if (src?.startsWith('https://')) {
     const imageUrl = new URL(src)
     const imgQuery = imageUrl.searchParams.get('image')
