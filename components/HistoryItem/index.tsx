@@ -6,6 +6,7 @@ import useWallets from '@/hooks/useWallets'
 import { History } from '@/services/moralis/type'
 import { detectUrlImage, ellipsisText, uppercase } from '@/utils/functions'
 import { Feather } from '@expo/vector-icons'
+import BigNumber from 'bignumber.js'
 import moment from 'moment'
 import React, { useMemo } from 'react'
 import { View } from 'react-native'
@@ -55,16 +56,16 @@ const HistoryItem = ({ item }: Props) => {
       valueSummary = `${nft.amount} ${uppercase(nft.token_symbol)}`
     } else if (isERC20) {
       const token = erc20Transfers[0]
-      primaryImage = token.token_logo
+      primaryImage = detectUrlImage(token.token_logo)
       primaryDirection = token.to_address.toLowerCase() === wallet?.address?.toLowerCase() ? 'incoming' : 'outgoing'
       summaryTitle = token.token_name || 'Token Transfer'
-      valueSummary = `${token.value_formatted} ${uppercase(token.token_symbol)}`
+      valueSummary = `${BigNumber(token.value_formatted).decimalPlaces(4).toFormat()} ${uppercase(token.token_symbol)}`
     } else if (isNative) {
       const native = nativeTransfers[0]
-      primaryImage = native.token_logo
+      primaryImage = detectUrlImage(native.token_logo)
       primaryDirection = native.direction
       summaryTitle = 'Native Transfer'
-      valueSummary = `${native.value_formatted} ${uppercase(native.token_symbol)}`
+      valueSummary = `${BigNumber(native.value_formatted).decimalPlaces(4).toFormat()} ${uppercase(native.token_symbol)}`
     }
 
     // Adjust title and value if mixed
@@ -75,7 +76,7 @@ const HistoryItem = ({ item }: Props) => {
       if (types.length > 1) {
         const extraCount = (nftTransfers.length + erc20Transfers.length + nativeTransfers.length) - 1
         if (extraCount > 0) {
-          valueSummary += ` (+${extraCount})`
+          // valueSummary += ` (+${extraCount})`
         }
       }
     }
@@ -112,6 +113,7 @@ const HistoryItem = ({ item }: Props) => {
           </ThemedText>
           <ThemedText style={[styles.value, { color: isIncoming ? COLORS.green400 : COLORS.red400 }]}>
             {isIncoming ? '+' : '-'}
+            {/* {BigNumber(data.value || '0').decimalPlaces(4).toNumber()} */}
             {data.value}
           </ThemedText>
         </View>
