@@ -2,6 +2,7 @@ import MyImage from '@/components/MyImage'
 import ThemedText from '@/components/UI/ThemedText'
 import { images } from '@/configs/images'
 import { COLORS } from '@/constants/style'
+import useChains from '@/hooks/useChains'
 import useMode from '@/hooks/useMode'
 import useWallets from '@/hooks/useWallets'
 import { History } from '@/services/moralis/type'
@@ -10,7 +11,8 @@ import { Feather } from '@expo/vector-icons'
 import BigNumber from 'bignumber.js'
 import moment from 'moment'
 import React, { useMemo } from 'react'
-import { View } from 'react-native'
+import { Linking, View } from 'react-native'
+import ThemeTouchableOpacity from '../UI/ThemeTouchableOpacity'
 import { getStyles } from './styles'
 
 type Props = {
@@ -19,8 +21,16 @@ type Props = {
 
 const HistoryItem = ({ item }: Props) => {
   const { wallet } = useWallets()
+  const { chainCurrent } = useChains()
   const { mode, isDark } = useMode()
   const styles = useMemo(() => getStyles(mode, isDark), [mode, isDark])
+
+  const handleOpenExplorer = async () => {
+    if (chainCurrent?.blockExplorers?.default?.url) {
+      const explorerUrl = `${chainCurrent.blockExplorers.default.url}/tx/${item.hash}`
+      await Linking.openURL(explorerUrl)
+    }
+  }
 
   const nftTransfers = item.nft_transfers || []
   const erc20Transfers = item.erc20_transfers || []
@@ -127,6 +137,10 @@ const HistoryItem = ({ item }: Props) => {
           </View>
         </View>
       </View>
+
+      <ThemeTouchableOpacity style={styles.explorerButton} onPress={handleOpenExplorer}>
+        <Feather name="external-link" size={16} color={isDark ? COLORS.gray : COLORS.black3} />
+      </ThemeTouchableOpacity>
     </View>
   )
 }

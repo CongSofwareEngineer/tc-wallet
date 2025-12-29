@@ -62,5 +62,11 @@ export const getStyles = (mode: MODE, isDark: boolean) => {
       fontSize: 12,
       fontWeight: '500',
     },
+    explorerButton: {
+      padding: 8,
+      marginLeft: 8,
+      borderRadius: 20,
+      backgroundColor: isDark ? COLORS.black2 : COLORS.lightBg,
+    },
   })
 }
